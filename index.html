@@ -1609,7 +1609,7 @@ function bossBeam(e,p,d,dt){
     W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*(e.bt<1.5?7:20)));W.core.material.opacity=e.bt<1.5?.4:.9;
     e.glow.visible=true;e.glow.scale.setScalar(.3+e.bt/2.3*2.4+Math.sin(now*40)*.1);
     if(rnd()<.8)spark(tv.set(t3.x+(rnd()-.5)*6,t3.y+(rnd()-.5)*6,t3.z+(rnd()-.5)*6),1,3);
-    if(e.bt>=2.3){e.bs='fire';e.bt=0;e.bdur=e.phs?2.9:1.75;if(!e.bm){e.bm=new THREE.Mesh(beamGeo,mkAdd(0xff9a60,.75));e.bc=new THREE.Mesh(beamGeo,mkAdd(0xfff4e0,.95));scene.add(e.bm,e.bc);bossFx.push(e.bm,e.bc)}
+    if(e.bt>=2.3){e.bs='fire';e.bt=0;e.bdur=e.phs?2.9:1.75;if(!e.bm){e.bm=new THREE.Mesh(beamGeo,mkAdd(0x2fd8d0,.75));e.bc=new THREE.Mesh(beamGeo,mkAdd(0xd8fff8,.95));scene.add(e.bm,e.bc);bossFx.push(e.bm,e.bc)}
       play('boomBig',{v:1.3,rate:.75});megaLoop(true);shake=Math.max(shake,1.2);toast('')}}
   else{
     const end=tv.set(p.x+e.bdir.x*150,1.2,p.z+e.bdir.z*150),dir=t2.copy(end).sub(t3),len=dir.length();dir.normalize();
