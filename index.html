@@ -1332,6 +1332,7 @@ spider:`float w=rig.x,c=uG+rig.y*6.2832,ab=rig.z,cn=rig.w,b=1.-w,sx=sign(positio
  transformed.y+=b*(cos(2.*uG)*.012*uA+sin(uT*1.3)*.006-.14*uC);transformed.x+=sx*.07*uC*w*(1.-w)*4.;
  transformed.xz*=1.-.22*uU*w;transformed.y+=.18*uU*w*w;
  transformed+=(position-vec3(0.,.38,-.52))*ab*(.03*sin(uT*2.1)+.05*uK);transformed.x+=ab*ab*sin(uT*.8)*.03;
+ transformed.y+=b*(-.30*uP)-cn*.16*uP;transformed.x+=sx*.13*uP*w*(1.-w)*4.;transformed.z+=.04*uP*w*(1.-w)*4.;
  transformed.z-=cn*.06*uR;transformed.xy+=cn*vec2(sin(uT*53.),cos(uT*47.))*.007*(uK+uR);`,
 hound:`float w=rig.x,c=uG+rig.y*6.2832,tl=rig.z,hd=rig.w,b=1.-w,fr=position.z>.05?1.:-1.;
  transformed.z-=cos(c)*.13*uA*w;transformed.y+=max(0.,sin(c))*.08*uA*w;
@@ -1343,8 +1344,8 @@ drone:`float w=rig.x,c=uG+rig.y*6.2832,sac=rig.z,b=1.-w;vec2 r=position.xz,tg=ve
  transformed.xz+=tg*cos(c)*.11*uA*w;transformed.y+=max(0.,sin(c))*.1*uA*w+sin(uT*9.+rig.y*20.)*.012*w*(1.-uA);
  transformed+=objectNormal*sac*(.012+.06*uK)*(.5+.5*sin(uT*(5.+11.*uK)));transformed.y+=b*abs(sin(uG))*.025*uA;`};
 function sculptMat(g,kind){if(g&&g.userData.map){const m=new THREE.MeshLambertMaterial({map:g.userData.map,emissive:0xffffff,emissiveMap:g.userData.em,emissiveIntensity:1.4});
-  if(kind&&RIG_GLSL[kind]&&g.attributes.rig){const u={};for(const k of['uG','uA','uT','uC','uU','uK','uR'])u[k]={value:0};m.userData.ru=u;
-    m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,u);sh.vertexShader='attribute vec4 rig;uniform float uG,uA,uT,uC,uU,uK,uR;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n'+RIG_GLSL[kind])};
+  if(kind&&RIG_GLSL[kind]&&g.attributes.rig){const u={};for(const k of['uG','uA','uT','uC','uU','uK','uR','uP'])u[k]={value:0};m.userData.ru=u;
+    m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,u);sh.vertexShader='attribute vec4 rig;uniform float uG,uA,uT,uC,uU,uK,uR,uP;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n'+RIG_GLSL[kind])};
     m.customProgramCacheKey=()=>'rig_'+kind}
   return m}return new THREE.MeshBasicMaterial({vertexColors:true})}
 function matProxy(m){return{emissive:{setHex:v=>m.color.setRGB(v?2.4:1,v?2.4:1,v?2.4:1),setRGB:(r,g,b)=>m.color.setRGB(1+r*2,1+g*2,1+b*2)},dispose:()=>m.dispose()}}
@@ -1387,7 +1388,7 @@ function makeHoundProc(mt){
 // NORN QUEEN sculpt (Voidweb Colossus): faces +Z, back cannon tip at model (0,.575,.95)
 function makeSpiderSculpt(){const q=makeSculpt('spider',17,'spider',0);if(!q)return null;const s=q.sc;q.s=2.6;
   const glow=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),new THREE.MeshBasicMaterial({color:0xb0ffe8,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));glow.position.set(0,.575*s,1.0*s);glow.visible=false;q.mdl.add(glow);
-  const muz=new THREE.Object3D();muz.position.set(0,.575*s,1.02*s);q.mdl.add(muz);q.muz=muz;q.glow=glow;return q}
+  const muz=new THREE.Object3D();muz.position.set(0,.575*s,1.02*s);muz.userData={y0:.575*s,dy:.46*s};q.mdl.add(muz);q.muz=muz;q.glow=glow;return q}
 function makeSpider(mt){
   const cy=5.4,root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy;root.add(g);
   const body=new THREE.Group();body.position.y=cy;g.add(body);
@@ -1591,6 +1592,9 @@ function rigStep(e,p,dt){const u=e.ru,K=RIG_K[e.kind]||RIG_K.drone;
   if(e.kind==='spider'){
     if(e.js){const sy=e.m.scale.y;if(e.js==='air'){u.uU.value+=(1-u.uU.value)*Math.min(1,dt*6);u.uC.value*=.8}else{u.uC.value=Math.max(0,(1-sy)/.38);u.uU.value*=.85;p.y=e.y}e.m.scale.set(1,1,1)}
     else{u.uC.value*=Math.max(0,1-dt*5);u.uU.value*=Math.max(0,1-dt*5)}
+    {const want=e.bs?1:0,pv=u.uP.value;u.uP.value=want?Math.min(1,pv+dt/.55):Math.max(0,pv-dt/.7);const k=u.uP.value*u.uP.value*(3-2*u.uP.value);
+      if(want&&pv<1&&u.uP.value>=1){shake=Math.max(shake,.6);SFX.bossStep(p);for(let q=0;q<10;q++)puff(tv.set(p.x+(rnd()-.5)*12,.4,p.z+(rnd()-.5)*12),2,0x5a4a3a,.6)}
+      const mz=e.muz,ud=mz.userData;if(ud&&ud.dy!=null){mz.position.y=ud.y0-ud.dy*k;if(e.glow)e.glow.position.y=mz.position.y}if(e.mdl)e.mdl.rotation.x=.05*k}
     u.uK.value=e.bs==='charge'?Math.min(1,e.bt/2.3):Math.max(0,u.uK.value-dt*2);u.uR.value=e.bs==='fire'?.6+Math.random()*.4:Math.max(0,u.uR.value-dt*4)}}
 function bossBeam(e,p,d,dt){
   if(bossPhase(e,p,dt))return true;
