@@ -61,6 +61,13 @@ python3 -m http.server 8000
    これを忘れても HTML はネット優先なので反映されますが、three.js やアイコンを差し替えたときはキャッシュが残るため必ず上げてください
 3. commit & push
 
+## クレジット
+
+- 制作：[@Negi_RLabo](https://x.com/Negi_RLabo)
+- 3Dモデル：敵キャラクターの3Dモデルの一部は [Meshy](https://www.meshy.ai/) で生成したものです（[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ja)）。ゲーム用に軽量化し、アニメーション用の加工を加えています。
+- 3Dエンジン：[three.js](https://threejs.org/)（MIT License、`vendor/three.LICENSE`）
+- フォント：Chakra Petch／Zen Kaku Gothic New（Google Fonts、SIL Open Font License）
+
 ## セーブデータ
 
 進行状況はブラウザの localStorage に保存されます（`rg_` で始まるキー）。

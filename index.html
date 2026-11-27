@@ -205,6 +205,7 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .srow{display:grid;grid-template-columns:minmax(120px,190px) 1fr 54px;align-items:center;gap:12px;padding:7px 2px;border-bottom:1px solid rgba(74,58,44,.5);font-weight:700;font-size:14px}
 .srow input[type=range]{width:100%;accent-color:var(--acc);height:28px}.srow em{font:700 14px "Chakra Petch";font-style:normal;text-align:right;color:var(--acc)}
 .sup{display:inline-block;padding:7px 16px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;font:700 13px "Zen Kaku Gothic New";border-radius:2px;text-align:center}.sup:active,.sup:hover{background:var(--acc);color:#1a1410}
+.cred{padding:8px 2px 12px;font-size:13px;line-height:1.7;color:var(--dim)}.cred b{color:var(--ink)}.cred a{color:var(--cy)}.cred p{margin:0 0 8px}
 .sgrp{margin:12px 0 2px;font:700 12px "Zen Kaku Gothic New";color:var(--acc);letter-spacing:.2em}
 .seg{display:flex;gap:6px}.seg button,.tg{min-height:34px;padding:0 14px;background:#2a2019;border:1px solid var(--line);color:var(--dim);font:700 13px "Zen Kaku Gothic New";cursor:pointer}.seg button.on,.tg.on{background:var(--acc);color:#1a1410;border-color:var(--acc)}
 #pauseW .card{display:flex;flex-direction:column;gap:9px}#pauseW h2{font:700 32px "Chakra Petch";letter-spacing:.2em;margin:0 0 6px}
@@ -1793,7 +1794,12 @@ const SROWS=[['サウンド'],['vol','マスター音量','r',0,100,5,'%'],['sfx
 function renderSet(){$('setList').innerHTML=tutSetHTML()+admHTML()+SROWS.map(r=>{if(r.length===1)return `<div class="sgrp">${r[0]}</div>`;const [k,l,ty]=r;
   if(ty==='r')return `<div class="srow"><span>${l}</span><input type="range" data-k="${k}" min="${r[3]}" max="${r[4]}" step="${r[5]}" value="${SET[k]}"><em id="sv_${k}">${SET[k]}${r[6]}</em></div>`;
   if(ty==='s')return `<div class="srow"><span>${l}</span><div class="seg">${r[3].map(([v,t])=>`<button data-k="${k}" data-v="${v}" class="${SET[k]===v?'on':''}">${t}</button>`).join('')}</div><em></em></div>`;
-  return `<div class="srow"><span>${l}</span><div class="seg"><button class="tg${SET[k]?' on':''}" data-k="${k}" data-t="1">${SET[k]?'ON':'OFF'}</button></div><em></em></div>`}).join('')+`<div class="sgrp">ご支援</div><div class="srow"><span>開発を応援する</span><div><a class="sup" href="https://ofuse.me/820d068b" target="_blank" rel="noopener">OFUSEで支援する ↗</a></div><em></em></div>`}
+  return `<div class="srow"><span>${l}</span><div class="seg"><button class="tg${SET[k]?' on':''}" data-k="${k}" data-t="1">${SET[k]?'ON':'OFF'}</button></div><em></em></div>`}).join('')+`<div class="sgrp">ご支援</div><div class="srow"><span>開発を応援する</span><div><a class="sup" href="https://ofuse.me/820d068b" target="_blank" rel="noopener">OFUSEで支援する ↗</a></div><em></em></div><div class="srow"><span>制作者のX</span><div><a class="sup" href="https://x.com/Negi_RLabo" target="_blank" rel="noopener">@Negi_RLabo ↗</a></div><em></em></div>`
+  +`<div class="sgrp">クレジット</div><div class="cred">
+<p><b>制作</b>　<a href="https://x.com/Negi_RLabo" target="_blank" rel="noopener">@Negi_RLabo</a></p>
+<p><b>3Dモデル</b>　敵キャラクターの3Dモデルの一部は <a href="https://www.meshy.ai/" target="_blank" rel="noopener">Meshy</a> で生成したものです（<a href="https://creativecommons.org/licenses/by/4.0/deed.ja" target="_blank" rel="noopener">CC BY 4.0</a>）。ゲーム用に軽量化し、アニメーション用の加工を加えています。</p>
+<p><b>3Dエンジン</b>　<a href="https://threejs.org/" target="_blank" rel="noopener">three.js</a>（MIT License）</p>
+<p><b>フォント</b>　Chakra Petch／Zen Kaku Gothic New（<a href="https://fonts.google.com/" target="_blank" rel="noopener">Google Fonts</a>・SIL Open Font License）</p></div>`}
 $('setList').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;SET[k]=+e.target.value;const r=SROWS.find(x=>x[0]===k);$('sv_'+k).textContent=SET[k]+r[6];saveSet()});
 $('setList').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;if(b.dataset.t)SET[k]=!SET[k];else SET[k]=b.dataset.v;saveSet();if(k==='quality')applyQuality();renderSet();play('ui',{v:.4})});
 function tutSetHTML(){if(state==='pause'||state==='play')return '';return `<div class="sgrp">チュートリアル</div><div class="srow"><span>基本操作の練習</span><div class="seg"><button class="tg" id="setTut">訓練を開始</button></div><em></em></div>`}
