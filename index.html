@@ -586,7 +586,9 @@ const BODY={
   spec:{n:'Specter',ab:'cloak',turn:300,ty:'ステルス',slots:['軽','軽'],hp:400,wt:22,d:'軽2。光学迷彩で姿を消して忍び寄る',
     mt:[{k:'arm',p:[.74,1.2,0],s:1},{k:'arm',p:[-.74,1.2,0],s:-1}]},
   lanc:{n:'Lancelot',ab:'bulwark',turn:210,ty:'ナイト',slots:['重','軽'],sn:['右腕','右肩'],hp:680,wt:46,d:'重1・軽1。武装を右側に集め、左腕に大盾を持つ騎士',
-    mt:[{k:'arm',p:[-1.02,1.25,0],s:-1},{k:'top',p:[-1.02,2.08,-.28],s:-1}]}
+    mt:[{k:'arm',p:[-1.02,1.25,0],s:-1},{k:'top',p:[-1.02,2.08,-.28],s:-1}]},
+  rapt:{n:'Raptor',ab:'glare',turn:270,ty:'強襲',slots:['軽','軽'],sn:['左前脚','右前脚'],hp:500,wt:30,d:'軽2。前傾姿勢の恐竜型。小さな前脚に軽武器を持ち、頭の赤い単眼から熱線を放つ',
+    mt:[{k:'arm',p:[.66,.98,.62],s:1},{k:'arm',p:[-.66,.98,.62],s:-1}]}
 };
 const LEGS={
   bip:{n:'Strider',ty:'ミディアム二脚',spd:12.5,hp:520,wt:30,ab:{n:'スラスター',sn:'スラスター',cd:4,ic:'dash'},d:'バランス型。スラスター噴射で進行方向へ瞬間加速'},
@@ -605,6 +607,7 @@ const ABIL={
   overload:{n:'Overload',ty:'リミッター解除',sn:'Overload',cd:26,dur:6,wt:8,ic:'overload',d:'6秒間リミッターを外し、全武器の連射と威力が上がる。終わると1.5秒間オーバーヒートして動けず撃てない'},
   deploy:{n:'Unfold',ty:'武装展開',sn:'展開',cd:12,dur:10,wt:8,ic:'deploy',d:'背中に格納した左肩の軽武器と頭部の重武器を展開し、10秒間4門すべてで撃てる'},
   cloak:{n:'Phantom',ty:'光学迷彩',sn:'迷彩',cd:16,dur:7,wt:8,ic:'cloak',d:'7秒間姿を消し、敵の狙いが大きく外れる（当たり判定は残る）。発動時、近くの敵は一瞬こちらを見失う。撃つと解除され、解除直後の攻撃は威力1.5倍。迷彩中は移動速度+25%'},
+  glare:{n:'Glare',ty:'頭部熱線',sn:'熱線',cd:14,dur:2.4,wt:8,ic:'glare',d:'頭の赤い単眼から極太の熱線を2.4秒間照射する。ロック中（なければ正面）の敵へ向けて薙ぎ払い、貫通して当たった敵を焼く'},
   bulwark:{n:'Bulwark',ty:'物理シールド',sn:'大盾',cd:14,dur:6,wt:8,ic:'bulwark',d:'6秒間、左腕の大盾を正面に構え、前方からの弾や攻撃を止める。爆発・横・背後からの攻撃は防げない。構え中は移動が遅くなる'}
 };
 const WSD={harpoon:'撃ち出した銛を巻き戻す。行きも帰りも貫通ダメージ',gat:'上下2連。最高回転で凄まじい連射',cannon:'着弾で大爆発する榴弾砲。連射は遅い',beam:'溜めて放つ、敵を貫通するビーム',melt:'当て続けた敵の装甲を溶かす熱線',twin:'交互に撃ち込む連装砲。弾は時間で自動装填',shot:'近距離で絶大な威力の散弾',burst:'3連射のバースト式重ショットガン',pod:'3基のポッドからロケットを連射する',rkt:'群れをまとめて吹き飛ばすロケット弾',mini:'撃ち続けるほど連射が加速する',msl:'ロック中の敵を追う誘導ミサイル',shield:'正面からの攻撃を85%カット',saw:'周りの敵を切り刻む近接武器',tesla:'電撃を流し続け、敵から敵へ連鎖する',flame:'炎の塊を連射し、燃え続けさせる'};
@@ -628,6 +631,7 @@ function fixW(nl){if(!BODY[cfg.B])cfg.B='std';if(!LEGS[cfg.G])cfg.G='bip';if(!nl
 function totWt(){return BODY[cfg.B].wt+LEGS[cfg.G].wt+BODY[cfg.B].slots.reduce((t,c,i)=>t+WP[cfg.W[i]].wt,0)}
 function wtMul(){return Math.max(.7,Math.min(1.2,1.35-totWt()/300))}
 const IC={
+  glare:'<circle cx="30" cy="30" r="9" fill="currentColor"/><circle cx="30" cy="30" r="15" fill="none" stroke="currentColor" stroke-width="3"/><path d="M45 30h12M30 15V6M41 19l7-7M41 41l7 7" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>',
   gallop:'<path d="M20 52h22l-3-12c6-3 9-9 9-16 0-7-5-12-12-14l-3-5-3 6c-9 2-16 9-18 18l-2 8 6 3 6-6 5 1-7 17z" fill="currentColor"/><circle cx="36" cy="20" r="2.4" fill="#111"/><path d="M4 28h9M2 36h10M6 44h8" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>',
   fly:'<circle cx="16" cy="16" r="9" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="44" cy="16" r="9" fill="none" stroke="currentColor" stroke-width="3"/><path d="M16 16h28M30 16v14M22 44l8-14 8 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>',
   anchor:'<path d="M30 12v34M20 20h20M14 34c2 9 9 13 16 13s14-4 16-13" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="30" cy="12" r="4" fill="currentColor"/>',
@@ -834,7 +838,7 @@ function gatModel(a,R,L,rr,parent,bm){
 }
 let sawGeo=null,coilGeo=null;const MKB=new THREE.MeshLambertMaterial({color:0xc9a04a,emissive:0x2a1a00});const tipGeo=new THREE.ConeGeometry(.1,.3,8),tipMat=new THREE.MeshLambertMaterial({color:0xd8402a,emissive:0x401008});const sawMat=new THREE.MeshLambertMaterial({color:0xc4c7cc,emissive:0x221100});const silverMat=new THREE.MeshLambertMaterial({color:0xc2c6cc,emissive:0x15171a});
 // side-mounted arm weapons: how far out (x) and how low (y) the weapon pivot sits, per body
-const ARMO={std:[.62,-.5],lite:[.5,-.46],quad:[.56,-.5],fort:[1.28,-.55],chim:[.56,-.5],spec:[.46,-.48],lanc:[.58,-.52]};const armO=()=>ARMO[cfg.B]||ARMO.std;
+const ARMO={rapt:[.4,-.42],std:[.62,-.5],lite:[.5,-.46],quad:[.56,-.5],fort:[1.28,-.55],chim:[.56,-.5],spec:[.46,-.48],lanc:[.58,-.52]};const armO=()=>ARMO[cfg.B]||ARMO.std;
 function armJoint(g,s){const [x,y]=armO();cyl(.16,-y+.05,MK.dk,0,y/2,0,g);cyl(.19,x-.08,MK.gm,s*(x-.08)/2,y,0,g,'x')}
 function mtBuild(g,MT,s){g.position.set(MT.p[0],MT.p[1],MT.p[2]);
   if(MT.k==='arm'){cyl(.2,.42,MK.dk,0,0,0,g,'x');const pd=cbox(.62,.46,.86,MK.paint,s*.1,.16,0,g,.08);pd.rotation.z=-s*.16;box(.06,.06,.6,MK.acc,s*.42,.3,0,g);cbox(.1,.4,.7,MK.gm,s*.38,.02,0,g);armJoint(g,s)}
@@ -1101,6 +1105,18 @@ function buildTorso(k,cw,P_,G_,D_){const U_=upper;
     cbox(cw*.7,.16,1.0,G_,0,1.68,-.1,U_,.05);cyl(.22,.08,G_,cw*.16,1.79,-.25,U_);cyl(.14,.1,D_,cw*.16,1.82,-.25,U_);box(.3,.05,.3,MK.acc,-cw*.16,1.79,-.2,U_);
     cbox(cw*.74,.8,.5,G_,0,1.05,-.86,U_,.08);vents(3,cw*.5,.06,D_,0,1.05,-1.12,U_,.12);
     for(const s of[-1,1]){cyl(.16,.9,D_,s*.42,1.9,-.72,U_);cyl(.19,.1,MK.gm,s*.42,2.35,-.72,U_)}
+  }else if(k==='rapt'){ // Raptor: torso pitched forward, long neck to a jawed head with a red mono-eye (the Glare emitter), crest, dorsal fins, long tapering tail
+    const bd=new THREE.Group();bd.position.set(0,1.05,0);bd.rotation.x=.2;U_.add(bd);
+    cbox(cw*.74,.6,1.3,P_,0,0,.05,bd,.14);cbox(cw*.56,.3,1.0,G_,0,-.38,0,bd,.06);for(let q=0;q<4;q++){const f=cbox(.06,.38-q*.06,.36,MK.acc,0,.42,.45-q*.36,bd,.02);f.rotation.x=-.45}
+    box(cw*.76,.05,.05,MK.acc,0,.05,.7,bd);vents(3,.05,.06,D_,cw*.37,0,-.05,bd,.14);vents(3,.05,.06,D_,-cw*.37,0,-.05,bd,.14);
+    const nk=new THREE.Group();nk.position.set(0,.1,.68);nk.rotation.x=-.5;bd.add(nk);cyl(.17,.75,D_,0,0,.35,nk,'z');cbox(.26,.22,.5,P_,0,.08,.32,nk,.05);
+    const hd=new THREE.Group();hd.position.set(0,.02,.82);hd.rotation.x=.42;nk.add(hd);
+    cbox(.5,.34,.62,P_,0,.04,.05,hd,.08);cbox(.36,.18,.5,P_,0,.06,.52,hd,.05);const jw=cbox(.32,.1,.62,G_,0,-.16,.4,hd,.03);jw.rotation.x=.12;
+    for(const s of[-1,1])for(let q=0;q<3;q++)cone(hd,new THREE.MeshLambertMaterial({color:0xe8dcc0}),.03,.1,s*.13,-.07,.42+q*.15,Math.PI);
+    const eye=new THREE.MeshBasicMaterial({color:0xff2a1a});ell(hd,G_,.22,.2,.09,0,.13,.3);ell(hd,eye,.15,.14,.06,0,.13,.36);rapEye=new THREE.Object3D();rapEye.position.set(0,.13,.42);hd.add(rapEye);rapEyeM=eye;
+    for(let q=0;q<3;q++){const c=cbox(.05,.18-q*.04,.22,MK.acc,0,.26-q*.02,-.05-q*.17,hd,.02);c.rotation.x=-.5}
+    const tl=new THREE.Group();tl.position.set(0,.06,-.68);tl.rotation.x=-.32;bd.add(tl);rapTail=tl;let z=0;for(let q=0;q<6;q++){const L=.42,w=.42-q*.06;cbox(w*cw*.8,w*.9,L,q%2?G_:P_,0,q*.035,z-L/2,tl,.04);z-=L*.92}
+    cone(tl,MK.acc,.06,.4,0,.22,-1.2,-1.2);
   }else{ // Vanguard: the balanced standard — angled chest, cockpit sensor, single mono-visor, V antenna
     cbox(cw,.86,.92,P_,0,1.03,0,U_,.16);
     for(const s of[-1,1]){const pl=cbox(cw*.5,.5,.22,P_,s*cw*.25,1.16,.47,U_);pl.rotation.set(-.2,-s*.22,0)}
@@ -1195,15 +1211,15 @@ function buildLegs(k,P_,G_,D_){
   }
   return 3.15*SC}
 function trackUpdate(du){P.tr=(P.tr||0)+du;for(const links of treadL)links.forEach((l,q)=>{const r=trackPos(P.tr+q*TRK_P/links.length,l.position);l.rotation.x=r});for(const w of wheelL)w.rotation.x=-P.tr/.3}
-let lancSh=null,lancArm=null,ovMat=null,ovStk=null,HS=null,hsLoad=12;
+let lancSh=null,lancArm=null,ovMat=null,ovStk=null,HS=null,hsLoad=12,rapEye=null,rapEyeM=null,rapTail=null,rapBm=null;const rapDir=new V(0,0,1);
 function buildMech(){
-  applyPaint();lancSh=lancArm=ovMat=ovStk=null;P.clk=false;
+  applyPaint();lancSh=lancArm=ovMat=ovStk=rapEye=rapEyeM=rapTail=null;if(rapBm)for(const m of rapBm)m.visible=false;P.clk=false;
   if(mech)scene.remove(mech);for(const m of liveBeams)scene.remove(m);liveBeams=[];for(const a of arms||[]){if(a.hm)scene.remove(a.hm);if(a.cab)scene.remove(a.cab)}
   mech=new THREE.Group();scene.add(mech);legsRoot=new THREE.Group();mech.add(legsRoot);legParts=[];
   const fort=cfg.B==='fort',P_=MK.paint,G_=MK.gm,D_=MK.dk;
   flames=[];wingL=[];treadL=[];wheelL=[];anchorG=null;legZ=0;hipY=buildLegs(cfg.G,P_,G_,D_);
   upper=new THREE.Group();upper.position.set(0,hipY,legZ);mech.add(upper);
-  const cw=fort?1.7:cfg.B==='lite'?1.0:cfg.B==='quad'?1.4:1.32;
+  const cw=fort?1.7:cfg.B==='lite'?1.0:cfg.B==='quad'?1.4:cfg.B==='rapt'?1.2:1.32;
   // pelvis + skirt armour (not on tracked chassis)
   if(cfg.G!=='tank'){cbox(1.02,.42,.72,G_,0,0,0,upper);for(const s of[-1,1]){const sk=cbox(.4,.5,.12,P_,s*.28,-.22,.4,upper);sk.rotation.x=.22;const ss=cbox(.12,.5,.5,P_,s*.55,-.2,0,upper);ss.rotation.z=s*.2}
   cyl(.3,.5,D_,0,.42,0,upper);}
@@ -2993,6 +3009,18 @@ function poseDeploy(u){const e=u*u*(3-2*u);for(const a of arms){if(!a.sp)continu
 function hailTick(){if(cfg.A!=='missile'||!podL.length)return;const N=podL.length,st=AB.body,tot=ABIL.missile.cd*U.cd;
   if(HS&&HS.n<HS.tot){const gone=Math.min(N,HS.n);podL.forEach((o,q)=>o.userData.head.visible=q>=gone);return}HS=null;
   const n=st.cd>0?Math.min(N,Math.floor((1-st.cd/tot)*N*1.08)):N;if(n>hsLoad){if(state==='play')play('tube',{v:.45,rate:1.1+rnd()*.15});hsLoad=n}podL.forEach((o,q)=>o.userData.head.visible=q<n)}
+// ===== Raptor: Glare — a heat ray from the red mono-eye, swept onto the locked (or nearest-ahead) target =====
+function glareTick(dt,act){if(rapTail)rapTail.rotation.y=Math.sin(now*2.1)*.12;
+  if(rapEyeM){const h=act?1:.55+.25*Math.sin(now*3);rapEyeM.color.setRGB(1,.16+.5*(act?Math.abs(Math.sin(now*30)):0)*h,.1)}
+  if(!rapBm){rapBm=[new THREE.Mesh(beamGeo,mkAdd(0xff3a1a,.7)),new THREE.Mesh(beamGeo,mkAdd(0xffe6c8,.95))];for(const m of rapBm){m.visible=false;scene.add(m)}}
+  const on=act&&rapEye&&(state==='play'||state==='demo');for(const m of rapBm)m.visible=!!on;if(!on)return;
+  rapEye.getWorldPosition(t3);const tg=lockT&&enemies.includes(lockT)&&!lockT.hid?lockT:nearest(P.pos,70);
+  if(tg)t2.copy(tg.m.position).sub(t3).normalize();else t2.set(Math.sin(upper.rotation.y),-.06,Math.cos(upper.rotation.y)).normalize();
+  rapDir.lerp(t2,Math.min(1,dt*5)).normalize();const L=72,end=_pv.copy(t3).addScaledVector(rapDir,L);
+  const w=1.15*(1+Math.sin(now*50)*.08);rapBm.forEach((m,i)=>{const k=i?.38:1;m.position.copy(t3);m.quaternion.setFromUnitVectors(up,rapDir);m.scale.set(w*k,L,w*k)});
+  for(const e of enemies.slice()){if(e.mat>0||e.hid)continue;if(segHit(t3,end,e.m.position,e.r+.8)){e.hp-=520*dt*amBoss('HE',e)*fpM();e.flash=.05;e.burn=Math.max(e.burn||0,1.2);if(rnd()<.3)spark(e.m.position,2,9);if(e.hp<=0)kill(e)}}
+  for(const pr of props)if(pr.alive&&segBox(t3.x,1.2,t3.z,end.x,1.2,end.z,pr)<1)hitProp(pr,900*dt);
+  for(let k=0;k<2;k++){const q=t2.copy(t3).addScaledVector(rapDir,rnd()*L);if(q.y<3)spark(q,1,6)}shake=Math.max(shake,.12)}
 function bodyTick(dt){const act=AB.body.act>0;hailTick();
   if(cfg.A==='overload'){const u=act?1-AB.body.act/(ABIL.overload.dur+(U.abX.overload||0)):0;
     if(act){P.ovW=true;P.ovH=Math.max(P.ovH||0,u)}
@@ -3005,6 +3033,7 @@ function bodyTick(dt){const act=AB.body.act>0;hailTick();
   if(P.stun>0)P.stun-=dt;if(P.amb>0)P.amb-=dt;
   if(cfg.A==='deploy'){const g=act?1:0,pd=P.dep||0;if(g>pd&&pd===0)play('clankH',{v:.6,rate:1.2});P.dep=pd+Math.sign(g-pd)*Math.min(Math.abs(g-pd),dt*2.4);poseDeploy(P.dep)}
   if(cfg.A==='cloak'){if(P.clk&&!act)cloakSet(false);if(P.clk){const mv=Math.hypot(P.vel.x,P.vel.z);cloakMat.opacity=.06+Math.min(.14,mv*.012)+Math.sin(now*9)*.02}}
+  if(cfg.A==='glare')glareTick(dt,act);
   if(lancSh){const pb=P.blk||0;P.blk=pb+((act?1:0)-pb)*Math.min(1,dt*9);if(act&&pb<.05)play('clankH',{v:.6,rate:.9});poseShield(P.blk)}}
 const fP=[];{const ft=glowTex('255,150,50');for(let i=0;i<170;i++){const m=new THREE.Sprite(new THREE.SpriteMaterial({map:ft,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));m.visible=false;scene.add(m);fP.push({m,v:new V(),t:0,life:1,s:1,g:1})}}let fpi=0;
 function flameP(p,dir,R,small){const q=fP[fpi++%fP.length];q.m.position.copy(p);if(small)q.v.set((rnd()-.5)*1.5,2.5+rnd()*2,(rnd()-.5)*1.5);else q.v.set(dir.x+(rnd()-.5)*.32,dir.y+(rnd()-.5)*.22,dir.z+(rnd()-.5)*.32).multiplyScalar(R*2.6*(.8+rnd()*.4));q.t=0;q.life=small?.5:.42+rnd()*.12;q.s=small?.8:.5;q.g=small?1.4:R*.3;q.m.visible=true}
@@ -3036,6 +3065,7 @@ function useBody(){
   else if(cfg.A==='barrier'){P.bar=A.dur+U.abBar*4;P.bhp=A.cap*(1+U.abBar*.6);SFX.barrierUp()}
   else if(cfg.A==='cloak'){cloakSet(true);for(const e of enemies)if(e.m.position.distanceTo(P.pos)<40)e.cd=Math.max(e.cd||0,1.5)}
   else if(cfg.A==='overload'){play('bup',{v:.8,rate:.6});SFX.clank(true);shake=Math.max(shake,.2)}
+  else if(cfg.A==='glare'){SFX.beamFire(.8);play('warp',{v:.5,rate:1.6});if(rapEye){rapEye.getWorldPosition(t3);rapDir.set(Math.sin(upper.rotation.y),-.06,Math.cos(upper.rotation.y)).normalize()}}
   else SFX.clank(true);
   if(A.dur)st.act=A.dur+(cfg.A==='barrier'?U.abBar*4:cfg.A==='turret'?U.abTur*5:0)+(U.abX[cfg.A]||0);st.cd=A.cd*U.cd;
 }
