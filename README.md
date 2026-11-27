@@ -24,6 +24,7 @@ three.js（r128）を使った1ファイル構成のゲームで、ビルド作�
 index.html             ゲーム本体（HTML / CSS / JS すべて入り）
 vendor/three.min.js    three.js r128（CDNに頼らず同梱）
 vendor/three.LICENSE   three.js のライセンス（MIT）
+news.json              お知らせ（ホーム右上のメールマーク）
 manifest.webmanifest   ホーム画面に追加（PWA）用の設定
 sw.js                  オフライン用 service worker
 icon-512.png           アプリアイコン（512px）
@@ -68,6 +69,21 @@ python3 -m http.server 8000
 - 3Dモデル：敵キャラクターの3Dモデルの一部は [Meshy](https://www.meshy.ai/) で生成したものです（[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ja)）。ゲーム用に軽量化し、アニメーション用の加工を加えています。
 - 3Dエンジン：[three.js](https://threejs.org/)（MIT License、`vendor/three.LICENSE`）
 - フォント：Chakra Petch／Zen Kaku Gothic New（Google Fonts、SIL Open Font License）
+
+## お知らせを追加する
+
+`news.json` の先頭に1件追加して commit & push するだけです（`sw.js` の `VERSION` を上げる必要はありません）。
+`id` は他と重ならない文字列にしてください。プレイヤーがまだ見ていない `id` の数が、ホーム右上のメールマークに赤丸で表示されます。
+
+```json
+{
+  "id": "2026-12-01-update",
+  "date": "2026-12-01",
+  "tag": "アップデート",
+  "title": "新しい武器を追加しました",
+  "body": "本文。改行は \n で入れられます。"
+}
+```
 
 ## セーブデータ
 

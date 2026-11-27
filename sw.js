@@ -1,6 +1,6 @@
 // HARD POINT service worker
 // 更新を配信するときは VERSION を上げてください（古いキャッシュが破棄されます）
-const VERSION = 'hp-v3';
+const VERSION = 'hp-v4';
 const CORE = [
   './',
   './index.html',
@@ -33,6 +33,16 @@ self.addEventListener('fetch', e => {
       fetch(req)
         .then(r => { const c = r.clone(); caches.open(VERSION).then(x => x.put('./index.html', c)); return r; })
         .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  // お知らせ(news.json)はネット優先 → 追加したらすぐ届く、オフライン時はキャッシュ
+  if (url.origin === location.origin && url.pathname.endsWith('/news.json')) {
+    e.respondWith(
+      fetch(req, { cache: 'no-store' })
+        .then(r => { const c = r.clone(); caches.open(VERSION).then(x => x.put(req, c)); return r; })
+        .catch(() => caches.match(req))
     );
     return;
   }
