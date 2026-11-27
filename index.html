@@ -3206,6 +3206,18 @@ function glareTick(dt,act){if(rapTail)rapTail.rotation.y=Math.sin(now*2.1)*.12;
   for(const e of enemies.slice()){if(e.mat>0||e.hid)continue;if(segHit(t3,end,e.m.position,e.r+.8)){e.hp-=520*dt*amBoss('HE',e)*fpM();e.flash=.05;e.burn=Math.max(e.burn||0,1.2);if(rnd()<.3)spark(e.m.position,2,9);if(e.hp<=0)kill(e)}}
   for(const pr of props)if(pr.alive&&segBox(t3.x,1.2,t3.z,end.x,1.2,end.z,pr)<1)hitProp(pr,900*dt);
   for(let k=0;k<2;k++){const q=t2.copy(t3).addScaledVector(rapDir,rnd()*L);if(q.y<3)spark(q,1,6)}shake=Math.max(shake,.12)}
+// ===== hangar: outline the part being changed (weapon slot / body / drive / whole mech for paint) in a pale blue glow =====
+const hlMat=new THREE.MeshBasicMaterial({color:0xa8ecff,side:THREE.BackSide,transparent:true,opacity:.9,depthWrite:false});const HL={key:null,mech:null,list:[]};
+function hlClear(){for(const o of HL.list)if(o.parent)o.parent.remove(o);HL.list=[]}
+function hlTargets(k){if(!mech)return[];if(k==='P')return[mech];if(k==='G')return[legsRoot];if(k==='A')return[abMod];
+  if(k&&k[0]==='w'){const a=arms[+k[1]];return a?[a.w]:[]}
+  if(k==='B'){const skip=new Set(arms.map(a=>a.g));return upper.children.filter(c=>!skip.has(c))}return[]}
+function hlTick(){const k=state==='menu'?menuFocus:null;
+  if(k!==HL.key||mech!==HL.mech){hlClear();HL.key=k;HL.mech=mech;if(k&&mech){mech.updateMatrixWorld(true);const ws=new V(),seen=[];
+    for(const t of hlTargets(k))t&&t.traverse(o=>{if(!o.isMesh||!o.visible||o.material===hlMat||(o.material&&o.material.transparent))return;seen.push(o)});
+    for(const o of seen){if(!o.geometry.boundingSphere)o.geometry.computeBoundingSphere();o.getWorldScale(ws);const r=o.geometry.boundingSphere.radius*Math.max(ws.x,ws.y,ws.z);if(!(r>0))continue;
+      const h=new THREE.Mesh(o.geometry,hlMat);h.scale.setScalar(1+Math.min(.5,.08/r));h.renderOrder=-1;o.add(h);HL.list.push(h)}}}
+  if(HL.list.length)hlMat.opacity=.65+.3*Math.sin(now*4)}
 // ===== FROST HARBOR weather: constant snowfall around the camera, and a blizzard every so often that pulls the fog in =====
 let SNOW=null;const WX={t:25,on:0,k:0};
 function weatherTick(dt){const act=MAP==='harbor'&&!TUT&&(state==='play'||state==='demo'||state==='menu'||state==='trans'||state==='drop');
@@ -3802,7 +3814,7 @@ function loop(t){
   else if(state==='drop'){updateDrop(dt);hudUpdate()}
   else if(state==='dead'){overT-=dt;for(const b of eb)if(b.on)b.m.position.addScaledVector(b.v,dt);if(overT<=0){state='over';$('over').querySelector('h2').innerHTML=`機体大破<small>${esc(P.hb||'敵の攻撃')}で大破</small>`;$('upl').textContent=Object.keys(PK).length?'取得した強化：'+Object.entries(PK).map(([k,v])=>UP.find(u=>u.id===k).n+(v>1?'×'+v:'')).join('、'):'';$('res').innerHTML=`<span class="dc">${TUT||TEST?stageLabel():mapName(MAP)+' ― '+stageLabel()+' まで到達'}</span><span class="bx"><span class="tl">TIME</span><b>${fmtT(RUN.t,1)}</b></span><span class="bx"><span class="tl">SCORE</span><b>${score.toLocaleString()}</b></span><span class="meta"><span class="scrapIn">${SCRI}+${(P.runScrap||0).toLocaleString()}<small>（所持 ${SCRAP.toLocaleString()}）</small></span></span>`;$('over').classList.remove('win');$('over').classList.remove('hide');$('hud').classList.add('hide');$('ctl').classList.add('hide');try{document.exitPointerLock&&document.exitPointerLock()}catch(e){}showRunMech(histAdd(false))}}
   updateShip(dt);updateZaps(sdt);updateCasings(sdt);updateProps(sdt);if(state==='play'||state==='drop')updateScraps(sdt);
-  fx(sdt);camUpdate(dt);weatherTick(dt);R.render(scene,cam);
+  fx(sdt);camUpdate(dt);weatherTick(dt);hlTick();R.render(scene,cam);
 }
 applyCtl();helpKeys();resetU();buildLevel('ruins');renderMenu();buildMech();applyQuality();goHome();requestAnimationFrame(loop);tutWelcome();
 }
