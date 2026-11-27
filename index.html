@@ -2,6 +2,12 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<script>
+// テスト版（/test/ 以下で開いたとき）はセーブデータを本番と分ける（キーの先頭に t_ を付ける）
+(function(){if(!/\/test\//.test(location.pathname))return;window.HP_TEST=true;var S=Storage.prototype,g=S.getItem,s=S.setItem,r=S.removeItem,P='t_';
+S.getItem=function(k){return g.call(this,P+k)};S.setItem=function(k,v){return s.call(this,P+k,v)};S.removeItem=function(k){return r.call(this,P+k)};
+addEventListener('DOMContentLoaded',function(){var b=document.createElement('div');b.textContent='TEST';b.style.cssText='position:fixed;left:50%;bottom:4px;transform:translateX(-50%);z-index:99;background:#e5261a;color:#fff;font:700 11px/1 sans-serif;padding:3px 10px;letter-spacing:.2em;pointer-events:none;opacity:.85';document.body.appendChild(b);document.title='[TEST] '+document.title})})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">

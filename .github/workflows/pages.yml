@@ -1,0 +1,65 @@
+# GitHub Pages への公開
+#   main ブランチ  → https://negiramen1922.github.io/hard_point/       （本番）
+#   test ブランチ  → https://negiramen1922.github.io/hard_point/test/  （テスト版）
+# どちらかに push すると、両方をまとめて公開し直します。
+# 事前に Settings → Pages → Build and deployment → Source を「GitHub Actions」にしておくこと。
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, test]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 本番（main）を取得
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: site
+
+      - name: テスト版（test）があれば取得
+        id: test
+        run: |
+          if git ls-remote --exit-code --heads "https://github.com/${{ github.repository }}" test >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.test.outputs.exists == 'true'
+        with:
+          ref: test
+          path: test-src
+
+      - name: ひとつのサイトにまとめる
+        run: |
+          rm -rf site/.git site/.github site/docs site/CLAUDE.md
+          if [ -d test-src ]; then
+            rm -rf test-src/.git test-src/.github test-src/docs test-src/CLAUDE.md
+            mkdir -p site/test
+            cp -r test-src/. site/test/
+          fi
+          touch site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -42,13 +42,25 @@ python3 -m http.server 8000
 # → http://localhost:8000 を開く
 ```
 
+## テスト版と本番
+
+| | ブランチ | URL |
+|---|---|---|
+| 本番 | `main` | https://negiramen1922.github.io/hard_point/ |
+| テスト版 | `test` | https://negiramen1922.github.io/hard_point/test/ |
+
+`.github/workflows/pages.yml` が、どちらかのブランチに push されるたびに両方をまとめて GitHub Pages に公開します。
+テスト版はセーブデータが本番と別になり、画面下に「TEST」と表示されます。
+
+流れ：変更 → `test` に push してテスト版で確認 → 問題なければ `test` を `main` にマージして公開。
+変更点は `CHANGES.md` に書きため、公開時に `news.json` のお知らせにします。
+
+> 初回だけ：リポジトリの **Settings → Pages → Build and deployment → Source** を **GitHub Actions** に変更してください。
+
 ## 公開する
 
 ### GitHub Pages
-1. このフォルダの中身をリポジトリのルートに push
-2. リポジトリの **Settings → Pages**
-3. **Source: Deploy from a branch**、**Branch: `main` / `(root)`** を選んで Save
-4. 1〜2分後に `https://<ユーザー名>.github.io/<リポジトリ名>/` で公開されます
+上の「テスト版と本番」のとおり、GitHub Actions で公開しています（Source: GitHub Actions）。
 
 ### Cloudflare Pages（任意）
 1. Cloudflare ダッシュボード → **Workers & Pages → Create → Pages → Connect to Git**
