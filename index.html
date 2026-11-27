@@ -37,7 +37,7 @@ canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:
 #mid .pl{background:rgba(12,16,20,.6);padding:1px 18px;font:700 20px/1.25 "Chakra Petch";color:#fff;border-bottom:3px solid #e53a2a}
 #pips{margin-top:3px;font:700 15px "Zen Kaku Gothic New";color:#ff6a5a;text-shadow:0 1px 3px #000}
 #pips i{width:9px;height:11px;background:#e53a2a;display:block;clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%)}
-#tmr{margin-top:4px;font:700 15px/1 "Chakra Petch";color:#cfe8f0;letter-spacing:.04em}#tmr.pb{color:#ffd24a}
+#tmr{margin-left:6px;padding-left:9px;border-left:1px solid rgba(255,255,255,.25);font:700 15px/1 "Chakra Petch";color:#cfe8f0;letter-spacing:.04em}#tmr:empty{display:none}#tmr.pb{color:#ffd24a}
 #score{position:absolute;top:8px;right:12px;text-align:right;font:700 22px/1 "Chakra Petch";text-shadow:0 1px 3px #000}
 #score small{display:block;font-size:11px;color:var(--dim)}
 #bossW{position:absolute;top:62px;left:50%;transform:translateX(-50%);width:min(44vw,380px);text-align:center;font:700 12px "Zen Kaku Gothic New";color:#ff8a60}
@@ -98,7 +98,7 @@ canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:
 #ctl>*{pointer-events:auto}
 #joy{position:absolute;left:0;top:35%;bottom:0;width:40%;touch-action:none}
 #look{position:absolute;right:0;top:0;bottom:0;width:58%;touch-action:none}
-#ctl{--B:min(150px,44vh);--R:min(240px,66vh);--A:min(56px,15vh)}
+#ctl{--U:1;--B:calc(min(150px,44vh)*var(--U));--R:calc(min(240px,66vh)*var(--U));--A:calc(min(56px,15vh)*var(--U))}
 #knob,#base{position:absolute;border-radius:50%;pointer-events:none;left:calc(var(--B)*.62 + 12px);bottom:calc(var(--B)*.55 + 6px)}
 #base{width:var(--B);height:var(--B);border:2px solid rgba(160,210,240,.45);background:rgba(20,26,32,.35);margin:0 0 calc(var(--B)/-2) calc(var(--B)/-2)}
 #knob{width:calc(var(--B)*.43);height:calc(var(--B)*.43);background:rgba(200,225,240,.55);margin:0 0 calc(var(--B)*-.215) calc(var(--B)*-.215);box-shadow:0 2px 8px rgba(0,0,0,.4)}
@@ -295,10 +295,10 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 <canvas id="c"></canvas>
 <div id="hurt"></div><div id="speed"></div><div id="flash"></div><div id="fade"></div>
 <div id="hud" class="hide">
-  <div id="scrapH"><svg class="si" viewBox="0 0 24 24"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z" fill="#ffcf8a" stroke="#7a4a18" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 2.5l8.2 4.75L12 12 3.8 7.25z" fill="#ffe7bf" opacity=".55"/><circle cx="12" cy="12" r="3.6" fill="#1a1410" stroke="#7a4a18" stroke-width="1.2"/></svg><b id="scrapN">0</b></div>
+  <div id="scrapH"><svg class="si" viewBox="0 0 24 24"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z" fill="#ffcf8a" stroke="#7a4a18" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 2.5l8.2 4.75L12 12 3.8 7.25z" fill="#ffe7bf" opacity=".55"/><circle cx="12" cy="12" r="3.6" fill="#1a1410" stroke="#7a4a18" stroke-width="1.2"/></svg><b id="scrapN">0</b><span id="tmr">00:00.0</span></div>
   <div id="me"><div class="nm">[HARD POINT] PILOT</div><div class="hpb"><i id="apB"></i><span id="apT"></span></div><div class="hpb bb hide" id="bbW"><i id="bbB"></i></div></div>
   <div id="mid"><div class="pl" id="waveT">WAVE 1</div><div id="pips"></div></div>
-  <div id="score"><small>SCORE</small><span id="scoreT">0</span><div id="tmr">00:00.0</div></div>
+  <div id="score"><small>SCORE</small><span id="scoreT">0</span></div>
   <div id="bossW" class="hide"><span id="bossN">BOSS</span><div class="hpb"><i id="bossB"></i><b class="tk" style="left:60%"></b><b class="tk" style="left:20%"></b></div></div>
   <div id="marks"></div>
   <div id="cross"></div><svg id="gauge" viewBox="0 0 140 140"></svg><div id="aimP"></div><div id="lock"><b id="lockD"></b></div><div id="locks"></div>
@@ -1829,16 +1829,17 @@ $('c').addEventListener('click',e=>{if(state!=='menu'||mMoved>8)return;ray.setFr
   while(o){const ai=arms.findIndex(a=>a.g===o);if(ai>=0)return openSheet('w'+ai);if(o===abMod)return openSheet('B');if(o===legsRoot)return openSheet('G');if(o===upper)return openSheet('B');o=o.parent}});
 $('go').addEventListener('click',()=>{closeSheet();openStages('garage')});
 // ===== settings =====
-const SETD={vol:90,sfx:100,bgm:60,fov:62,quality:'high',shake:100,sens:100,invY:false,drop:true,slow:true,lines:true,hurt:true};
+const SETD={vol:90,sfx:100,bgm:60,fov:62,quality:'high',shake:100,sens:100,sensT:100,sensY:100,invY:false,stk:100,ui:100,uiA:100,vib:true,tmr:true,dmgN:true,drop:true,slow:true,lines:true,hurt:true};
 const SET=Object.assign({},SETD);try{Object.assign(SET,JSON.parse(localStorage.getItem('rg_set')||'{}'))}catch(e){}
-function saveSet(){try{localStorage.setItem('rg_set',JSON.stringify(SET))}catch(e){}}
+function saveSet(){try{localStorage.setItem('rg_set',JSON.stringify(SET))}catch(e){}applyCtl()}
+function applyCtl(){const c=$('ctl');if(c){c.style.setProperty('--U',SET.ui/100);c.style.opacity=SET.uiA/100}const t=$('tmr');if(t)t.style.display=SET.tmr?'':'none'}
 function applyQuality(){R.setPixelRatio(SET.quality==='high'?Math.min(devicePixelRatio,2):SET.quality==='mid'?Math.min(devicePixelRatio,1.4):1);resize()}
 let lastVK='';function applyVol(){const vk=[!!AC,muted,state==='pause',state==='demo',SET.vol,SET.sfx,SET.bgm].join();if(vk===lastVK||!AC||!master)return;lastVK=vk;const t=AC.currentTime;
   master.gain.setTargetAtTime(muted||state==='pause'?0:.9*SET.vol/100,t,.06);sfxG.gain.setTargetAtTime(SET.sfx/100*(state==='demo'?.3:1),t,.06);musG.gain.setTargetAtTime(.5*SET.bgm/100,t,.06)}
 const SROWS=[['サウンド'],['vol','マスター音量','r',0,100,5,'%'],['sfx','効果音','r',0,100,5,'%'],['bgm','BGM','r',0,100,5,'%'],
   ['画面'],['fov','視野角','r',50,85,1,'°'],['quality','画質','s',[['low','低'],['mid','標準'],['high','高']]],['shake','画面の揺れ','r',0,100,10,'%'],
-  ['操作'],['sens','視点の感度','r',30,200,10,'%'],['invY','視点の上下反転','t'],
-  ['演出'],['drop','出撃時の降下演出','t'],['slow','ボス撃破のスローモーション','t'],['lines','加速時の集中線','t'],['hurt','被弾時の赤いフラッシュ','t']];
+  ['操作'],...(TOUCH?[['sensT','視点の感度','r',30,300,10,'%'],['stk','スティックの感度','r',50,200,10,'%'],['ui','ボタンの大きさ','r',70,140,5,'%'],['uiA','ボタンの濃さ','r',30,100,5,'%'],['vib','被弾時の振動','t']]:[['sens','マウスの感度','r',30,300,10,'%']]),['sensY','上下方向の感度','r',50,200,10,'%'],['invY','視点の上下反転','t'],
+  ['演出'],['drop','出撃時の降下演出','t'],['slow','ボス撃破のスローモーション','t'],['lines','加速時の集中線','t'],['hurt','被弾時の赤いフラッシュ','t'],['tmr','タイムの表示','t'],['dmgN','ダメージ数値の表示','t']];
 function renderSet(){$('setList').innerHTML=tutSetHTML()+admHTML()+SROWS.map(r=>{if(r.length===1)return `<div class="sgrp">${r[0]}</div>`;const [k,l,ty]=r;
   if(ty==='r')return `<div class="srow"><span>${l}</span><input type="range" data-k="${k}" min="${r[3]}" max="${r[4]}" step="${r[5]}" value="${SET[k]}"><em id="sv_${k}">${SET[k]}${r[6]}</em></div>`;
   if(ty==='s')return `<div class="srow"><span>${l}</span><div class="seg">${r[3].map(([v,t])=>`<button data-k="${k}" data-v="${v}" class="${SET[k]===v?'on':''}">${t}</button>`).join('')}</div><em></em></div>`;
@@ -1968,14 +1969,14 @@ cv.addEventListener('mousedown',e=>{if(state!=='play')return;if(document.pointer
 addEventListener('mouseup',e=>{if(e.button===0)mb=false;if(e.button===2)mb2=false});
 let plFail=false;document.addEventListener('pointerlockerror',()=>{plFail=true;plHint()});
 function plHint(){const h=$('plh');if(h&&plFail)h.innerHTML='マウスを<b>ドラッグ</b>して視点操作（右ドラッグなら撃たずに回せる）'}
-addEventListener('mousemove',e=>{if(document.pointerLockElement===cv||(state==='play'&&!TOUCH&&(e.buttons&2||(plFail&&e.buttons&1)))){camYaw-=e.movementX*.0035*SET.sens/100;camPitch=cl(camPitch+e.movementY*.002*SET.sens/100*(SET.invY?-1:1),.05,.6);lookActive=.3}});
+addEventListener('mousemove',e=>{if(document.pointerLockElement===cv||(state==='play'&&!TOUCH&&(e.buttons&2||(plFail&&e.buttons&1)))){camYaw-=e.movementX*.0035*SET.sens/100;camPitch=cl(camPitch+e.movementY*.002*SET.sens/100*SET.sensY/100*(SET.invY?-1:1),.05,.6);lookActive=.3}});
 const J=$('joy'),knob=$('knob'),base=$('base');
-function joyMove(e){const r=base.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const d=Math.hypot(dx,dy),mx=r.width*.4;if(d>mx){dx*=mx/d;dy*=mx/d}joy.x=dx/mx;joy.y=dy/mx;knob.style.transform=`translate(${dx}px,${dy}px)`}
+function joyMove(e){const r=base.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const d=Math.hypot(dx,dy),mx=r.width*.4,mf=mx*100/SET.stk;if(d>mx){dx*=mx/d;dy*=mx/d}joy.x=cl(dx/mf,-1,1);joy.y=cl(dy/mf,-1,1);knob.style.transform=`translate(${dx}px,${dy}px)`}
 J.addEventListener('pointerdown',e=>{if(joy.id!==null)return;joy.id=e.pointerId;try{J.setPointerCapture(e.pointerId)}catch(_){}joyMove(e)});
 J.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e)});
 const jend=e=>{if(e.pointerId!==joy.id)return;joy.id=null;joy.x=joy.y=0;knob.style.transform=''};
 J.addEventListener('pointerup',jend);J.addEventListener('pointercancel',jend);
-function lookBy(dx,dy){camYaw-=dx*.0075*SET.sens/100;camPitch=cl(camPitch+dy*.004*SET.sens/100*(SET.invY?-1:1),.05,.6);lookActive=.3}
+function lookBy(dx,dy){camYaw-=dx*.0075*SET.sensT/100;camPitch=cl(camPitch+dy*.004*SET.sensT/100*SET.sensY/100*(SET.invY?-1:1),.05,.6);lookActive=.3}
 const LK=$('look');let lk=null;
 LK.addEventListener('pointerdown',e=>{if(lk)return;lk={id:e.pointerId,x:e.clientX,y:e.clientY};try{LK.setPointerCapture(e.pointerId)}catch(_){}});
 LK.addEventListener('pointermove',e=>{if(!lk||e.pointerId!==lk.id)return;lookBy(e.clientX-lk.x,e.clientY-lk.y);lk.x=e.clientX;lk.y=e.clientY});
@@ -2245,7 +2246,7 @@ function damage(d,dir,at,by,ex){if(TUT)return;
   const c=guardCut(dir);if(c){d*=1-c;spark(at,6,10);if(now-(P.bks||0)>.15){SFX.block();P.bks=now}shake=Math.max(shake,.15)}
   if(P.bar>0&&d>0){const ab=Math.min(P.bhp,d);P.bhp-=ab;d-=ab;spark(at,4,8);SFX.barrierHit();if(P.bhp<=0){P.bar=0;AB.body.act=0;SFX.barrierDown()}}
   d*=U.taken*(odOn()?.7:1)*(U.unfC&&cfg.A==='deploy'&&AB.body.act>0?.7:1);
-  if(d>0){hurtT=.3;shake=Math.max(shake,.4);if(now-(P.hs||0)>.18){SFX.hurt();P.hs=now}P.hp-=d}
+  if(d>0){hurtT=.3;shake=Math.max(shake,.4);if(now-(P.hs||0)>.18){SFX.hurt();P.hs=now;if(SET.vib&&TOUCH&&navigator.vibrate)try{navigator.vibrate(Math.min(120,25+d*.25))}catch(e){}}P.hp-=d}
 }
 
 // ---------- abilities ----------
@@ -2634,7 +2635,7 @@ function update(dt){
 let hurtT=0,pipS='';const marks=$('marks'),indP=[],ehP=[];
 function mk(arr,cls,html){const el=document.createElement('div');el.className=cls;if(html)el.innerHTML=html;marks.appendChild(el);arr.push(el);return el}
 const dnP=[];let dni=0,hudLast=0;
-function popNum(pos,v,cls,r){let o=dnP[dni%14];if(!o){const el=document.createElement('div');el.className='dn';$('hud').appendChild(el);o={el,p:new V(),t0:0,on:false};dnP[dni%14]=o}dni++;
+function popNum(pos,v,cls,r){if(!SET.dmgN)return;let o=dnP[dni%14];if(!o){const el=document.createElement('div');el.className='dn';$('hud').appendChild(el);o={el,p:new V(),t0:0,on:false};dnP[dni%14]=o}dni++;
   o.el.textContent=fmt(v);o.el.className='dn'+(cls?' '+cls:'');o.p.set(pos.x+(rnd()-.5)*1.4,pos.y+(r||1)+.6+rnd()*.6,pos.z+(rnd()-.5)*1.4);o.t0=now;o.on=true;o.el.style.display='block'}
 function hudUpdate(){
   gaugeUpdate();
@@ -2871,7 +2872,7 @@ function loop(t){
   updateShip(dt);updateZaps(sdt);updateCasings(sdt);updateProps(sdt);if(state==='play'||state==='drop')updateScraps(sdt);
   fx(sdt);camUpdate(dt);R.render(scene,cam);
 }
-resetU();buildLevel('ruins');renderMenu();buildMech();applyQuality();goHome();requestAnimationFrame(loop);tutWelcome();
+applyCtl();resetU();buildLevel('ruins');renderMenu();buildMech();applyQuality();goHome();requestAnimationFrame(loop);tutWelcome();
 }
 </script>
 <script>
