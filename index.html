@@ -834,7 +834,7 @@ function gatModel(a,R,L,rr,parent,bm){
 }
 let sawGeo=null,coilGeo=null;const MKB=new THREE.MeshLambertMaterial({color:0xc9a04a,emissive:0x2a1a00});const tipGeo=new THREE.ConeGeometry(.1,.3,8),tipMat=new THREE.MeshLambertMaterial({color:0xd8402a,emissive:0x401008});const sawMat=new THREE.MeshLambertMaterial({color:0xc4c7cc,emissive:0x221100});const silverMat=new THREE.MeshLambertMaterial({color:0xc2c6cc,emissive:0x15171a});
 // side-mounted arm weapons: how far out (x) and how low (y) the weapon pivot sits, per body
-const ARMO={std:[.62,-.5],lite:[.5,-.46],quad:[.56,-.5],fort:[.52,-.78],chim:[.56,-.5],spec:[.46,-.48],lanc:[.58,-.52]};const armO=()=>ARMO[cfg.B]||ARMO.std;
+const ARMO={std:[.62,-.5],lite:[.5,-.46],quad:[.56,-.5],fort:[1.2,-.55],chim:[.56,-.5],spec:[.46,-.48],lanc:[.58,-.52]};const armO=()=>ARMO[cfg.B]||ARMO.std;
 function armJoint(g,s){const [x,y]=armO();cyl(.16,-y+.05,MK.dk,0,y/2,0,g);cyl(.19,x-.08,MK.gm,s*(x-.08)/2,y,0,g,'x')}
 function mtBuild(g,MT,s){g.position.set(MT.p[0],MT.p[1],MT.p[2]);
   if(MT.k==='arm'){cyl(.2,.42,MK.dk,0,0,0,g,'x');const pd=cbox(.62,.46,.86,MK.paint,s*.1,.16,0,g,.08);pd.rotation.z=-s*.16;box(.06,.06,.6,MK.acc,s*.42,.3,0,g);cbox(.1,.4,.7,MK.gm,s*.38,.02,0,g);armJoint(g,s)}
@@ -846,7 +846,9 @@ function buildMount(i,t){
   const g=new THREE.Group();upper.add(g);
   if(MT)mtBuild(g,MT,s);
   else if(arm){g.position.set(s*wid,1.25,0);const PS={lite:.7,quad:.88,fort:1.3}[cfg.B]||1,pg=new THREE.Group();pg.scale.setScalar(PS);pg.position.x=s*(PS-1)*.25;g.add(pg);
-    if(cfg.B==='fort'){const pd=cbox(.86,.62,1.1,MK.paint,s*.16,.12,0,pg,.1);pd.rotation.z=-s*.1;cbox(.9,.12,1.14,MK.gm,s*.16,.5,0,pg,.04);box(.08,.5,.9,MK.acc,s*.6,.1,0,pg);vents(3,.05,.07,MK.dk,s*.62,.1,0,pg,.14)}
+    if(cfg.B==='fort'){// Bastion: tall slab pauldrons reaching down past the elbow; the weapon bolts onto their outer face
+      cbox(.78,1.45,1.16,MK.paint,s*.2,-.36,0,pg,.1);cbox(.84,.14,1.2,MK.gm,s*.2,.42,0,pg,.04);cbox(.82,.16,1.2,MK.gm,s*.2,-1.05,0,pg,.04);box(.06,1.0,.12,MK.acc,s*.6,-.4,.42,pg);vents(4,.05,.07,MK.dk,s*.6,-.45,-.15,pg,.16);
+      for(const z of[-.38,.38])cyl(.07,.06,MK.dk,s*.6,.15,z,pg,'x')}
     else if(cfg.B==='lite'){const pd=cbox(.6,.46,.9,MK.paint,s*.12,.14,-.04,pg,.1);pd.rotation.z=-s*.28;for(let q=0;q<3;q++){const st=box(.62,.05,.1,q%2?MK.dk:MKY,s*.13,.38,-.25+q*.2,pg);st.rotation.z=-s*.28}}
     else if(cfg.B==='quad'){const pd=cbox(.72,.5,.96,MK.paint,s*.14,.12,0,pg);pd.rotation.z=-s*.12;cbox(.5,.16,.5,MK.gm,s*.1,.44,-.1,pg,.04);box(.08,.08,.5,cyMat,s*.38,.44,-.1,pg)}
     else{const pd=cbox(.74,.56,1.02,MK.paint,s*.14,.14,0,pg);pd.rotation.z=-s*.18;const tr=cbox(.62,.1,.8,MK.acc,s*.16,.45,.05,pg);tr.rotation.z=-s*.18}
