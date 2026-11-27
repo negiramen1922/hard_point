@@ -2014,14 +2014,14 @@ function fadeTo(fn,label){state='trans';const f=$('fade');f.textContent=label||'
 let arenaBoss=false;
 function startStage(n){arenaBoss=false;stage=n;if(n>bestOf(MAP))try{localStorage.setItem(bestKey(MAP),n)}catch(e){}if(MAP==='deadcity'&&n>best)best=n;sub=0;phase='ruins';clearField();buildLevel('ruins');placePlayer(0,0);MUS.lvl=1;nextWave();startDrop()}
 function nextWave(){
-  if(phase==='ruins'&&sub>=3){fadeTo(()=>{phase='boss';arenaBoss=true;clearField();buildLevel('boss');placePlayer(0,-50);wave=(stage-1)*4+4;sqDir=null;sqLast=0;sqN=0;bmN=0;toSpawn=['boss'];for(let i=0;i<10+stage*4;i++)toSpawn.push('drone');if(stage>=2)for(let i=0;i<stage;i++)toSpawn.push('hound');for(let i=0;i<1+stage;i++)toSpawn.push('shooter','drone');spawnT=1.5;MUS.lvl=2;banner('WARNING');P.hp=Math.min(P.max,P.hp+P.max*.2);startDrop()},`STAGE ${stage}-BOSS`);return}
+  if(phase==='ruins'&&sub>=3){fadeTo(()=>{phase='boss';arenaBoss=true;clearField();buildLevel('boss');placePlayer(0,-50);wave=(stage-1)*4+4;sqDir=null;sqLast=0;sqN=0;bmN=0;toSpawn=['boss'];for(let i=0;i<10+stage*4;i++)toSpawn.push('drone');if(stage>=2)for(let i=0;i<stage;i++)toSpawn.push(MAP==='desert'?'skoll':'hound');for(let i=0;i<1+stage;i++)toSpawn.push('shooter','drone');spawnT=1.5;MUS.lvl=2;banner('WARNING');P.hp=Math.min(P.max,P.hp+P.max*.2);startDrop()},`STAGE ${stage}-BOSS`);return}
   sub++;wave=(stage-1)*4+sub;toSpawn=[];sqDir=null;sqLast=0;sqN=0;spawnT=1.5;const wr=mkRng(seedOf('wave',stage,wave));
   for(let i=0;i<28+wave*9;i++)toSpawn.push('drone');
   const mix=(t,n)=>{for(let i=0;i<n;i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,t)};
   if(wave>=2)mix('flyer',2+Math.floor(wave*.8));if(stage>=2)mix('mortar',1+Math.floor(stage*.7));if(stage>=3){mix('sniper',1+Math.floor(stage*.6));mix('guard',2+Math.floor(stage*.8))}
   if(MAP==='desert'){mix('skoll',3+Math.floor(wave*.9));mix('logi',1+Math.floor(wave*.5));if(stage>=2)mix('dvalin',2+Math.floor(wave*.4))}
   for(let i=0;i<5+Math.floor(wave*2);i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,'shooter');
-  if(stage>=2)for(let i=0;i<4+Math.floor(wave*1.3);i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,'hound');
+  if(stage>=2&&MAP!=='desert')for(let i=0;i<4+Math.floor(wave*1.3);i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,'hound');
   banner(stageLabel());if(sub>1)P.hp=Math.min(P.max,P.hp+P.max*.15);
 }
 
@@ -3230,13 +3230,18 @@ function update(dt){
     else if(e.type==='logi'){const want=d>46?1:d<30?-1:0,sd=e.ph>3?1:-1;p.x+=(md.x*want-tv.z*sd*.5)*e.spd*dt;p.z+=(md.z*want+tv.x*sd*.5)*e.spd*dt;if(e.tail)e.tail.rotation.y=Math.sin(now*3+e.ph)*.3;e.cd-=dt;
       if(e.cd<=0&&d<70){e.cd=3.6+rnd()*1.2;e.muz.getWorldPosition(t3);const n=stage>=3?3:stage>=2?2:1;for(let k=0;k<n;k++){const to=new V(P.pos.x+P.vel.x*1.2+(k?(rnd()-.5)*12:0),0,P.pos.z+P.vel.z*1.2+(k?(rnd()-.5)*12:0));lobShell(t3.clone(),to,'Logiの溶岩弾',{lava:1,T:1.4,R:4,dmg:110,h:14,sz:2.4})}play('bshot',sp(p,1.1,.2))}}
     else if(e.type==='dvalin'){const X=e.ex;if(e.mst==null){e.mst='up';e.mt2=.9}e.mt2-=dt;
-      if(e.mst==='under'){e.hid=true;X.g.visible=false;X.mound.visible=true;X.mound.scale.y=.85+Math.sin(now*12+e.ph)*.15;p.addScaledVector(md,e.spd*dt);if(rnd()<dt*14)puff(t3.set(p.x+(rnd()-.5)*2,.3,p.z+(rnd()-.5)*2),1,0x9a7048,.6);
-        if(d<5.5||e.mt2<=0){e.mst='rise';e.mt2=.75;e.warn=makeWarn(p,4.5);play('screech',sp(p,.5,.3))}}
-      else if(e.mst==='rise'){if(rnd()<.6)puff(t3.set(p.x+(rnd()-.5)*4,.3,p.z+(rnd()-.5)*4),1.2,0x9a7048,1);
-        if(e.mt2<=0){dropWarn(e.warn);e.warn=null;e.mst='up';e.mt2=3.2;e.hid=false;X.g.visible=true;X.mound.visible=false;explode(p.clone().setY(1),1.3,true);for(let k=0;k<10;k++)puff(t3.set(p.x+(rnd()-.5)*5,.5,p.z+(rnd()-.5)*5),1.6,0x9a7048,2);
+      if(!X.bumps){X.bumps=[];for(let k=0;k<7;k++){const b=ell(e.m,sandM,1,1,1,0,0,0);b.visible=false;X.bumps.push({m:b,t:9,w:new V()})}X.bi=0;X.bT=0}
+      e.m.updateMatrixWorld();for(const b of X.bumps){b.t+=dt;const u=b.t/.75;if(u>=1){b.m.visible=false;continue}const h=Math.sin(u*Math.PI);b.m.visible=true;b.m.position.copy(e.m.worldToLocal(t3.copy(b.w)));b.m.scale.set(.75+.35*h,.08+.55*h,.75+.35*h)}
+      if(e.mst==='under'){e.hid=true;X.g.visible=false;X.mound.visible=true;X.mound.scale.y=.7+Math.sin(now*14+e.ph)*.3;e.ut=(e.ut||0)+dt;if(e.ret&&d>26)e.ret=false;
+        if(e.ret)p.addScaledVector(md,-e.spd*dt);else p.addScaledVector(md,e.spd*dt);
+        X.bT-=dt;if(X.bT<=0){X.bT=.11;const b=X.bumps[X.bi++%X.bumps.length];b.t=0;b.w.set(p.x+(rnd()-.5)*1.6,0,p.z+(rnd()-.5)*1.6);if(rnd()<.5)puff(t3.set(b.w.x,.4,b.w.z),.8+rnd()*.6,0x8a6038,2.5)}
+        if(rnd()<dt*8)spark(t3.set(p.x,.3,p.z),1,5);
+        if((!e.ret&&d<20&&e.ut>.4)||e.mt2<=0){e.mst='rise';e.ret=false;e.mt2=.75;e.warn=makeWarn(p,4.5);play('screech',sp(p,.5,.3))}}
+      else if(e.mst==='rise'){X.mound.scale.y=.7+Math.sin(now*30)*.3;if(rnd()<.6)puff(t3.set(p.x+(rnd()-.5)*4,.3,p.z+(rnd()-.5)*4),1.2,0x9a7048,1);
+        if(e.mt2<=0){dropWarn(e.warn);e.warn=null;e.mst='up';e.mt2=3.4;e.hid=false;X.g.visible=true;X.mound.visible=false;explode(p.clone().setY(1),1.3,true);for(let k=0;k<10;k++)puff(t3.set(p.x+(rnd()-.5)*5,.5,p.z+(rnd()-.5)*5),1.6,0x9a7048,2);
           if(d<4.5&&P.y<3.5){t2.copy(tv).negate();damage(90,t2,p,'Dvalinの奇襲');P.vel.addScaledVector(t2,-14);P.vy=Math.max(P.vy,6);shake=Math.max(shake,.5)}}}
-      else{e.hid=false;if(d>3)p.addScaledVector(md,e.spd*.3*dt);if(d<3.2&&P.y<3.5){e.bc=(e.bc||0)-dt;if(e.bc<=0){e.bc=.9;t2.copy(tv).negate();damage(35,t2,p,'Dvalinの爪');SFX.clank(false)}}
-        if(e.mt2<=0){e.mst='under';e.mt2=4.5+rnd()*1.5;for(let k=0;k<8;k++)puff(t3.set(p.x+(rnd()-.5)*4,.4,p.z+(rnd()-.5)*4),1.4,0x9a7048,1.5);SFX.clank(false)}}}
+      else{e.hid=false;if(d>3)p.addScaledVector(md,e.spd*.75*dt);if(d<3.2&&P.y<3.5){e.bc=(e.bc||0)-dt;if(e.bc<=0){e.bc=.9;t2.copy(tv).negate();damage(35,t2,p,'Dvalinの爪');SFX.clank(false)}}
+        if(e.mt2<=0){e.mst='under';e.mt2=6+rnd()*1.5;e.ut=0;e.ret=d<20;for(let k=0;k<8;k++)puff(t3.set(p.x+(rnd()-.5)*4,.4,p.z+(rnd()-.5)*4),1.4,0x9a7048,1.5);SFX.clank(false)}}}
     else if(e.type==='shooter'){const want=d>24?1:d<16?-1:0;const sw=Math.sin(now*.7+e.ph);p.addScaledVector(want>0?md:tv,want*e.spd*dt);p.x+=-tv.z*sw*e.spd*.6*dt;p.z+=tv.x*sw*e.spd*.6*dt;
       e.cd-=dt;if(e.cd<=0&&d<50){e.cd=(stage<2?3.2:2.4)+rnd();const a0=Math.atan2(tv.x,tv.z);for(const k of(stage<2?[0]:stage<3?[-.5,.5]:[-1,0,1]))eShoot(e,t2.set(Math.sin(a0+k*.16),0,Math.cos(a0+k*.16)),16,40,'grn',1.5);SFX.enemyShot(p)}}
     else if(!bossBeam(e,p,d,dt)&&!bossArma(e,p,d,dt)&&!bossTurtle(e,p,d,dt)&&!bossHrungnir(e,p,d,dt)&&!bossNidhogg(e,p,d,dt)&&!bossJump(e,p,d,dt)){if(d>18)p.addScaledVector(md,e.spd*dt);
@@ -3255,7 +3260,7 @@ function update(dt){
     const r=P.bar>0?3.7:1.6;
     if(Math.hypot(b.m.position.x-P.pos.x,b.m.position.z-P.pos.z)<r&&Math.abs(b.m.position.y-(P.y+2.6))<2.2){t2.copy(b.v).normalize().negate();if(U.sRef&&guardCut(t2)){const tg=nearest(P.pos,90);_pv2.copy(b.m.position);if(tg)t3.copy(tg.m.position).sub(_pv2).normalize();else t3.copy(t2);fireBullet(_pv2,t3,.02,120,45,1.2)}if(!volHit.has(b.vol)){volHit.set(b.vol,now);damage(b.dmg,t2,b.m.position,b.by)}if(volHit.size>64)for(const [k,t] of volHit)if(now-t>3)volHit.delete(k);b.on=false;b.m.visible=false}}
   if(arenaBoss&&(phase==='clear'||dying.some(d=>d.e.type==='boss'))){toSpawn=[];if(portals.length){for(const q of portals)scene.remove(q.g);portals.length=0}for(const o of enemies.slice())if(!o.wipe){o.wipe=1;setTimeout(()=>{if(enemies.includes(o))kill(o)},150+rnd()*450)}}
-  if(arenaBoss&&phase==='boss'&&enemies.some(e=>e.type==='boss')){P.bsT=(P.bsT==null?8:P.bsT)-dt;if(P.bsT<=0){P.bsT=12;const minion=enemies.length-1+toSpawn.length+portals.reduce((a,q)=>a+q.types.length,0);if(minion<6+stage*2){const br=mkRng(seedOf('bm',stage,++bmN));for(let k=0;k<4+stage;k++)toSpawn.push((MAP==='desert'?['drone','skoll','skoll','hound','shooter']:['drone','drone','drone','hound','shooter'])[Math.floor(br()*(stage>=2?5:3))]);sqT=24}}}
+  if(arenaBoss&&phase==='boss'&&enemies.some(e=>e.type==='boss')){P.bsT=(P.bsT==null?8:P.bsT)-dt;if(P.bsT<=0){P.bsT=12;const minion=enemies.length-1+toSpawn.length+portals.reduce((a,q)=>a+q.types.length,0);if(minion<6+stage*2){const br=mkRng(seedOf('bm',stage,++bmN));for(let k=0;k<4+stage;k++)toSpawn.push((MAP==='desert'?['drone','skoll','skoll','logi','shooter']:['drone','drone','drone','hound','shooter'])[Math.floor(br()*(stage>=2?5:3))]);sqT=24}}}
   spawnT-=dt;updatePortals(dt);updateShells(dt);updateHaz(dt);
   sqT+=dt;
   if(toSpawn.length&&spawnT<=0){
@@ -3303,7 +3308,7 @@ function hudUpdate(){
   const boss=enemies.find(e=>e.type==='boss');$('bossW').classList.toggle('hide',!boss);if(boss){const f=Math.max(0,boss.hp/boss.max),fin=(boss.phs||0)>=2;$('bossB').style.width=Math.min(100,(fin&&boss.fin0?.2*boss.hp/boss.fin0:f)*100)+'%';$('bossW').classList.toggle('fin',fin);const nm=eName(boss)+(fin?'  —  FINAL':boss.phs?'  —  PHASE 2':'');if($('bossN').textContent!==nm)$('bossN').textContent=nm}
   $('hurt').style.opacity=hurtT>0&&SET.hurt?.8:0;
   const W=innerWidth,H=innerHeight,cx=W/2,cy=H/2;let ii=0,hi=0;
-  for(const e of enemies){
+  for(const e of enemies){if(e.hid)continue;
     const d=e.m.position.distanceTo(P.pos);
     tv.copy(e.m.position);tv.y+=e.r+.8;tv.project(cam);
     if(tv.z<1&&Math.abs(tv.x)<.98&&Math.abs(tv.y)<.98){
