@@ -29,6 +29,7 @@ manifest.webmanifest   ホーム画面に追加（PWA）用の設定
 sw.js                  オフライン用 service worker
 icon-512.png           アプリアイコン（512px）
 icon-192.png           アプリアイコン（192px）
+og-image.png           URLを貼ったときに出る紹介画像（1200×630、OGP / Xカード）
 .nojekyll              GitHub Pages で Jekyll 処理を無効化
 ```
 
@@ -68,6 +69,22 @@ python3 -m http.server 8000
 3. Framework preset: **None**、Build command: 空欄、Build output directory: `/`
 4. push するたびに自動で再公開されます
 
+## URLを貼ったときの紹介カード（OGP）
+
+`index.html` の `<head>` に OGP / Xカード（`summary_large_image`）のタグを入れてあります。
+画像は `og-image.png`、URLは `https://negiramen1922.github.io/hard_point/` を前提にしています。
+**公開URLが違う場合**（Cloudflare Pages・独自ドメインなど）は、`index.html` の `og:url`・`og:image`・`twitter:image`・`canonical` と、
+ゲーム内の `SITE_URL`（共有画像に入るURLの予備）を書き換えてください。
+X や Discord はカードをキャッシュするので、差し替え直後は古いカードが出ることがあります。
+
+## 結果の共有と戦歴
+
+- ミッション終了（制圧／大破）の結果画面に、使った機体の3Dモデル（ドラッグで回転）と構成が出ます
+- 「共有」でリザルト画像（1200×630）を作成。スマホなど対応環境では画像つきでSNSに共有、PCでは「画像を保存」＋「Xでポスト」
+- ホームの「戦歴」から過去のミッション（最新60件）を一覧でき、詳細で結果・機体（3D）・構成の確認と共有、「この機体を格納庫で使う」ができます
+- 訓練場・試運転は記録しません
+- 共有ボーナス：1日1回、「共有する」（共有完了時）または「Xでポスト」でスクラップ +100（端末の日付で判定、`rg_shday`）。受け取れる日は共有ボタンの右上に吹き出しが出ます
+
 ## 更新するとき
 
 1. `index.html` を新しい版に差し替え
@@ -99,5 +116,5 @@ python3 -m http.server 8000
 
 ## セーブデータ
 
-進行状況はブラウザの localStorage に保存されます（`rg_` で始まるキー）。
+進行状況はブラウザの localStorage に保存されます（`rg_` で始まるキー。戦歴は `rg_hist`）。
 同じURLで遊ぶ限り引き継がれますが、公開URLを変えるとセーブは別扱いになります。
