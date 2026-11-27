@@ -568,6 +568,7 @@ const WP={
   rkt:{n:'Volley',s:'Volley',ty:'ロケット',c:'軽',wt:9,am:'HE',tr:170,kind:'gun',rkt:true,rate:4,dmg:130,spin:0,spread:.02,mag:8,rl:5,vel:0,aoe:4.2,d:'誘導しないロケット弾を素早く連射する瞬間火力型。着弾で爆発し群れをまとめて吹き飛ばす。8発撃ち切るとリロードは長め'},
   mini:{n:'Squall',s:'Squall',ty:'ガトリング',c:'軽',wt:8,am:'HE',tr:200,kind:'gun',rate:14,rmax:36,heatT:3,dmg:6,spin:.35,spread:.065,mag:300,rl:3.5,vel:120,d:'軽ガトリング。装弾300。撃つほど赤熱して加速するが、加速するほど弾がばらける'},
   msl:{n:'Swarm',s:'Swarm',ty:'ミサイル',c:'軽',wt:9,am:'HE',tr:180,kind:'gun',msl:true,rate:4,dmg:70,spin:0,spread:0,mag:12,rl:3.2,vel:0,d:'照準の近くの敵を同時に複数ロックオン（最大で残弾数まで）。1回押すとロックした敵へ一斉射撃し、マガジンが空になるまで撃ち尽くす。ロックしていないと撃てない'},
+  harpoon:{n:'Gungnir',s:'Gungnir',ty:'ハープーン',c:'重',wt:21,am:'AP',tr:75,kind:'harpoon',dmg:150,range:20,vel:85,rv:62,cd:.4,d:'巨大な銛を撃ち出し、ワイヤーで巻き戻す近距離の重武器。射程50m。銛は敵を貫通し、行きと帰りの両方でダメージを与える。戻ってくるまで次は撃てない'},
   shield:{n:'Buckler',s:'Buckler',ty:'シールド',c:'軽',wt:10,kind:'shield',cut:.85,d:'押している間ガード。正面からの攻撃を85%カット（移動は遅くなる）'},
   saw:{n:'Grinder',s:'Grinder',ty:'回転ノコ',c:'軽',wt:10,am:'AP',kind:'saw',dps:520,range:8,d:'近接武器。振り回して周りの敵を切り刻む。切り続けるほど刃が赤熱して威力最大2倍、切った敵は怯んで攻撃が止まり弾き飛ばされる'},
   flame:{n:'Inferno',s:'Inferno',ty:'火炎放射',c:'軽',wt:10,am:'HE',tr:160,kind:'flame',dps:190,rate:16,vel:30,burn:45,range:80,fuelT:8,rl:2.4,d:'炎の塊を連続で撃ち出す。遠くまで届くが弾速がとても遅いので、離れた敵や動く敵には偏差撃ちが必要。当たった敵は数秒間燃え続ける。燃料8秒分で、切れると補給'},
@@ -606,7 +607,7 @@ const ABIL={
   cloak:{n:'Phantom',ty:'光学迷彩',sn:'迷彩',cd:16,dur:7,wt:8,ic:'cloak',d:'7秒間姿を消し、敵の狙いが大きく外れる（当たり判定は残る）。発動時、近くの敵は一瞬こちらを見失う。撃つと解除され、解除直後の攻撃は威力1.5倍。迷彩中は移動速度+25%'},
   bulwark:{n:'Bulwark',ty:'物理シールド',sn:'大盾',cd:14,dur:6,wt:8,ic:'bulwark',d:'6秒間、左腕の大盾を正面に構え、前方からの弾や攻撃を止める。爆発・横・背後からの攻撃は防げない。構え中は移動が遅くなる'}
 };
-const WSD={gat:'上下2連。最高回転で凄まじい連射',cannon:'着弾で大爆発する榴弾砲。連射は遅い',beam:'溜めて放つ、敵を貫通するビーム',melt:'当て続けた敵の装甲を溶かす熱線',twin:'交互に撃ち込む連装砲。弾は時間で自動装填',shot:'近距離で絶大な威力の散弾',burst:'3連射のバースト式重ショットガン',pod:'3基のポッドからロケットを連射する',rkt:'群れをまとめて吹き飛ばすロケット弾',mini:'撃ち続けるほど連射が加速する',msl:'ロック中の敵を追う誘導ミサイル',shield:'正面からの攻撃を85%カット',saw:'周りの敵を切り刻む近接武器',tesla:'電撃を流し続け、敵から敵へ連鎖する',flame:'炎の塊を連射し、燃え続けさせる'};
+const WSD={harpoon:'撃ち出した銛を巻き戻す。行きも帰りも貫通ダメージ',gat:'上下2連。最高回転で凄まじい連射',cannon:'着弾で大爆発する榴弾砲。連射は遅い',beam:'溜めて放つ、敵を貫通するビーム',melt:'当て続けた敵の装甲を溶かす熱線',twin:'交互に撃ち込む連装砲。弾は時間で自動装填',shot:'近距離で絶大な威力の散弾',burst:'3連射のバースト式重ショットガン',pod:'3基のポッドからロケットを連射する',rkt:'群れをまとめて吹き飛ばすロケット弾',mini:'撃ち続けるほど連射が加速する',msl:'ロック中の敵を追う誘導ミサイル',shield:'正面からの攻撃を85%カット',saw:'周りの敵を切り刻む近接武器',tesla:'電撃を流し続け、敵から敵へ連鎖する',flame:'炎の塊を連射し、燃え続けさせる'};
 const SLOTN=['左腕','右腕','左肩','右肩'];const sln=i=>(BODY[cfg.B].sn||SLOTN)[i];
 const cfg={B:'std',G:'bip',A:'missile',W:['gat','mini','mini','mini']};
 
@@ -907,10 +908,11 @@ function buildMount(i,t){
     a.lb=new THREE.Mesh(beamGeo,mk2(0xff3a1a,.75));a.lc=new THREE.Mesh(beamGeo,mk2(0xfff0e0,.95));a.lg=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex('255,90,40'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
     for(const m of[a.lb,a.lc,a.lg]){m.visible=false;scene.add(m);liveBeams.push(m)}
   }else if(t==='twin'){ // Gemini: stepped twin-barrel breech (thick sleeve -> long thin barrel -> muzzle block per barrel), two round drum magazines tilted outward on top of the rear
-    cbox(.8,.6,1.05,G_,0,0,.3,w,.1);cbox(.64,.46,.5,G_,0,-.02,1.0,w,.08);box(.82,.07,.9,MK.acc,0,.34,.3,w);cbox(.36,.26,.5,D_,0,-.4,.25,w,.05);vents(3,.05,.24,D_,s*.41,0,.3,w,.14);
-    a.brls=[];a.mzs=[];for(const sx of[-1,1]){const g2=new THREE.Group();g2.position.set(sx*.19,.04,1.15);w.add(g2);cyl(.15,.55,D_,0,0,.27,g2,'z');cbox(.22,.22,.24,MK.gm,0,0,.6,g2,.04);cyl(.085,1.85,mat.gun,0,0,1.6,g2,'z');cyl(.11,.12,D_,0,0,1.0,g2,'z');cbox(.24,.2,.36,D_,0,0,2.6,g2,.05);
-      const mz2=new THREE.Object3D();mz2.position.set(sx*.19,.04,1.15+2.82);w.add(mz2);a.brls.push(g2);a.mzs.push(mz2)}
-    a.mag=new THREE.Group();a.mag.position.set(0,.3,-.2);w.add(a.mag);
+    const T_=new THREE.Group();w.add(T_);if(arm)T_.rotation.z=-s*Math.PI/2;// arm-mounted: rolled onto its side so the drums face outward and stay visible from behind
+    cbox(.8,.6,1.05,G_,0,0,.3,T_,.1);cbox(.64,.46,.5,G_,0,-.02,1.0,T_,.08);box(.82,.07,.9,MK.acc,0,.34,.3,T_);cbox(.36,.26,.5,D_,0,-.4,.25,T_,.05);vents(3,.05,.24,D_,s*.41,0,.3,T_,.14);
+    a.brls=[];a.mzs=[];for(const sx of[-1,1]){const g2=new THREE.Group();g2.position.set(sx*.19,.04,1.15);T_.add(g2);cyl(.15,.55,D_,0,0,.27,g2,'z');cbox(.22,.22,.24,MK.gm,0,0,.6,g2,.04);cyl(.085,1.85,mat.gun,0,0,1.6,g2,'z');cyl(.11,.12,D_,0,0,1.0,g2,'z');cbox(.24,.2,.36,D_,0,0,2.6,g2,.05);
+      const mz2=new THREE.Object3D();mz2.position.set(sx*.19,.04,1.15+2.82);T_.add(mz2);a.brls.push(g2);a.mzs.push(mz2)}
+    a.mag=new THREE.Group();a.mag.position.set(0,.3,-.2);T_.add(a.mag);
     for(const sx of[-1,1]){const dr=new THREE.Group();dr.position.set(sx*.5,.02,0);dr.rotation.set(-.3,0,-sx*.85);a.mag.add(dr);
       cyl(.36,.2,mat.mag,0,0,0,dr);cyl(.27,.23,D_,0,0,0,dr);cyl(.09,.26,MK.acc,0,0,0,dr);const rim=new THREE.Mesh(new THREE.TorusGeometry(.36,.035,5,20),MK.gm);rim.rotation.x=Math.PI/2;rim.position.y=.1;dr.add(rim);
       box(.2,.3,.22,D_,0,-.22,0,dr)}
@@ -973,6 +975,11 @@ function buildMount(i,t){
       const p1=box(.07,.07,.6,MK.gm,0,0,.2,pg2);p1.rotation.x=-.25;const tp=new THREE.Mesh(new THREE.SphereGeometry(.07,8,6),cyMat);tp.position.set(0,.12,.48);pg2.add(tp);a.prong.push(tp)}
     a.tip=new THREE.Mesh(new THREE.SphereGeometry(.15,10,8),cyMat);a.tip.position.set(0,0,2.35);w.add(a.tip);a.mz.position.set(0,0,2.4);a.arcT=0;
     a.mag=cbox(.3,.36,.5,mat.mag,s*.36,-.1,.45,w,.04);box(.04,.26,.36,cyMat,s*.52,-.1,.45,a.mag.parent);
+  }else if(t==='harpoon'){ // Gungnir: long heavy launcher tube, receiver with box mag and grip, cable reel on the side, a huge barbed harpoon riding under the barrel
+    cbox(.56,.6,1.5,G_,0,0,.3,w,.09);box(.58,.07,1.2,MK.acc,0,.33,.3,w);cbox(.36,.5,.5,mat.mag,0,-.5,.45,w,.05);cbox(.18,.42,.24,D_,0,-.42,-.2,w,.04);
+    cyl(.24,2.5,MK.gm,0,.06,2.2,w,'z');cyl(.28,.3,D_,0,.06,1.2,w,'z');cyl(.3,.34,D_,0,.06,3.35,w,'z');cyl(.18,.1,MK.dk,0,.06,3.53,w,'z');for(let q=0;q<3;q++)box(.5,.05,.12,MK.dk,0,.06,1.6+q*.45,w);
+    box(.12,.14,2.3,MK.dk,0,-.3,2.1,w);const rl=new THREE.Group();rl.position.set(s*.38,-.12,.35);w.add(rl);cyl(.26,.18,MK.dk,0,0,0,rl,'x');cyl(.17,.2,MK.acc,0,0,0,rl,'x');a.reel=rl;
+    a.spike=harpoonMesh();a.spike.position.set(0,-.3,3.05);w.add(a.spike);a.mz.position.set(0,-.3,4.15);a.mag=null;a.hp=null;a.cd=0;
   }else if(t==='flame'){ // Inferno: twin fuel tanks, igniter block, flared nozzle with a pilot light
     cbox(.46,.46,1.0,G_,0,0,.45,w,.08);box(.48,.06,.8,MK.acc,0,.26,.45,w);
     for(const q of[-1,1]){cyl(.15,.9,MKR,s*.38,-.05+q*.0,.35+q*.0,w,'z').position.set(s*.36,q*.15-.02,.35);cyl(.16,.06,D_,s*.36,q*.15-.02,.82,w,'z')}
@@ -1186,7 +1193,7 @@ function trackUpdate(du){P.tr=(P.tr||0)+du;for(const links of treadL)links.forEa
 let lancSh=null,lancArm=null,ovMat=null,ovStk=null,HS=null,hsLoad=12;
 function buildMech(){
   applyPaint();lancSh=lancArm=ovMat=ovStk=null;P.clk=false;
-  if(mech)scene.remove(mech);for(const m of liveBeams)scene.remove(m);liveBeams=[];
+  if(mech)scene.remove(mech);for(const m of liveBeams)scene.remove(m);liveBeams=[];for(const a of arms||[]){if(a.hm)scene.remove(a.hm);if(a.cab)scene.remove(a.cab)}
   mech=new THREE.Group();scene.add(mech);legsRoot=new THREE.Group();mech.add(legsRoot);legParts=[];
   const fort=cfg.B==='fort',P_=MK.paint,G_=MK.gm,D_=MK.dk;
   flames=[];wingL=[];treadL=[];wheelL=[];anchorG=null;legZ=0;hipY=buildLegs(cfg.G,P_,G_,D_);
@@ -2196,7 +2203,7 @@ function spec(k,id){
   if(k==='B'){const B=BODY[id],A=ABIL[B.ab];return rankBar(BODY,id,'hp','HP '+fmt(B.hp))+rankBar(BODY,id,'wt','重量 '+B.wt,1)+rankBar(BODY,id,'turn','旋回 '+B.turn+'°/秒')+`スロット ${B.slots.join('・')}<br>内蔵：${A.n}（${A.ty}）${A.dur?'効果'+A.dur+'秒・':''}リキャスト${A.cd}秒`}
   if(k==='G'){const L=LEGS[id];return rankBar(LEGS,id,'hp','HP '+fmt(L.hp))+rankBar(LEGS,id,'spd','速度 '+L.spd)+rankBar(LEGS,id,'wt','重量 '+L.wt,1)+`${L.ab.n}　${L.ab.dur?'効果'+L.ab.dur+'秒・':''}${L.ab.toggle?'ON/OFF切替・解除後':''}リキャスト${L.ab.cd}秒`}
   if(k==='A')return `重量 ${ABIL[id].wt}　リキャスト ${ABIL[id].cd}秒`;
-  const W=WP[id],wt=`重量 ${W.wt}　${W.am?'弾種 '+W.am+'　':''}${W.tr?'腕旋回 '+W.tr+'°/秒　':''}`;if(W.cannon)return wt+`威力 ${W.dmg}（範囲爆発）　装弾 ${W.mag}　リロード ${W.rl}秒`;if(W.kind==='gun')return wt+`火力 ${Math.round(W.rate*W.dmg)}${W.rmax?'→'+W.rmax*W.dmg:''}/秒　装弾 ${W.mag}　リロード ${W.rl}秒`;if(W.kind==='beam')return wt+`照射 最大${W.maxT}秒　${W.dps}/秒　貫通`;if(W.kind==='saw')return wt+`${W.dps}/秒　近接（範囲${Math.round(W.range*M_SCALE)}m）`;if(W.kind==='laser')return wt+`${W.dps}/秒　溶解で被ダメ最大+60%　連続${W.heatT}秒`;if(W.kind==='tesla')return wt+`${W.dmg}×最大${W.chain+1}体連鎖　射程${Math.round(W.range*M_SCALE)}m`;return wt+`正面ダメージ ${W.cut*100}%カット`}
+  const W=WP[id],wt=`重量 ${W.wt}　${W.am?'弾種 '+W.am+'　':''}${W.tr?'腕旋回 '+W.tr+'°/秒　':''}`;if(W.kind==='harpoon')return wt+`威力 ${W.dmg}×往復（貫通）　射程${Math.round(W.range*M_SCALE)}m`;if(W.cannon)return wt+`威力 ${W.dmg}（範囲爆発）　装弾 ${W.mag}　リロード ${W.rl}秒`;if(W.kind==='gun')return wt+`火力 ${Math.round(W.rate*W.dmg)}${W.rmax?'→'+W.rmax*W.dmg:''}/秒　装弾 ${W.mag}　リロード ${W.rl}秒`;if(W.kind==='beam')return wt+`照射 最大${W.maxT}秒　${W.dps}/秒　貫通`;if(W.kind==='saw')return wt+`${W.dps}/秒　近接（範囲${Math.round(W.range*M_SCALE)}m）`;if(W.kind==='laser')return wt+`${W.dps}/秒　溶解で被ダメ最大+60%　連続${W.heatT}秒`;if(W.kind==='tesla')return wt+`${W.dmg}×最大${W.chain+1}体連鎖　射程${Math.round(W.range*M_SCALE)}m`;return wt+`正面ダメージ ${W.cut*100}%カット`}
 function rankBar(src,id,key,label,low){const ids=Object.keys(src),vals=ids.map(k=>src[k][key]),v=src[id][key],sorted=[...vals].sort((a,b)=>low?a-b:b-a),r=sorted.indexOf(v)+1,mn=Math.min(...vals),mx=Math.max(...vals);let f=(v-mn)/((mx-mn)||1);if(low)f=1-f;
   return `<span class="rk"><b>${label}</b><i><s style="width:${(12+88*f).toFixed(0)}%"></s></i><u>${r}位</u></span>`}
 function card(k,label,name){return `<button class="slot${k[0]==='w'?' w':''}" data-k="${k}"><small>${label}</small>${name}</button>`}
@@ -2204,7 +2211,7 @@ function renderMenu(){
   fixW();saveCfg();
   $('colL').innerHTML=card('B','ボディ（内蔵アビリティ）',BODY[cfg.B].n+' ／ '+ABIL[BODY[cfg.B].ab].n)+card('G','ドライブ',LEGS[cfg.G].n)+card('P','塗装',(PAINT[cfg.P]||PAINT.bone).n);
   $('colR').innerHTML=BODY[cfg.B].slots.map((c,i)=>card('w'+i,`${sln(i)}<em>${c}</em>`,WP[cfg.W[i]].n)).join('');
-  const dps=t=>{const W=WP[t];if(W.kind==='laser')return W.dps;return W.kind==='gun'?(W.rmax?(W.rate+W.rmax)/2:W.rate)*W.dmg:W.kind==='beam'?W.dps*W.maxT/(W.charge+W.maxT+W.cd):W.kind==='saw'?W.dps:W.kind==='tesla'?W.dmg*2/W.cd:W.kind==='flame'?W.dps+W.burn:0};
+  const dps=t=>{const W=WP[t];if(W.kind==='laser')return W.dps;if(W.kind==='harpoon')return W.dmg*2/(W.range/W.vel+W.range/W.rv+W.cd);return W.kind==='gun'?(W.rmax?(W.rate+W.rmax)/2:W.rate)*W.dmg:W.kind==='beam'?W.dps*W.maxT/(W.charge+W.maxT+W.cd):W.kind==='saw'?W.dps:W.kind==='tesla'?W.dmg*2/W.cd:W.kind==='flame'?W.dps+W.burn:0};
   const tot=BODY[cfg.B].slots.reduce((s,c,i)=>s+dps(cfg.W[i]),0);
   const sh=[['HP',fmt(BODY[cfg.B].hp+LEGS[cfg.G].hp)],['総火力/秒',Math.round(tot)],['総重量',totWt()],['速度',+(LEGS[cfg.G].spd*wtMul()).toFixed(1)+'（×'+wtMul().toFixed(2)+'）'],['旋回',BODY[cfg.B].turn+'°/秒'],['アビリティ',ABIL[BODY[cfg.B].ab].n+'／'+LEGS[cfg.G].ab.n]].map(x=>`<div class="st">${x[0]}<b>${x[1]}</b></div>`).join('');$('stats').innerHTML=sh;$('shSum').innerHTML=sh;if($('scrapG'))$('scrapG').innerHTML=SCRI+SCRAP.toLocaleString()+(ADMIN?' <small>管理者</small>':'');if($('shScrap'))$('shScrap').innerHTML=SCRI+SCRAP.toLocaleString();
 }
@@ -2645,6 +2652,7 @@ function gaugeUpdate(){if(!gRefs.length)return;arms.forEach((a,i)=>{const r=gRef
   else if(W.kind==='flame'){if(a.rf>0){f=a.fuel;col='#ffd23a';t='FUEL'}else{f=a.fuel;col='#ff8a2a'}}
   else if(W.kind==='saw'){f=a.spin;col=(a.hot||0)>.05?'#ff6a2a':'#efe8da'}
   else if(W.kind==='tesla'){if(a.rl>0){f=1-a.rl/a.rlT;col='#ffd23a';t='RELOAD'}else{f=a.ammo/magOf(a);col='#5fe0ff'}}
+  else if(W.kind==='harpoon'){if(a.hp){f=a.hp==='out'?1-a.hd/W.range:.15;col='#ffd23a';t=a.hp==='out'?'':'RETURN'}else{f=a.cd>0?1-a.cd/W.cd:1}}
   else{f=a.guard;col='#7fe0ff'}
   const el=$('gf'+i);f=Math.max(0,Math.min(1,f));el.setAttribute('d',f>.01?gArc(r.r,r.a0,r.a0+(r.a1-r.a0)*f):'');el.style.stroke=col;el.style.opacity=op;
   const tx=$('gt'+i);if(tx.textContent!==t)tx.textContent=t;tx.style.fill=col})}
@@ -2842,6 +2850,31 @@ const magOf=a=>Math.round(a.W.mag*U.mag*(U.wm&&U.wm[a.t]||1));
 const anchOn=()=>cfg.G==='spider'&&P.anc===2;const odOn=()=>(U.od&&P.hp<P.max*.3)||anchOn();
 const ovOn=()=>cfg.A==='overload'&&AB.body.act>0;const fpM=()=>(odOn()?1.3:1)*(ovOn()?1.4:1)*(P.amb>0?1.5:1);const rtM=()=>(odOn()?1.5:1)*(ovOn()?1.5:1);
 const armOK=a=>!(P.stun>0)&&!(a.sp&&(P.dep||0)<.95);
+// ===== Gungnir harpoon: flies out to its range piercing everything on the way, then is reeled back in, hitting again on the way back =====
+const hpSteel=new THREE.MeshLambertMaterial({color:0xb8bcc2}),hpLine=new THREE.LineBasicMaterial({color:0x2a2a2e});
+function harpoonMesh(){const g=new THREE.Group();const sh=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,1.9,8),MK.dk);sh.rotation.x=Math.PI/2;sh.position.z=-.55;g.add(sh);
+  const hd=new THREE.Mesh(new THREE.ConeGeometry(.26,1.0,10),hpSteel);hd.rotation.x=Math.PI/2;hd.position.z=.85;g.add(hd);const cl=new THREE.Mesh(new THREE.CylinderGeometry(.2,.26,.3,10),MK.gm);cl.rotation.x=Math.PI/2;cl.position.z=.25;g.add(cl);
+  for(let k=0;k<4;k++){const b=new THREE.Mesh(new THREE.ConeGeometry(.08,.5,5),hpSteel);const a=k/4*TAU+.4;b.position.set(Math.cos(a)*.2,Math.sin(a)*.2,.35);b.rotation.x=-Math.PI/2;b.rotation.z=a;b.rotateX(.5);g.add(b)}return g}
+function harpoonHit(a,from,to,set){const W=a.W,R=1.1;for(const e of enemies.slice()){if(set.has(e)||e.mat>0||e.hid)continue;if(!segHit(from,to,e.m.position,e.r+R))continue;set.add(e);
+    const dm=W.dmg*hitMul(e)*amBoss('AP',e)*(U.twin&&firingCount>=2?1.35:1)*fpM();e.hp-=dm;e.flash=.15;popNum(e.m.position,dm,'',e.r);spark(e.m.position,5,14);explode(e.m.position.clone().setY(e.m.position.y+.5),.6,true);SFX.clank(true);shake=Math.max(shake,.25);
+    if(e.hp<=0)kill(e)}
+  for(const pr of props)if(pr.alive&&segBox(from.x,1.2,from.z,to.x,1.2,to.z,pr)<1)hitProp(pr,W.dmg)}
+function harpoonArm(a,pr,dt,tgt){const W=a.W;a.cd-=dt;a.mz.getWorldPosition(t3);
+  if(!a.hp){if(a.reel)a.reel.rotation.x*=.9;a.w.position.z+=(0-a.w.position.z)*Math.min(1,dt*10);
+    if(pr&&a.cd<=0){const dir=aimDir(t3,tgt,new V(),a);a.hp='out';a.hd=0;a.hdir=dir.clone();a.hpos=t3.clone();a.hset=new Set();a.spike.visible=false;
+      a.hm=harpoonMesh();a.hm.position.copy(a.hpos);a.hm.lookAt(a.hpos.clone().add(dir));scene.add(a.hm);
+      const g=new THREE.BufferGeometry().setFromPoints([t3.clone(),t3.clone()]);a.cab=new THREE.Line(g,hpLine);scene.add(a.cab);
+      a.w.position.z=-.45;SFX.boom(1.1,t3);play('bshot',{v:.9,rate:.7});shake=Math.max(shake,.35);puff(t3,1,0x8a8580,1);a.lf=now}
+    return}
+  const prev=a.hpos.clone();
+  if(a.hp==='out'){const st=W.vel*dt;a.hpos.addScaledVector(a.hdir,st);a.hd+=st;harpoonHit(a,prev,a.hpos,a.hset);
+    let stop=a.hd>=W.range*(U.hpR||1)||a.hpos.y<.2;for(const b of blds)if(!stop&&segBox(prev.x,prev.y,prev.z,a.hpos.x,a.hpos.y,a.hpos.z,b)<1){stop=true;spark(a.hpos,6,12);SFX.clank(true)}
+    if(stop){a.hp='back';a.hset2=new Set();play('clankL',{v:.5,rate:.8})}}
+  else{const to=t3.clone().sub(a.hpos),L=to.length(),st=W.rv*dt;if(a.reel)a.reel.rotation.x+=dt*25*a.s;
+    if(L<=st+.3){a.hp=null;a.cd=W.cd;a.spike.visible=true;scene.remove(a.hm);scene.remove(a.cab);a.cab.geometry.dispose();a.hm=a.cab=null;SFX.clank(true);play('chak',{v:.6});a.w.position.z=-.2;return}
+    to.multiplyScalar(1/L);a.hpos.addScaledVector(to,st);harpoonHit(a,prev,a.hpos,a.hset2);a.hm.lookAt(a.hpos.clone().sub(to))}
+  a.hm.position.copy(a.hpos);if(a.hp==='out')a.hm.lookAt(a.hpos.clone().add(a.hdir));
+  const ps=a.cab.geometry.attributes.position;ps.setXYZ(0,t3.x,t3.y,t3.z);ps.setXYZ(1,a.hpos.x,a.hpos.y,a.hpos.z);ps.needsUpdate=true;a.cab.geometry.computeBoundingSphere()}
 function amBoss(am,e){return e.type==='boss'?(am==='AP'?1.15:am==='HE'?.9:1):1}
 function amMul(b,e){if(!b.am)return 1;const d=b.m.position.distanceTo(b.o);let m=b.am==='AP'?(d<60?1:Math.max(.75,1-(d-60)/50*.25)):(d<30?1:Math.max(.55,1-(d-30)/60*.45));return m*amBoss(b.am,e)}
 function hitMul(e){let m=1;if(U.crit&&rnd()<U.crit){m*=3;e.crt=now}if(U.phase&&e.age!=null&&e.age<2)m*=3;return m}
@@ -3064,6 +3097,7 @@ function updateArms(dt,tgt){
       if(!a.lon){a.lb.visible=a.lc.visible=a.lg.visible=false}
       a.lmat.color.setRGB(.42+a.heat*.58,.1+(a.lon?.4:0)+a.heat*.3,.06+a.heat*.2);for(const f2 of a.hs)f2.material=a.oh||a.heat>.75?mat.acc:MK.gm;
     }else if(W.kind==='flame'){flameArm(a,pr,dt,tgt)
+    }else if(W.kind==='harpoon'){harpoonArm(a,pr,dt,tgt)
     }else if(W.kind==='saw'){
       a.spin=Math.max(0,Math.min(1,a.spin+(pr?dt*3.2:-dt*1.6)));a.blade.rotation.y+=dt*(3+a.spin*48);a.sw+=dt*a.spin*7.5;
       const ex=a.spin;a.w.rotation.y=a.s*ex*(.5+Math.sin(a.sw)*1.15);a.w.rotation.x=-ex*.12;a.w.position.z=ex*.45;sawMat.emissive.setRGB(.13+ex*.35,.07+ex*.12,0);if(a.blur)a.blur.material.opacity=Math.max(0,ex-.3)*.4;
@@ -3339,6 +3373,7 @@ function hudUpdate(){
     else if(Wp.kind==='saw'){f=a.spin;t=a.spin>.45?((a.hot||0)>.05?'HEAT '+Math.round(100+(a.hot||0)*100)+'%':'SPIN'):'READY'}
     else if(Wp.kind==='tesla'){f=a.rl>0?1-a.rl/a.rlT:a.ammo/magOf(a);t=a.rl>0?'RELOAD':a.ammo}
     else if(Wp.kind==='flame'){f=a.fuel;t=a.rf>0?'REFUEL':a.fon?'BURN':'READY'}
+    else if(Wp.kind==='harpoon'){f=a.hp?0:1;t=a.hp==='out'?'SHOT':a.hp?'RETURN':'READY'}
     else{f=a.guard;t=a.guard>.5?'GUARD':'—'}
     $('pg'+i).style.fill=a.heat>.05?`rgba(255,${Math.round(200-a.heat*150)},${Math.round(255-a.heat*230)},${(.3+a.heat*.25).toFixed(2)})`:'';$('pg'+i).setAttribute('d',f>.01?arcP(R1,R2,r.a0,r.a0+(r.a1-r.a0)*Math.min(1,f)):'');
     if(a.sp&&(P.dep||0)<.95){f=0;t='格納'}else if(P.stun>0){t='STUN'}$('pg'+i).setAttribute('d',f>.01?arcP(R1,R2,r.a0,r.a0+(r.a1-r.a0)*Math.min(1,f)):'');
