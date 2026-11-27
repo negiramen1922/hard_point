@@ -26,7 +26,8 @@ vendor/three.min.js    three.js r128（CDNに頼らず同梱）
 vendor/three.LICENSE   three.js のライセンス（MIT）
 manifest.webmanifest   ホーム画面に追加（PWA）用の設定
 sw.js                  オフライン用 service worker
-icon-512.png           アプリアイコン
+icon-512.png           アプリアイコン（512px）
+icon-192.png           アプリアイコン（192px）
 .nojekyll              GitHub Pages で Jekyll 処理を無効化
 ```
 

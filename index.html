@@ -219,6 +219,11 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .bhave{display:flex;justify-content:center;align-items:center;gap:8px;margin:6px 0 14px;font:700 15px "Chakra Petch";color:var(--dim)}.bhave b{color:var(--ink)}.bhave svg{width:18px;height:18px}
 .card.buy .row{display:flex;gap:10px}.card.buy .row .pbtn{flex:1;justify-content:center}
 
+.card.a2{width:min(92vw,420px);text-align:center}.a2i{width:64px;height:64px;border-radius:14px;margin:0 auto 6px;display:block}.card.a2 h2{font:700 20px "Zen Kaku Gothic New";margin:0 0 6px}.card.a2 p{margin:0 0 10px;color:var(--dim);font-size:13px;line-height:1.6}
+#a2How{text-align:left;background:#120d09;border:1px solid var(--line);padding:8px 12px;margin-bottom:12px;font-size:13px;line-height:1.9}#a2How:empty{display:none}#a2How svg{width:18px;height:18px;vertical-align:-4px;color:var(--cy);margin:0 2px}#a2How b{color:var(--ink)}
+.card.a2 .row{display:flex;gap:10px}.card.a2 .row .pbtn{flex:1;justify-content:center}
+#a2B{position:absolute;right:max(3vw,14px);top:calc(max(4vh,12px) + 50px);display:flex;align-items:stretch;pointer-events:auto}#a2B button{background:rgba(255,90,31,.92);color:#1a1410;border:0;font:700 13px "Zen Kaku Gothic New";cursor:pointer;display:flex;align-items:center;gap:6px;padding:8px 12px;animation:a2p 2.4s ease-in-out infinite}#a2B svg{width:18px;height:18px}#a2B #a2BX{background:rgba(14,10,8,.8);color:var(--ink);animation:none;padding:8px 10px;font-size:15px}
+@keyframes a2p{50%{box-shadow:0 0 16px rgba(255,120,40,.8)}}
 .cred{padding:8px 2px 12px;font-size:13px;line-height:1.7;color:var(--dim)}.cred b{color:var(--ink)}.cred a{color:var(--cy)}.cred p{margin:0 0 8px}
 .sgrp{margin:12px 0 2px;font:700 12px "Zen Kaku Gothic New";color:var(--acc);letter-spacing:.2em}
 .seg{display:flex;gap:6px}.seg button,.tg{min-height:34px;padding:0 14px;background:#2a2019;border:1px solid var(--line);color:var(--dim);font:700 13px "Zen Kaku Gothic New";cursor:pointer}.seg button.on,.tg.on{background:var(--acc);color:#1a1410;border-color:var(--acc)}
@@ -346,7 +351,7 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
     <button class="hb" id="hDex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4z"/><path d="M20 4h-7a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h7z"/></svg><b>図鑑</b><small>敵性生命体の記録</small></button>
     <button class="hb" id="hSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><b>設定</b><small>音量・画面・操作・演出</small></button>
   </nav>
-  <div id="hCur"></div><div id="hScrap" class="scrapTop"></div>
+  <div id="hCur"></div><div id="hScrap" class="scrapTop"></div><div id="a2B" class="hide"><button id="a2BGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>ホーム画面に追加して遊ぼう</button><button id="a2BX" aria-label="閉じる">×</button></div>
 </div>
 <div id="stsel" class="ovl hide"><div class="win"><h3><button class="bk" id="ssBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>戻る</button><span>マップ選択</span></h3><div id="ssList"></div></div></div>
 <div id="dexW" class="ovl hide"><div class="win"><h3><button class="bk" id="dexBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>戻る</button><span>図鑑 ― 敵性生命体の記録</span><em id="dexCnt" style="font:700 12px Chakra Petch;color:var(--dim);font-style:normal"></em></h3><div id="dexList"></div></div></div>
@@ -359,6 +364,8 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 <div class="ft"><a class="sup" href="#" id="fqSend">送信する</a><em id="fqMsg"></em></div></div></div>
 <div id="uiPvW" class="hide"><div class="pv"><span>ボタンの大きさ</span><input type="range" min="70" max="140" step="5" data-uk="ui"><em data-uv="ui"></em></div><div class="pv"><span>ボタンの濃さ</span><input type="range" min="30" max="100" step="5" data-uk="uiA"><em data-uv="uiA"></em></div><div class="row"><button class="kbb" id="uiPvR">元に戻す</button><button class="pbtn main sm" id="uiPvOk" style="min-height:36px;margin:0;padding:0 22px">決定</button></div></div>
 <div id="buyW" class="ovl hide" style="z-index:12"><div class="card buy"><h2 id="buyT"></h2><div class="bth" id="buyI"></div><div class="bcost" id="buyC"></div><div class="bhave" id="buyH"></div><div class="row"><button class="pbtn main" id="buyY">はい</button><button class="pbtn" id="buyN">いいえ</button></div></div></div>
+<div id="a2W" class="ovl hide" style="z-index:13"><div class="card a2"><img src="icon-192.png" alt="" class="a2i"><h2>ホーム画面に追加しよう</h2><p>アプリのようにホーム画面からすぐ起動でき、<br>全画面で遊べます。オフラインでも動きます。</p>
+<div id="a2How"></div><div class="row"><button class="pbtn main" id="a2Go">追加する</button><button class="pbtn" id="a2Later">あとで</button></div></div></div>
 <div id="pauseW" class="ovl hide" style="z-index:8"><div class="card"><h2>PAUSE</h2>
 <div class="pgrid"><div class="pvol"><div class="pvh">サウンド</div>
 <div class="pv"><span>マスター</span><input type="range" min="0" max="100" step="5" data-pk="vol"><em data-pv="vol"></em></div>
@@ -1720,7 +1727,7 @@ function tutTick(dt){if(!TUT||TUT.done||TUT.i>=TSTEPS.length)return;const S=TSTE
 function tutFieldEnd(){tutPanel(`STEP ${TSTEPS.length+1} / ${TSTEPS.length+1}`,'訓練完了','最後に格納庫での機体の組み替え方を見ていこう',null,false,false);banner('訓練完了');
   setTimeout(()=>{if(!TUT)return;fadeTo(()=>{GT={i:0};goHome();openGarage();gtShow()},'HANGAR')},2200)}
 function gtShow(){if(!GT)return;const S=GSTEPS[GT.i];tutPanel(`HANGAR ${GT.i+1} / ${GSTEPS.length}`,S.t,S.d,S.sel,false,!S.wait,S.last)}
-function gtNext(){if(!GT)return;GT.i++;if(GT.i>=GSTEPS.length){GT=null;tutDone();tutHide();return}gtShow()}
+function gtNext(){if(!GT)return;GT.i++;if(GT.i>=GSTEPS.length){GT=null;tutDone();tutHide();setTimeout(a2Open,400);return}gtShow()}
 document.addEventListener('click',e=>{if(!GT)return;const S=GSTEPS[GT.i];if(S.wait&&e.target.closest&&e.target.closest(S.sel))setTimeout(gtNext,380)},true);
 function tutPanel(st,t,d,hi,bar,next,last){const w=$('tut');w.classList.remove('hide');w.classList.toggle('gar',!!GT);
   w.innerHTML=`<div class="st">${st}</div><h4>${t}</h4><p>${d}</p>${bar?'<div class="bar"><i id="tutBar"></i></div>':''}<div class="bt">${next?`<button id="tutNx">${last?'完了':'次へ'}</button>`:''}<button id="tutSk">${GT?'閉じる':'スキップ'}</button></div>`;
@@ -1732,6 +1739,22 @@ function tutHiUpd(){const h=$('tutHi');if(!h)return;const el=TUTHI&&!$('tut').cl
 setInterval(tutHiUpd,150);
 function tutHide(){$('tut').classList.add('hide');TUTHI=null;tutHiUpd()}
 function tutSkip(){tutDone();if(TUT){TUT=null;GT=null;tutHide();goHome();return}GT=null;tutHide()}
+// ===== add to home screen =====
+let a2Evt=null;const a2Std=()=>matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true;
+const a2iOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();a2Evt=e;a2Banner()});addEventListener('appinstalled',()=>{a2Evt=null;try{localStorage.setItem('rg_a2','inst')}catch(_){}$('a2B').classList.add('hide');$('a2W').classList.add('hide')});
+function a2Can(){return !a2Std()&&(a2Evt||TOUCH)}
+function a2Banner(){let t=0;try{const v=localStorage.getItem('rg_a2');if(v==='inst')return $('a2B').classList.add('hide');t=+v||0}catch(_){}$('a2B').classList.toggle('hide',!(a2Can()&&Date.now()>t&&state==='demo'))}
+function a2Open(){if(!a2Can())return false;const h=$('a2How');
+  if(a2Evt){h.innerHTML='';$('a2Go').textContent='追加する'}
+  else if(a2iOS){h.innerHTML='<b>1.</b> 画面の共有ボタン <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg> をタップ<br><b>2.</b> 「<b>ホーム画面に追加</b>」<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>を選ぶ<br><b>3.</b> 右上の「追加」をタップ';$('a2Go').textContent='わかった'}
+  else{h.innerHTML='<b>1.</b> ブラウザのメニュー（︙）を開く<br><b>2.</b> 「<b>ホーム画面に追加</b>」または「<b>アプリをインストール</b>」を選ぶ';$('a2Go').textContent='わかった'}
+  $('a2W').classList.remove('hide');return true}
+$('a2Go').addEventListener('click',async()=>{$('a2W').classList.add('hide');if(a2Evt){const e=a2Evt;a2Evt=null;try{e.prompt();const r=await e.userChoice;if(r&&r.outcome==='accepted')try{localStorage.setItem('rg_a2','inst')}catch(_){}}catch(_){}a2Banner()}});
+$('a2Later').addEventListener('click',()=>{$('a2W').classList.add('hide')});
+$('a2BGo').addEventListener('click',e=>{e.stopPropagation();a2Open()});
+$('a2BX').addEventListener('click',e=>{e.stopPropagation();try{localStorage.setItem('rg_a2',String(Date.now()+3*864e5))}catch(_){}$('a2B').classList.add('hide')});
+setInterval(a2Banner,1500);
 function tutWelcome(){let seen=false;try{seen=localStorage.getItem('rg_tut')==='1'}catch(e){}if(!seen)$('tutW').classList.remove('hide')}
 function sortie(n){
   if(slamG)slamG.visible=false;

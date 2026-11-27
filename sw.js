@@ -1,12 +1,13 @@
 // HARD POINT service worker
 // 更新を配信するときは VERSION を上げてください（古いキャッシュが破棄されます）
-const VERSION = 'hp-v2';
+const VERSION = 'hp-v3';
 const CORE = [
   './',
   './index.html',
   './vendor/three.min.js',
   './manifest.webmanifest',
-  './icon-512.png'
+  './icon-512.png',
+  './icon-192.png'
 ];
 
 self.addEventListener('install', e => {
