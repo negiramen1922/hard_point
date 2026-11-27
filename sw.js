@@ -1,6 +1,6 @@
 // HARD POINT service worker
 // 更新を配信するときは VERSION を上げてください（古いキャッシュが破棄されます）
-const VERSION = 'hp-v4';
+const VERSION = 'hp-v5';
 const CORE = [
   './',
   './index.html',
