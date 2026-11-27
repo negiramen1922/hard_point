@@ -2029,7 +2029,8 @@ function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','pauseW'
 function goHome(){TUT=null;TEST=null;$('dpsH').classList.add('hide');if(!GT)tutHide();hideAll();stopMotors();megaLoop(false);inp.all=false;inp.w.fill(false);mb=mb2=false;joy.x=joy.y=0;try{document.pointerLockElement&&document.exitPointerLock()}catch(e){}startDemo()}
 function homeCur(){const c=demo?JSON.parse(demo.keep):cfg;$('hScrap').innerHTML=SCRI+SCRAP.toLocaleString()+(ADMIN?' <small>管理者</small>':'');$('hCur').innerHTML=`現在の機体<b>${BODY[c.B].n} ／ ${LEGS[c.G].n}</b>${BODY[c.B].slots.map((x,i)=>WP[c.W[i]].n).join('・')} ／ ${ABIL[c.A].n}`}
 function startDemo(){if(!demo)demo={keep:JSON.stringify(cfg)};Object.assign(demo,{t:0,sw:0,shot:0,ang:rnd()*TAU,ab:3,lg:5,cut:true,look:null});
-  Object.assign(cfg,JSON.parse(JSON.stringify(DEMO_L[Math.floor(rnd()*DEMO_L.length)])));fixW(true);
+  Object.assign(cfg,JSON.parse(demo.keep));fixW(true);// the home-screen demo fights with the player's own loadout (matches the 現在の機体 panel)
+  
   clearField();resetU();buildLevel('ruins');buildMech();const hp=1e7;Object.assign(P,{anc:0,ancK:0,ancT:0,hb:'',hp,max:hp,wm:wtMul(),legA:0,y:0,vy:0,dash:0,bar:0,bhp:0,hov:0,eng:null});P.pos.set(0,0,0);P.vel.set(0,0,0);
   AB.leg.cd=AB.leg.act=AB.body.cd=AB.body.act=0;AB.leg.ch=null;AB.leg.lock=0;stage=2;sub=2;wave=6;phase='next';placePlayer(0,0);toSpawn=[];for(let k=0;k<14;k++)toSpawn.push(DEMO_E[Math.floor(rnd()*DEMO_E.length)]);spawnT=.3;sqDir=null;sqLast=0;
   MUS.lvl=1;state='demo';homeCur();$('home').classList.remove('hide')}
