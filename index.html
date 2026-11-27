@@ -1860,8 +1860,8 @@ function bossHrungnir(e,p,d,dt){if(e.kind!=='hrungnir')return false;const ph=e.p
   if(e.hs){e.ht+=dt;
     if(e.hs==='aim'){t2.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.bdir.lerp(t2,Math.min(1,dt*4)).normalize();e.tyaw=Math.atan2(e.bdir.x,e.bdir.z);const W=e.wl.userData;e.wl.position.set(p.x,.09,p.z);e.wl.rotation.y=e.tyaw;W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*14));
       if(rnd()<.5)puff(t3.set(p.x+(rnd()-.5)*6,.4,p.z+(rnd()-.5)*6),1.4,0x9a7048,.5);
-      if(e.ht>=(e.hk>0?.5:.9)){e.hs='dash';e.ht=0;dropFx(e.wl);e.wl=null;SFX.thrust(true);shake=Math.max(shake,.5);play('screech',sp(p,.6,.4))}}
-    else{const spd=ph>=2?50:ph>=1?46:42;t3.set(p.x+e.bdir.x*(spd*dt+e.r*.9),1.5,p.z+e.bdir.z*(spd*dt+e.r*.9));let stop=e.ht>1.35;
+      if(e.ht>=(e.hk>0?.6:1.0)){e.hs='dash';e.ht=0;dropFx(e.wl);e.wl=null;SFX.thrust(true);shake=Math.max(shake,.5);play('screech',sp(p,.6,.4))}}
+    else{const spd=ph>=2?44:ph>=1?41:37;t3.set(p.x+e.bdir.x*(spd*dt+e.r*.9),1.5,p.z+e.bdir.z*(spd*dt+e.r*.9));let stop=e.ht>1.35;
       if(inBld(t3,1)||Math.hypot(t3.x,t3.z)>ARENA-3){stop=true;explode(t3.clone().setY(2),2);shake=Math.max(shake,.9);SFX.bossLand(t3);if(ph>=2)bossBarrage(e,p,14,12)}else{p.x+=e.bdir.x*spd*dt;p.z+=e.bdir.z*spd*dt}
       propsAoe(p,e.r+1,9999);if(rnd()<.9)puff(t3.set(p.x-e.bdir.x*4+(rnd()-.5)*4,.4,p.z-e.bdir.z*4+(rnd()-.5)*4),1.8,0x9a7048,.6);
       if(ph>=2){e.trl=(e.trl||0)-dt;if(e.trl<=0){e.trl=.22;addPool(p.x-e.bdir.x*5,p.z-e.bdir.z*5,3,3.2,45,'HRUNGNIRの毒だまり')}}
