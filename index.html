@@ -899,11 +899,15 @@ function buildMount(i,t){
     const mk2=(c,o)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false});
     a.lb=new THREE.Mesh(beamGeo,mk2(0xff3a1a,.75));a.lc=new THREE.Mesh(beamGeo,mk2(0xfff0e0,.95));a.lg=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex('255,90,40'),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
     for(const m of[a.lb,a.lc,a.lg]){m.visible=false;scene.add(m);liveBeams.push(m)}
-  }else if(t==='twin'){ // Gemini: twin recoiling barrels on one breech
-    cbox(.78,.66,1.3,G_,0,0,.55,w,.1);box(.8,.08,1.0,MK.acc,0,.37,.5,w);cbox(.4,.3,.6,D_,0,-.44,.3,w,.06);
-    a.brls=[];a.mzs=[];for(const sx of[-1,1]){const g2=new THREE.Group();g2.position.set(sx*.2,.05,1.15);w.add(g2);cyl(.17,.6,D_,0,0,.25,g2,'z');cyl(.11,2.0,mat.gun,0,0,1.3,g2,'z');cbox(.26,.26,.36,D_,0,0,2.35,g2,.05);
-      const mz2=new THREE.Object3D();mz2.position.set(sx*.2,.05,1.15+2.6);w.add(mz2);a.brls.push(g2);a.mzs.push(mz2)}
-    a.mag=cbox(.4,.5,.75,mat.mag,s*.58,-.1,.45,w,.06);a.mz.position.set(0,.05,3.75);a.side=0;a.ej=new V(s*.42,.2,.4);
+  }else if(t==='twin'){ // Gemini: stepped twin-barrel breech (thick sleeve -> long thin barrel -> muzzle block per barrel), two round drum magazines tilted outward on top of the rear
+    cbox(.8,.6,1.05,G_,0,0,.3,w,.1);cbox(.64,.46,.5,G_,0,-.02,1.0,w,.08);box(.82,.07,.9,MK.acc,0,.34,.3,w);cbox(.36,.26,.5,D_,0,-.4,.25,w,.05);vents(3,.05,.24,D_,s*.41,0,.3,w,.14);
+    a.brls=[];a.mzs=[];for(const sx of[-1,1]){const g2=new THREE.Group();g2.position.set(sx*.19,.04,1.15);w.add(g2);cyl(.15,.55,D_,0,0,.27,g2,'z');cbox(.22,.22,.24,MK.gm,0,0,.6,g2,.04);cyl(.085,1.85,mat.gun,0,0,1.6,g2,'z');cyl(.11,.12,D_,0,0,1.0,g2,'z');cbox(.24,.2,.36,D_,0,0,2.6,g2,.05);
+      const mz2=new THREE.Object3D();mz2.position.set(sx*.19,.04,1.15+2.82);w.add(mz2);a.brls.push(g2);a.mzs.push(mz2)}
+    a.mag=new THREE.Group();a.mag.position.set(0,.3,-.2);w.add(a.mag);
+    for(const sx of[-1,1]){const dr=new THREE.Group();dr.position.set(sx*.5,.02,0);dr.rotation.set(-.3,0,-sx*.85);a.mag.add(dr);
+      cyl(.36,.2,mat.mag,0,0,0,dr);cyl(.27,.23,D_,0,0,0,dr);cyl(.09,.26,MK.acc,0,0,0,dr);const rim=new THREE.Mesh(new THREE.TorusGeometry(.36,.035,5,20),MK.gm);rim.rotation.x=Math.PI/2;rim.position.y=.1;dr.add(rim);
+      box(.2,.3,.22,D_,0,-.22,0,dr)}
+    a.mz.position.set(0,.04,3.97);a.side=0;a.ej=new V(s*.42,.2,.4);
   }else if(t==='burst'){ // Hammerhead: triple-bore heavy shotgun with a rattling V-engine block on the back (silver heads, black ribbed block, pulleys and belt facing the pilot)
     a.eng=new THREE.Group();w.add(a.eng);const E_=a.eng;
     cbox(.62,.5,.9,D_,0,-.12,-.05,E_,.05);for(let q=0;q<4;q++)box(.66,.06,.08,MK.gm,0,-.05,-.4+q*.24,E_);
