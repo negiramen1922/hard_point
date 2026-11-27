@@ -1735,10 +1735,10 @@ function makeTurtle(mt){const cy=3.4,root=new THREE.Group(),g=new THREE.Group();
   const body=new THREE.Group();body.position.y=cy;g.add(body);
   const rock=new THREE.MeshLambertMaterial({color:0x3a2e28}),rock2=new THREE.MeshLambertMaterial({color:0x5e4636}),lava=new THREE.MeshBasicMaterial({color:0xff6a1a});
   ell(body,mt,4.5,1.25,5.5,0,-.95,0);ell(body,lava,5.0,3.0,6.0,0,.12,0);ell(body,rock2,5.35,.6,6.35,0,-.45,0);
-  const up=new V(0,1,0),nrm=new V();
+  const up=new V(0,1,0),nrm=new V(),plates=[];
   for(const [ph,n] of[[.18,13],[.55,11],[.92,8],[1.28,4]])for(let k=0;k<n;k++){const th=k/n*TAU+ph*1.7,cx=Math.cos(ph)*Math.sin(th),cz=Math.cos(ph)*Math.cos(th),sy=Math.sin(ph);
     const x=5.0*cx,y=3.0*sy+.12,z=6.0*cz;if(Math.abs(x)<2.4&&z<1.4&&z>-3.2&&y>2.0)continue;nrm.set(cx/5,sy/3,cz/6).normalize();
-    const pl=ell(body,k%3?rock:rock2,1.55-ph*.25,.42,1.55-ph*.25,x*1.02,y*1.02,z*1.02);pl.quaternion.setFromUnitVectors(up,nrm)}
+    const pl=ell(body,k%3?rock:rock2,1.55-ph*.25,.42,1.55-ph*.25,x*1.02,y*1.02,z*1.02);pl.quaternion.setFromUnitVectors(up,nrm);plates.push(pl)}
   const vol=new THREE.Group();vol.position.set(0,2.55,-.9);body.add(vol);
   const cone=new THREE.Mesh(new THREE.CylinderGeometry(1.3,3.4,5.2,10),rock);cone.position.y=2.25;vol.add(cone);
   const rim=new THREE.Mesh(new THREE.TorusGeometry(1.25,.36,6,14),rock2);rim.rotation.x=Math.PI/2;rim.position.y=4.85;vol.add(rim);
@@ -1751,8 +1751,34 @@ function makeTurtle(mt){const cy=3.4,root=new THREE.Group(),g=new THREE.Group();
   const legs=[];for(const [x,z] of[[-3.7,3.4],[3.7,3.4],[-3.7,-3.4],[3.7,-3.4]]){const hip=new THREE.Group();hip.position.set(x,cy-1.3,z);g.add(hip);
     ell(hip,mt,1.15,1.7,1.15,0,-.9,0);ell(hip,rock2,1.3,.5,1.5,0,-2.0,.35);for(const c of[-.5,0,.5])ell(hip,rock,.22,.2,.4,c,-2.15,1.6);legs.push({hip,ph:(x>0)===(z>0)?0:Math.PI,by:cy-1.3})}
   const tail=new THREE.Mesh(new THREE.ConeGeometry(.7,2.6,7),mt);tail.rotation.x=-Math.PI/2-.25;tail.position.set(0,-.6,-6.6);body.add(tail);
-  return{root,legs,cy,s:6.5,kind:'turtle',body,muz,head,ex:{crater,vlight,lava,vol}}}
+  return{root,legs,cy,s:6.5,kind:'turtle',body,muz,head,ex:{crater,vlight,lava,vol,plates,head,tail}}}
+// SURTR forms: PHASE 2 blows the crater open (bigger volcano, spin charge unlocked); FINAL PHASE shatters the shell plates and exposes the magma
+function turtlePhase(e,tg){const X=e.ex;X.crater.getWorldPosition(t3);
+  if(tg===1){explode(t3.clone(),3.5);for(let k=0;k<10;k++)spark(t3,4,18);X.vol.scale.setScalar(1.18);X.vol.position.y+=.25;e.rcd=2.5;toast('SURTR 火口が吹き飛んだ！')}
+  if(tg===2){const pl=X.plates.filter((q,i)=>i%5!==0&&q.visible);let n=0;for(const q of pl){if(rnd()<.55){q.visible=false;q.getWorldPosition(t3);if(n++<12)setTimeout(()=>explode(t3.clone(),1.4,true),n*60);puff(t3,2,0x2a2220,3)}}
+    X.vol.scale.setScalar(1.3);e.rcd=1.5;toast('SURTR 甲羅が砕けた！ 溶岩が噴き出す')}}
+// shell spin charge (PHASE 2+): tuck head / legs / tail in, telegraph a line, spin like a top and ram, bounce off rocks and the arena edge
+function turtleTuck(e,X,k){X.head.position.z=7.1-2.6*k;X.head.scale.setScalar(1-.75*k);X.tail.scale.setScalar(1-.8*k);for(const L of e.legs){L.hip.scale.set(1,1-.7*k,1);L.hip.visible=k<.95}e.bodyG.position.y=e.y-1.3*k}
+function turtleSpin(e,p,d,dt,ph,X){
+  if(!e.ts){if(ph<1||e.es)return false;if(e.rcd==null)e.rcd=3;e.rcd-=dt;if(e.rcd>0||d<16)return false;
+    e.ts='tuck';e.tt=0;e.spin=e.spin||0;e.bdir=new V(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.wl=makeLine(12);toast('SURTR 甲羅回転突撃！ 赤い線から離れろ');play('roar',sp(p,.7,.5));SFX.bossCrouch(p)}
+  e.tt+=dt;const fin=ph>=2;
+  if(e.ts==='tuck'){const k=Math.min(1,e.tt/.8);turtleTuck(e,X,k);e.spin+=dt*k*k*14;tv.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.bdir.lerp(tv,Math.min(1,dt*3)).normalize();
+    const W=e.wl.userData;e.wl.position.set(p.x,.09,p.z);e.wl.rotation.y=Math.atan2(e.bdir.x,e.bdir.z);W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*14));if(rnd()<.6)puff(tv.set(p.x+(rnd()-.5)*9,.4,p.z+(rnd()-.5)*9),1.8,0x6a5038,.5);
+    if(e.tt>=1.2){e.ts='spin';e.tt=0;dropFx(e.wl);e.wl=null;SFX.thrust(true);shake=Math.max(shake,.6)}}
+  else if(e.ts==='spin'){const spd=fin?38:31;e.spin+=dt*16;tv.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize();const cr=e.bdir.x*tv.z-e.bdir.z*tv.x,tr=Math.max(-.6*dt,Math.min(.6*dt,Math.asin(cl(-cr,-1,1)))),c=Math.cos(tr),sn=Math.sin(tr);e.bdir.set(e.bdir.x*c+e.bdir.z*sn,0,-e.bdir.x*sn+e.bdir.z*c).normalize();
+    t3.set(p.x+e.bdir.x*(spd*dt+e.r*.8),1.5,p.z+e.bdir.z*(spd*dt+e.r*.8));const rr=Math.hypot(t3.x,t3.z);
+    if(inBld(t3,1)||rr>ARENA-3){e.bdir.negate();e.bdir.x+=(rnd()-.5)*.9;e.bdir.normalize();explode(t3.clone().setY(2),2.2);shake=Math.max(shake,1);SFX.bossLand(t3);if(fin)bossBarrage(e,p,16,13)}
+    else{p.x+=e.bdir.x*spd*dt;p.z+=e.bdir.z*spd*dt}
+    propsAoe(p,e.r+1,9999);if(rnd()<.9)puff(tv.set(p.x-e.bdir.x*5+(rnd()-.5)*5,.4,p.z-e.bdir.z*5+(rnd()-.5)*5),2+rnd(),0x6a5038,.6);if(rnd()<.7)spark(tv.set(p.x+(rnd()-.5)*8,.5,p.z+(rnd()-.5)*8),2,10);
+    X.crater.getWorldPosition(t3);if(rnd()<.4)spark(t3,2,16);
+    const pd=Math.hypot(P.pos.x-p.x,P.pos.z-p.z);if(pd<e.r+2&&P.y<5&&now-(e.rh||0)>.9){e.rh=now;t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(fin?460:400,t2,P.pos.clone().setY(2),'SURTRの甲羅回転突撃');P.vel.addScaledVector(t2,-28);P.vy=Math.max(P.vy,9);shake=Math.max(shake,1.2);SFX.bossLand(P.pos)}
+    if(e.tt>(fin?4.6:3.6)){e.ts='untuck';e.tt=0}}
+  else{const k=Math.max(0,1-e.tt/.8);turtleTuck(e,X,k);e.spin+=dt*k*14;
+    if(e.tt>=.8){turtleTuck(e,X,0);e.ts=null;e.tyaw+=e.spin;e.spin=0;e.rcd=(fin?6:9.5)+rnd()*2.5;e.cd=1.4;e.scd=Math.max(e.scd||0,2);e.ecd=Math.max(e.ecd||0,1.5)}}
+  return true}
 function bossTurtle(e,p,d,dt){if(e.kind!=='turtle')return false;const ph=e.phs||0,X=e.ex;
+  if(turtleSpin(e,p,d,dt,ph,X))return true;
   const ty=Math.atan2(P.pos.x-p.x,P.pos.z-p.z);if(e.tyaw==null)e.tyaw=ty;e.tyaw=la(e.tyaw,ty,dt*(.45+ph*.15));
   if(d>24&&!e.es)p.addScaledVector(t2.set(Math.sin(e.tyaw),0,Math.cos(e.tyaw)),e.spd*.55*dt);
   X.crater.getWorldPosition(t3);const heat=e.es==='erupt'?1:e.es==='rumble'?.75:.3+.12*Math.sin(now*3);X.vlight.intensity=2+heat*7;X.lava.color.setRGB(1,.3+heat*.25,.08+heat*.08);
@@ -1787,11 +1813,12 @@ function megaLoop(on){if(!AC)return;if(on&&!megaSrc&&SBK.beamLoop&&!muted){const
   if(!on&&megaSrc){try{megaSrc.g.gain.setTargetAtTime(0,AC.currentTime,.08);megaSrc.s.stop(AC.currentTime+.5)}catch(e){}megaSrc=null}}
 
 function bossPhase(e,p,dt){const f=e.fin0?0:e.hp/e.max,tg=e.fin0?2:f<.2?2:f<.6?1:0;
-  if(tg>(e.phs||0)&&!e.js&&!e.bs&&!e.as){e.phs=tg;e.ptr=1.3;banner(tg===2?'FINAL PHASE':'PHASE 2');play('roar',{v:1.5,rate:tg===2?.75:.9});shake=Math.max(shake,1.2);if(SET.slow)slowT=Math.max(slowT,.45);
+  if(tg>(e.phs||0)&&!e.js&&!e.bs&&!e.as&&!e.ts){e.phs=tg;e.ptr=1.3;banner(tg===2?'FINAL PHASE':'PHASE 2');play('roar',{v:1.5,rate:tg===2?.75:.9});shake=Math.max(shake,1.2);if(SET.slow)slowT=Math.max(slowT,.45);
     const g=rings[rgi++%rings.length];g.m.position.set(p.x,.08,p.z);g.t=0;g.s=3;g.m.visible=true;for(let k=0;k<16;k++)puff(tv.set(p.x+(rnd()-.5)*10,.6,p.z+(rnd()-.5)*10),2,0x5a3a30,1);
     e.spd*=1.2;
     if(e.kind==='arma'&&tg===1&&e.tur.length>1){const t=e.tur.shift();t.g.getWorldPosition(t3);explode(t3.clone(),2.2);t.g.visible=false;e.heavy=e.tur[0];e.heavy.g.scale.setScalar(1.35)}
     if(e.kind==='arma'&&tg===2){e.rcd=1}
+    if(e.kind==='turtle')turtlePhase(e,tg);
     if(tg===2){e.fin0=e.hp*2;e.hp=e.fin0;e.php=e.hp}}
   if(e.ptr>0){e.ptr-=dt;if(rnd()<.5)spark(tv.set(p.x+(rnd()-.5)*5,p.y+2,p.z+(rnd()-.5)*5),2,8);return true}return false}
 function bossBarrage(e,c,n,spd){curVol=++eVol;for(let j=0;j<n;j++){const q=j/n*TAU+now;eShoot(e,t2.set(Math.sin(q),0,Math.cos(q)),spd,70,'mag',2.2,new V(c.x,2,c.z))}curVol=0}
@@ -3080,7 +3107,7 @@ function update(dt){
       if(e.stk>=2){e.ph=e.ph>3?1:5;e.stk=0}}
     const ox=p.x,oz=p.z;pushOut(p,e.r,e.type==='flyer'?p.y:0,true);if(e.type!=='flyer')for(const pr of props){if(pr.alive&&Math.abs(p.x-pr.x)<pr.hw+e.r*.7&&Math.abs(p.z-pr.z)<pr.hd+e.r*.7)hitProp(pr,(e.type==='boss'?4000:500)*dt)}if(Math.abs(p.x-ox)+Math.abs(p.z-oz)>.001){const sd=e.ph>3?1:-1;p.x+=-tv.z*e.spd*.7*dt*sd;p.z+=tv.x*e.spd*.7*dt*sd}
     if(!(e.pj>0))p.y=e.y+(e.type==='flyer'?Math.sin(now*1.5+e.ph)*.8:0);}e.wp+=dt*e.spd*.9;if(e.type==='boss'){const si=Math.floor(e.wp/Math.PI);if(si!==e.ls){e.ls=si;SFX.bossStep(p);const dd=p.distanceTo(P.pos);if(dd<45)shake=Math.max(shake,.25*(1-dd/45));puff(tv.set(p.x+(rnd()-.5)*6,.5,p.z+(rnd()-.5)*6),1.5,0x5a4a3a,.4)}}if(e.type==='hound'){for(const L of e.legs)L.hip.rotation.x=e.pj>0?(L.hip.position.z>0?-.9:.9):Math.sin(e.wp*1.5+L.ph)*.85}else for(const L of e.legs){L.hip.rotation.y=Math.sin(e.wp+L.ph)*(e.kind==='spider'?.22:.35);L.hip.position.y=L.by+Math.max(0,Math.sin(e.wp+L.ph))*.25*(e.y/2)}
-    if(e.ru)rigStep(e,p,dt);else if(e.bs)e.m.rotation.set(0,Math.atan2(e.bdir.x,e.bdir.z),0);else if(e.kind==='turtle')e.m.rotation.set(0,e.tyaw||0,0);else e.m.lookAt(P.pos.x,p.y,P.pos.z);
+    if(e.ru)rigStep(e,p,dt);else if(e.bs)e.m.rotation.set(0,Math.atan2(e.bdir.x,e.bdir.z),0);else if(e.kind==='turtle')e.m.rotation.set(0,(e.tyaw||0)+(e.spin||0),0);else e.m.lookAt(P.pos.x,p.y,P.pos.z);
     e.flash-=dt;if(e.flash>0)e.mt.emissive.setHex(0x999999);else if(e.melt>.03){const m=e.melt;e.mt.emissive.setRGB(.25+.75*m,.05+.85*m*m,.7*m*m*m)}else if(e.phs)e.mt.emissive.setRGB(e.phs*.22*(.55+.45*Math.sin(now*(e.phs>1?9:5))),.02,0);else e.mt.emissive.setHex(0);
   }
   for(const b of eb){if(!b.on)continue;b.m.position.addScaledVector(b.v,dt);b.life-=dt;
