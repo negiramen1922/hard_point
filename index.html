@@ -133,7 +133,7 @@ h1{margin:0;font:700 clamp(26px,5vw,44px)/1.05 "Chakra Petch";text-shadow:0 2px 
 h1 span{color:var(--acc)}
 header p{margin:3px 0 0;color:var(--dim);font-weight:700;font-size:13px}
 .col{position:absolute;display:flex;flex-direction:column;gap:6px}
-#colL{left:18px;top:138px}#colR{right:18px;top:12px}
+#colL{left:18px;top:134px}#colR{right:18px;top:58px}
 .slot{position:relative;min-width:168px;min-height:50px;padding:4px 52px 4px 12px;background:rgba(22,17,13,.86);border:1px solid var(--line);border-left:3px solid var(--acc);color:var(--ink);text-align:left;cursor:pointer;font:700 15px/1.3 "Zen Kaku Gothic New"}
 .slot small{display:block;font-size:11px;color:var(--dim)}
 .slot small em{font-style:normal;color:var(--acc);margin-left:4px}
@@ -147,14 +147,15 @@ header p{margin:3px 0 0;color:var(--dim);font-weight:700;font-size:13px}
 .hint{position:absolute;left:50%;transform:translateX(-50%);bottom:72px;width:min(420px,40vw);margin:0;font-size:12px;color:var(--dim);text-align:center;pointer-events:none!important}
 @media (pointer:coarse){.hint{display:none}}
 @media (max-width:760px){#stats .st b{font-size:14px}}
+
 button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-#sheet{position:fixed;top:0;right:0;bottom:0;width:min(600px,60vw);z-index:5}
+#sheet{position:fixed;top:0;right:0;bottom:0;width:min(460px,50vw);z-index:5}
 .sh{background:rgba(26,20,15,.94);border-left:3px solid var(--acc);height:100%;box-sizing:border-box;overflow:auto;padding:10px 12px;touch-action:pan-y}
 .op{display:grid!important;grid-template-columns:84px minmax(0,1fr);column-gap:10px;align-items:start}.op .th{grid-row:1/span 3;width:84px;height:63px;object-fit:cover;background:radial-gradient(#4a3c30,#1c1510);border:1px solid var(--line)}.op.sel{border-color:var(--acc);background:#3a2a1e;box-shadow:inset 0 0 0 1px var(--acc)}
 #shHint{font:500 11px 'Zen Kaku Gothic New';color:var(--dim);margin:-6px 0 8px}
 #mdrag{position:fixed;left:50%;bottom:62px;transform:translateX(-50%);font:500 11px 'Zen Kaku Gothic New';color:var(--dim);pointer-events:none;text-shadow:0 1px 2px #000}
-.sh h3{margin:0 0 10px;font-size:17px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-#opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sh h3{margin:-10px -12px 10px;padding:10px 12px;font-size:17px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:-10px;z-index:3;background:rgba(26,20,15,.98);border-bottom:1px solid var(--line)}
+#opts{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
 .op{text-align:left;padding:8px 12px;background:#2a2019;border:1px solid var(--line);color:var(--dim);cursor:pointer;font:500 13px/1.4 "Zen Kaku Gothic New";min-height:44px}
 .op b{display:block;font-size:16px;color:var(--ink);margin-bottom:2px}
 .op b i{font-style:normal;font-size:11px;padding:1px 6px;margin-left:6px;border:1px solid currentColor;color:var(--acc);vertical-align:2px}
@@ -212,6 +213,12 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .kbh{font-size:12px;color:var(--dim);padding:2px 2px 6px}.kbs{display:flex;gap:8px}.kbb{min-width:92px;min-height:34px;background:#2a2019;border:1px solid var(--line);color:var(--ink);font:700 13px "Chakra Petch","Zen Kaku Gothic New";cursor:pointer;padding:0 10px}.kbb.on{border-color:var(--acc);color:var(--acc);animation:blink .8s infinite}.srow.kbr2{padding:4px 2px}
 #uiPvW{position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:20;background:rgba(31,24,18,.94);border-top:3px solid var(--acc);padding:8px 14px;width:min(520px,70vw);pointer-events:auto}#uiPvW .pv{grid-template-columns:110px 1fr 46px}#uiPvW .row{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
 #ctl.pv *{pointer-events:none!important}
+.card.buy{width:min(92vw,360px);text-align:center}.card.buy h2{font:700 18px/1.4 "Zen Kaku Gothic New";margin:0 0 10px}.card.buy h2 b{color:var(--acc)}
+.bth{display:flex;justify-content:center;margin-bottom:10px}.bth img{width:160px;height:120px;object-fit:cover;background:radial-gradient(#4a3c30,#1c1510);border:1px solid var(--line)}.bth .sw{width:160px;height:60px;border:1px solid var(--line)}
+.bcost{display:flex;justify-content:center;align-items:center;gap:6px;font:700 26px "Chakra Petch";color:#ffcf8a}.bcost svg,.bhave svg{width:26px;height:26px}
+.bhave{display:flex;justify-content:center;align-items:center;gap:8px;margin:6px 0 14px;font:700 15px "Chakra Petch";color:var(--dim)}.bhave b{color:var(--ink)}.bhave svg{width:18px;height:18px}
+.card.buy .row{display:flex;gap:10px}.card.buy .row .pbtn{flex:1;justify-content:center}
+
 .cred{padding:8px 2px 12px;font-size:13px;line-height:1.7;color:var(--dim)}.cred b{color:var(--ink)}.cred a{color:var(--cy)}.cred p{margin:0 0 8px}
 .sgrp{margin:12px 0 2px;font:700 12px "Zen Kaku Gothic New";color:var(--acc);letter-spacing:.2em}
 .seg{display:flex;gap:6px}.seg button,.tg{min-height:34px;padding:0 14px;background:#2a2019;border:1px solid var(--line);color:var(--dim);font:700 13px "Zen Kaku Gothic New";cursor:pointer}.seg button.on,.tg.on{background:var(--acc);color:#1a1410;border-color:var(--acc)}
@@ -222,8 +229,10 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .pbtn.sm{min-height:40px;font-size:14px;margin-top:4px;justify-content:center}.pbtn.warn{border-color:#6a3020}.pbtn.warn.cf{background:#8a2a14;border-color:#ff5a1f;color:#fff}
 #pauseW .pbtn{min-height:46px}#pauseW h2{font:700 32px "Chakra Petch";letter-spacing:.2em;margin:0 0 6px}
 .pbtn{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 16px;background:#2a2019;border:1px solid var(--line);color:var(--ink);font:700 16px "Zen Kaku Gothic New";cursor:pointer}.pbtn svg{width:24px;height:24px}.pbtn.main{background:var(--acc);color:#1a1410;border-color:var(--acc)}
-#sndH,#helpH{display:none!important}#pauseB{right:12px;top:52px;width:48px;height:48px;z-index:6;pointer-events:auto;touch-action:none}#pauseB svg,#gBack svg{width:22px;height:22px}
-#gBack{position:absolute;left:174px;top:86px;pointer-events:auto;z-index:3;background:rgba(20,16,12,.55)}
+#sndH,#helpH{display:none!important}#pauseB{right:12px;top:52px;width:48px;height:48px;z-index:6;pointer-events:auto;touch-action:none;padding:0;display:flex;align-items:center;justify-content:center}#pauseB svg{width:26px;height:26px;flex:none}#gBack svg{width:22px;height:22px}
+#menu #sndM,#menu #helpM,#menu #fsM,#menu .hint{display:none!important}
+#scrapG{position:fixed;right:18px;top:12px;margin:0!important;padding:5px 12px;background:rgba(22,17,13,.86);border:1px solid var(--line);font-size:18px!important;pointer-events:none}
+#gBack{position:absolute;left:18px;top:84px;pointer-events:auto;z-index:3;background:rgba(20,16,12,.55)}
 #over .card .row{display:flex;gap:8px;justify-content:center}
 #over .tm{display:block;margin-top:6px;font:700 15px "Chakra Petch";color:var(--dim)}
 #cfC{position:fixed;inset:0;pointer-events:none;z-index:0}#over .card{position:relative;z-index:1}
@@ -298,6 +307,10 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 .card.tw .pbtn{width:100%;justify-content:center;margin:6px 0 0}
 @media (max-height:460px){.hnav .hb{min-height:44px;padding-top:3px;padding-bottom:3px}.hnav{gap:5px}}
 @media (max-height:460px){#tut{top:8px;width:min(460px,62vw);padding:6px 10px 8px}#tut h4{font-size:15px}#tut p{font-size:12px}#tut.gar{bottom:auto;top:8px;left:50%;transform:translateX(-50%);width:min(440px,60vw)}}
+@media (max-height:500px){header h1{font-size:30px}header p{font-size:11px}#gBack{top:62px;min-height:34px}#colL{top:104px;gap:4px}#colR{top:52px;gap:4px}
+  .slot{min-height:40px;padding:2px 48px 2px 10px;font-size:13px}.slot small{font-size:10px}
+  #stats{gap:10px;max-width:calc(100vw - 420px)!important;flex-wrap:wrap}#stats .st{font-size:10px}#stats .st b{font-size:13px}#mdrag{display:none}
+  #go,#goT{min-height:44px}#go{min-width:130px}#goT{right:158px}}
 </style>
 </head>
 <body>
@@ -345,6 +358,7 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 <div class="ck"><input type="checkbox" id="fqEnv" checked><label for="fqEnv" style="margin:0">端末・ブラウザの情報を添える（バグ調査用）</label></div>
 <div class="ft"><a class="sup" href="#" id="fqSend">送信する</a><em id="fqMsg"></em></div></div></div>
 <div id="uiPvW" class="hide"><div class="pv"><span>ボタンの大きさ</span><input type="range" min="70" max="140" step="5" data-uk="ui"><em data-uv="ui"></em></div><div class="pv"><span>ボタンの濃さ</span><input type="range" min="30" max="100" step="5" data-uk="uiA"><em data-uv="uiA"></em></div><div class="row"><button class="kbb" id="uiPvR">元に戻す</button><button class="pbtn main sm" id="uiPvOk" style="min-height:36px;margin:0;padding:0 22px">決定</button></div></div>
+<div id="buyW" class="ovl hide" style="z-index:12"><div class="card buy"><h2 id="buyT"></h2><div class="bth" id="buyI"></div><div class="bcost" id="buyC"></div><div class="bhave" id="buyH"></div><div class="row"><button class="pbtn main" id="buyY">はい</button><button class="pbtn" id="buyN">いいえ</button></div></div></div>
 <div id="pauseW" class="ovl hide" style="z-index:8"><div class="card"><h2>PAUSE</h2>
 <div class="pgrid"><div class="pvol"><div class="pvh">サウンド</div>
 <div class="pv"><span>マスター</span><input type="range" min="0" max="100" step="5" data-pk="vol"><em data-pv="vol"></em></div>
@@ -353,7 +367,7 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 <button class="pbtn sm" id="pMute"></button></div>
 <div class="pbs"><button class="pbtn main" id="pResume"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5l12.5 7.5L7 19.5z" fill="currentColor"/></svg>再開</button><button class="pbtn" id="pSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>設定</button><button class="pbtn" id="pHelp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>操作方法</button><button class="pbtn hide" id="pTgt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span id="pTgtL">敵を出す</span></button><button class="pbtn warn" id="pHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h5v16h-5"/><path d="M10 8l-4 4 4 4M6 12h10"/></svg><span id="pHomeL">撤退してホームへ</span></button></div></div></div></div>
 <div id="menu" class="hide">
-  <button class="bk" id="gBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>ホーム</button>
+  <button class="bk" id="gBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>戻る</button>
   <header><h1>格納庫 <span>HANGAR</span></h1><p>パーツをタップして換装<span id="scrapG" class="scrapIn"></span></p></header>
   <button class="snd" id="sndM" aria-label="サウンド切替"></button>
   <button class="snd" id="helpM" aria-label="操作方法"><b>?</b></button>
@@ -1803,9 +1817,14 @@ function openSheet(k){
 $('menu').addEventListener('click',e=>{const k=e.target.closest('.slot')?.dataset.k;if(k)openSheet(k)});
 $('opts').addEventListener('click',e=>{const b=e.target.closest('.op');if(!b||b.disabled)return;const v=b.dataset.v;showDet(shK,v);if(shK==='P'&&!b.classList.contains('lk'))for(const t in TH)delete TH[t];
   if(b.classList.contains('lk')){const c=+b.dataset.cost;if(SCRAP<c){b.classList.remove('ng');void b.offsetWidth;b.classList.add('ng');play('clankL',{v:.4});return}
-    if(!b.classList.contains('cf')){b.classList.add('cf');b.querySelector('.lkc').lastChild.textContent=`${c.toLocaleString()} もう一度タップで解禁`;return}
-    SCRAP-=c;UNL.push(b.dataset.kk+':'+v);saveScrap();play('ui',{v:.7});SFX.clank(true);if(shK[0]==='w')cfg.W[+shK[1]]=v;else cfg[shK]=v;renderMenu();buildMech();const sc2=$('opts').parentElement.scrollTop;openSheet(shK);$('opts').parentElement.scrollTop=sc2;return}if(shK[0]==='w')cfg.W[+shK[1]]=v;else cfg[shK]=v;renderMenu();buildMech();
+    buyAsk(b,c,()=>doBuy(b,c,v));return}if(shK[0]==='w')cfg.W[+shK[1]]=v;else cfg[shK]=v;renderMenu();buildMech();
   for(const x of $('opts').querySelectorAll('.op'))x.classList.toggle('sel',x===b);play('ui',{v:.4})});
+function doBuy(b,c,v){if(SCRAP<c)return;SCRAP-=c;UNL.push(b.dataset.kk+':'+v);saveScrap();play('ui',{v:.7});SFX.clank(true);if(shK[0]==='w')cfg.W[+shK[1]]=v;else cfg[shK]=v;renderMenu();buildMech();const sc2=$('opts').parentElement.scrollTop;openSheet(shK);$('opts').parentElement.scrollTop=sc2}
+let buyCb=null;function buyAsk(b,c,cb){const nm=(b.querySelector('b')?.childNodes[0]?.textContent||'').trim(),im=b.querySelector('img.th'),sw=b.querySelector('.sw,.pnt,[style*="background"]');
+  $('buyT').innerHTML=`<b>${nm}</b> を購入しますか？`;$('buyI').innerHTML=im&&im.getAttribute('src')?`<img src="${im.src}" alt="">`:sw?`<div class="sw" style="${sw.getAttribute('style')||''}"></div>`:'';
+  $('buyC').innerHTML=`${SCRI}${c.toLocaleString()}`;$('buyH').innerHTML=`所持 ${SCRI}<b>${SCRAP.toLocaleString()}</b> → <b>${(SCRAP-c).toLocaleString()}</b>`;
+  buyCb=cb;$('buyW').classList.remove('hide');play('ui',{v:.4})}
+$('buyY').addEventListener('click',()=>{$('buyW').classList.add('hide');const f=buyCb;buyCb=null;f&&f()});$('buyN').addEventListener('click',()=>{$('buyW').classList.add('hide');buyCb=null});
 function lockH(c){return `<span class="lkc${SCRAP<c?' short':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>${SCRI}<span>${c.toLocaleString()}</span></span>`}
 const STI={hp:'<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>',wt:'<path d="M9 8a3 3 0 0 1 6 0"/><path d="M6 9h12l2 11H4z"/>',turn:'<path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M17 2v4h4"/>',spd:'<path d="M5 6l6 6-6 6M13 6l6 6-6 6"/>'};
 const stI=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${STI[n]}</svg>`;
