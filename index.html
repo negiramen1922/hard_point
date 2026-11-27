@@ -2136,8 +2136,8 @@ function fireBullet(from,dir,spread,vel,dmg,scale){
 let curLife=0;function shoot(a,tgt){curLife=a.W.rng&&a.W.vel?a.W.rng/a.W.vel:0;try{shoot0(a,tgt)}finally{curLife=0}}
 function shoot0(a,tgt){
   const W=a.W;if(a.mzp){a.mzi=((a.mzi||0)+1)%a.mzp.length;a.mz.position.copy(a.mzp[a.mzi]);if(a.fl)a.fl.position.copy(a.mz.position)}a.mz.getWorldPosition(tv);
-  if(W.msl){const LT=lockTargets();if(!LT.length)return;a.mk=(a.mk||0)+1;const lt0=LT[a.mk%LT.length];for(let q=0;q<U.mS;q++)setTimeout(()=>{const m2=missiles.find(x=>!x.on);if(!m2||state!=='play')return;a.mz.getWorldPosition(m2.m.position);m2.on=true;m2.lk=1;m2.delay=0;m2.dmg=W.dmg;m2.t=0;m2.life=4;const L2=lockTargets();m2.tgt=L2.length?L2[(a.mk+q+1)%L2.length]:lt0;m2.v.set(Math.sin(upper.rotation.y)*26+(rnd()-.5)*8,7+rnd()*3,Math.cos(upper.rotation.y)*26+(rnd()-.5)*8);m2.m.visible=true},(q+1)*70);
-  const m=missiles.find(x=>!x.on);if(!m)return;aimDir(tv,tgt,t2,a);m.on=true;m.lk=1;m.delay=0;m.dmg=W.dmg;m.t=0;m.life=4;m.tgt=lt0;m.m.position.copy(tv);m.v.copy(t2).multiplyScalar(26);m.v.y+=6+rnd()*3;m.v.x+=(rnd()-.5)*5;m.v.z+=(rnd()-.5)*5;m.m.visible=true;if(a.rear){const rp=a.rear.clone();a.w.localToWorld(rp);a.w.getWorldDirection(t3);backblast(rp,t3.negate(),false)}play('mfire',{v:.65,rate:1.05+rnd()*.15,lim:200});puff(tv,.5,0x8a8580,.5);a.w.position.z=-.15;return}
+  if(W.msl){const LT=lockTargets();if(!LT.length)return;a.mk=(a.mk||0)+1;const lt0=LT[a.mk%LT.length];for(let q=0;q<U.mS;q++)setTimeout(()=>{const m2=missiles.find(x=>!x.on);if(!m2||state!=='play')return;a.mz.getWorldPosition(m2.m.position);m2.on=true;m2.lk=1;m2.delay=0;m2.dmg=W.dmg;m2.t=0;m2.life=4;const L2=lockTargets();m2.it=null;mslSet(m2,L2.length?mslPick(L2):lt0);m2.v.set(Math.sin(upper.rotation.y)*26+(rnd()-.5)*8,7+rnd()*3,Math.cos(upper.rotation.y)*26+(rnd()-.5)*8);m2.m.visible=true},(q+1)*70);
+  const m=missiles.find(x=>!x.on);if(!m)return;aimDir(tv,tgt,t2,a);m.on=true;m.lk=1;m.delay=0;m.dmg=W.dmg;m.t=0;m.life=4;m.it=null;mslSet(m,mslPick(LT)||lt0);m.m.position.copy(tv);m.v.copy(t2).multiplyScalar(26);m.v.y+=6+rnd()*3;m.v.x+=(rnd()-.5)*5;m.v.z+=(rnd()-.5)*5;m.m.visible=true;if(a.rear){const rp=a.rear.clone();a.w.localToWorld(rp);a.w.getWorldDirection(t3);backblast(rp,t3.negate(),false)}play('mfire',{v:.65,rate:1.05+rnd()*.15,lim:200});puff(tv,.5,0x8a8580,.5);a.w.position.z=-.15;return}
   if(W.twin){a.lst=now;a.mz=a.mzs[a.side];a.mz.getWorldPosition(tv);a.brls[a.side].userData.k=1;a.side^=1;const dmT=W.dmg*U.cD*(a.t==='twin'&&U.ae.twin?1.2:1)*(U.twin&&firingCount>=2?1.35:1)*fpM();aimDir(tv,tgt,t2,a);
     const b=fireBullet(tv,t2,W.spread,W.vel,dmT,1.9);b.aoe=W.aoe*U.cA*(U.ae[a.t]||1);b.am=W.am;b.life=curLife||1.4;a.fl.position.copy(a.mz.position);a.fl.visible=true;a.fl.scale.setScalar(1.3+rnd()*.5);
     muzL.intensity=3.5;muzL.color.setHex(0xffa040);muzL.position.copy(tv);shake=Math.max(shake,.22);play('ar',{v:.9,rate:.72});ejectCase(a,true);puff(tv,.6,0x8a8580,.8);return}
@@ -2368,6 +2368,9 @@ const legStock=()=>1+((cfg.G==='bip'||cfg.G==='rev')?(U.stk||0):0);
 // ===== マルチロックオン（Swarm と Hailstorm）：最大ロック数＝残弾数（Hailstormは発射数）。ロックしていないと撃てない =====
 const LOCKT=.45,LKS={};let locks=[],lkStep=0;const lkEls=[];
 function lockCap(){let c=0;for(const a of arms)if(a.W.msl&&!(a.rl>0))c+=a.ammo;if(cfg.A==='missile'&&AB.body.cd<=0&&AB.body.act<=0)c=Math.max(c,12+U.abMis);return c}
+// missile target bookkeeping: e.inc = damage already flying at e, so a salvo spreads instead of overkilling one target
+function mslPick(c){let b=null,br=-1e9;for(const e of c){const r=e.hp-(e.inc||0);if(r>br){br=r;b=e}}return b}
+function mslSet(m,e){if(m.it)m.it.inc=Math.max(0,(m.it.inc||0)-(m.dmg||90));m.tgt=e;m.it=e||null;if(e)e.inc=(e.inc||0)+(m.dmg||90)}
 function lockedN(){let n=0;for(const l of locks)if(l.done)n++;return n}
 function lockTargets(){return locks.filter(l=>l.done&&enemies.includes(l.e)).map(l=>l.e)}
 function lockOK(e){if(!enemies.includes(e)||e.mat>0)return false;tv.copy(e.m.position);tv.y+=e.r*.4;const d=tv.distanceTo(cam.position);if(d>127)return false;t2.copy(tv).sub(cam.position).divideScalar(d);cam.getWorldDirection(t3);return t2.dot(t3)>.9}
@@ -2438,7 +2441,7 @@ function useBody(){
   const A=ABIL[cfg.A],st=AB.body;if((state!=='play'&&state!=='demo')||st.cd>0)return;
   if(cfg.A==='missile'){const ts=lockTargets();if(!ts.length){if(state==='play')toast('ロックオンしていません');return}
     HS={n:0,tot:12+U.abMis};hsLoad=0;play('mlaunch',{v:.5,rate:.9});
-    for(let k=0;k<12+U.abMis;k++){const m=missiles.find(x=>!x.on);if(!m)break;m.on=true;m.lk=1;m.dmg=90;m.delay=k*.07+.001;m.src=podL[k%2];m.tgt=ts[k%ts.length];m.t=0;m.life=5;m.m.visible=false}}
+    for(let k=0;k<12+U.abMis;k++){const m=missiles.find(x=>!x.on);if(!m)break;m.on=true;m.lk=1;m.dmg=90;m.delay=k*.07+.001;m.src=podL[k%2];m.it=null;mslSet(m,ts[k%ts.length]);m.t=0;m.life=5;m.m.visible=false}}
   else if(cfg.A==='orbital'){if(!orbitalStrike())return}
   else if(cfg.A==='barrier'){P.bar=A.dur+U.abBar*4;P.bhp=A.cap*(1+U.abBar*.6);SFX.barrierUp()}
   else if(cfg.A==='cloak'){cloakSet(true);for(const e of enemies)if(e.m.position.distanceTo(P.pos)<40)e.cd=Math.max(e.cd||0,1.5)}
@@ -2625,15 +2628,16 @@ function update(dt){
     if(m.delay>0){m.delay-=dt;if(m.delay<=0){m.src.getWorldPosition(m.m.position);if(m.src.userData.fwd){m.src.getWorldDirection(t3);m.v.copy(t3).multiplyScalar(24).add(tv.set((rnd()-.5)*3,(rnd()-.5)*2,(rnd()-.5)*3));if(m.src.userData.rear){const rp=new V(),bd=t3.clone().negate();m.src.userData.rear.getWorldPosition(rp);backblast(rp,bd,true)}}else m.v.set((rnd()-.5)*7,15+rnd()*5,(rnd()-.5)*7).addScaledVector(fw,4);m.m.visible=true;play('mfire',{v:.7,rate:.95+rnd()*.15,lim:200});if(HS)HS.n++;puff(m.m.position,.6,0xb8b2a6,.8)}continue}
     m.t+=dt;m.life-=dt;
     // limited seeker: turn rate capped; if the target dies, only re-acquire something close and ahead of the nose
-    if(m.tgt&&!enemies.includes(m.tgt)&&m.lk){const L2=lockTargets();m.tgt=L2.length?L2[Math.floor(rnd()*L2.length)]:m.tgt}
-    if(m.tgt&&!enemies.includes(m.tgt)){m.tgt=null;const sp=m.v.length()||1;let best=null,bd=1e9;for(const e of enemies){tv.copy(e.m.position).sub(m.m.position);const d=tv.length();if(d>28)continue;const c=tv.dot(m.v)/(d*sp);if(c<.7)continue;if(d<bd){bd=d;best=e}}m.tgt=best}
+    if(m.tgt&&!enemies.includes(m.tgt)){const L2=m.lk?lockTargets():[];let nt=L2.length?mslPick(L2):null;
+      if(!nt){const sp=m.v.length()||1;let bs=-1e9;for(const e of enemies){if(e.mat>0)continue;tv.copy(e.m.position).sub(m.m.position);const d=tv.length();if(d>70)continue;const c=tv.dot(m.v)/(d*sp);if(c<.2)continue;const sc=Math.min(400,e.hp-(e.inc||0))-d*3+c*30;if(sc>bs){bs=sc;nt=e}}}
+      mslSet(m,nt);if(!nt)m.life=Math.min(m.life,.45)}
     {const sp=Math.min(48,m.v.length()+dt*40);if(m.tgt&&m.t>.25){tv.copy(m.tgt.m.position).sub(m.m.position).normalize();t2.copy(m.v).normalize();const ang=Math.acos(Math.max(-1,Math.min(1,tv.dot(t2)))),mx=(m.lk?(m.t<.45?2.6:7.5):(m.t<.8?3.2:2.2))*U.mT*dt;
       if(ang>1e-4){const k=Math.min(1,mx/ang);t2.lerp(tv,k).normalize()}m.v.copy(t2).multiplyScalar(sp)}else if(m.dumb){m.v.setLength(Math.min(78,m.v.length()+dt*55));if(rnd()<.6)puff(m.m.position,.45,0x8a8580,.3)}else{m.v.y-=4*dt;m.v.setLength(sp)}}
     m.p.copy(m.m.position);m.m.position.addScaledVector(m.v,dt);t2.copy(m.m.position).add(m.v);m.m.lookAt(t2);
     if(rnd()<.6)spark(m.p,1,1.5);if(rnd()<.45)puff(m.p,.32+rnd()*.15,0xb8b2a6,.45);if(m.m.userData.fl)m.m.userData.fl.scale.set(1,.7+rnd()*.7,1);
     let hit=false;for(const e of enemies){if(segHit(m.p,m.m.position,e.m.position,e.r+.4)){e.hp-=(m.dmg||90)*hitMul(e)*(m.dumb?amBoss('HE',e):1);e.flash=.1;if(m.dumb)aoe(m.m.position,m.aoe,m.dmg*.7,e);if(!m.dumb)aoe(m.m.position,U.mB?4.5:2.2,(m.dmg||90)*(U.mB?.6:.3),e);if(e.hp<=0)kill(e);hit=true;break}}
     if(m.dumb&&!hit){const ph=propSeg(m.p.x,m.p.y,m.p.z,m.m.position.x,m.m.position.y,m.m.position.z);if(ph){hitProp(ph.pr,m.dmg);hit=true}}
-    if(hit||m.life<=0||m.m.position.y<0||(m.t>.4&&inBld(m.m.position))){if(m.dumb){if(!hit)aoe(m.m.position,m.aoe,m.dmg*.7,null);explode(m.m.position.clone(),1.3);if(m.cl)cluster(m.m.position.clone(),m.dmg);m.dumb=false;m.cl=false}else explode(m.m.position.clone(),.55);m.on=false;m.lk=0;m.m.visible=false}
+    if(hit||m.life<=0||m.m.position.y<0||(m.t>.4&&inBld(m.m.position))){if(m.dumb){if(!hit)aoe(m.m.position,m.aoe,m.dmg*.7,null);explode(m.m.position.clone(),1.3);if(m.cl)cluster(m.m.position.clone(),m.dmg);m.dumb=false;m.cl=false}else explode(m.m.position.clone(),.55);mslSet(m,null);m.on=false;m.lk=0;m.m.visible=false}
   }
   // bullets
   for(const b of bullets){if(!b.on)continue;b.p.copy(b.m.position);b.m.position.addScaledVector(b.v,dt);b.life-=dt;
