@@ -1,7 +1,7 @@
 {
   "name": "HARD POINT",
   "short_name": "HARDPOINT",
-  "description": "ブラウザで遊べるメカTPS",
+  "description": "パーツを組み替えた自分だけのメカで異形の群れと戦う、ブラウザで遊べる3DメカTPS",
   "lang": "ja",
   "start_url": "./index.html",
   "scope": "./",
