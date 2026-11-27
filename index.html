@@ -431,6 +431,7 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 #ovHUse:disabled{opacity:.5;cursor:default}
 .mapc.mlk{filter:grayscale(.85) brightness(.6);cursor:default}.mapc.mlk .best{color:var(--dim)}
 .mapc .best{bottom:auto!important;top:8px;background:rgba(10,7,5,.7);padding:2px 7px}
+.mapc.soon{cursor:default;background:repeating-linear-gradient(-45deg,#221a14 0 16px,#1a1410 16px 32px)}.mapc .soonI{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,90,31,.18),rgba(0,0,0,0) 60%)}.mapc .soonI b{font:700 72px 'Chakra Petch';color:rgba(239,232,218,.25)}.mapc.soon .mn{color:var(--dim);letter-spacing:.18em}.mapc.soon .best{color:#ffd24a}
 </style>
 </head>
 <body>
@@ -2215,17 +2216,18 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='p
 const STG=[{n:'外縁区画',d:'崩れたビル群の外周。小型の群れが中心'},{n:'旧市街',d:'猟犬型と迫撃型が出現'},{n:'工業区',d:'狙撃型と装甲型が加わる'},{n:'中央塔',d:'全種が入り乱れる激戦区'},{n:'深部',d:'異形の巣。終わりなき防衛線'},{n:'最深部',d:'ここから先は無限に続く'}];
 let best=1;try{best=Math.max(1,+localStorage.getItem('rg_best')||1)}catch(e){}
 let ssFrom='home';
-const MAPS=[{id:'deadcity',n:'DEAD CITY'},{id:'desert',n:'SCORCHED DUNES',need:'deadcity'}];const MAPIMG={};
+const MAPS=[{id:'deadcity',n:'DEAD CITY'},{id:'desert',n:'SCORCHED DUNES',need:'deadcity',rel:false}];// rel:false = not released yet: production shows a COMING SOON card, the test site plays it
+const mapRel=id=>{const M=MAPS.find(m=>m.id===id);return !!M&&(M.rel!==false||!!window.HP_TEST)};const MAPIMG={};
 const mapName=id=>(MAPS.find(m=>m.id===id)||MAPS[0]).n;
 const bestKey=id=>id==='deadcity'?'rg_best':'rg_best_'+id,bestOf=id=>{try{return Math.max(1,+localStorage.getItem(bestKey(id))||1)}catch(e){return 1}};
-function mapShot(){if(MAPS.every(M=>MAPIMG[M.id]))return;const keepM=MAP,keepS=stage,p=cam.position.clone(),q=cam.quaternion.clone();
-  try{for(const M of MAPS){if(MAPIMG[M.id])continue;MAP=M.id;stage=1;buildLevel('ruins');cam.position.set(62,40,78);cam.lookAt(0,6,0);R.render(scene,cam);MAPIMG[M.id]=R.domElement.toDataURL('image/jpeg',.82)}}catch(e){}
+function mapShot(){if(MAPS.every(M=>MAPIMG[M.id]||!mapRel(M.id)))return;const keepM=MAP,keepS=stage,p=cam.position.clone(),q=cam.quaternion.clone();
+  try{for(const M of MAPS){if(MAPIMG[M.id]||!mapRel(M.id))continue;MAP=M.id;stage=1;buildLevel('ruins');cam.position.set(62,40,78);cam.lookAt(0,6,0);R.render(scene,cam);MAPIMG[M.id]=R.domElement.toDataURL('image/jpeg',.82)}}catch(e){}
   MAP=keepM;stage=keepS;buildLevel('ruins');cam.position.copy(p);cam.quaternion.copy(q)}
-function openStages(from){ssFrom=from;mapShot();const cl=clrList();const L=MAPS.map(M=>{const lk=M.need&&!cl.includes(M.need)&&!ADMIN&&!window.HP_TEST;return `<button class="sc mapc${lk?' mlk':''}" data-n="1" data-map="${M.id}"${lk?' disabled':''}><img src="${MAPIMG[M.id]||''}" alt=""><span class="mn">${M.n}</span><span class="best">${lk?mapName(M.need)+' を制圧で解放':cl.includes(M.id)?'CLEAR':'最高到達 STAGE '+Math.min(bestOf(M.id),MAXST)}</span></button>`});
+function openStages(from){ssFrom=from;mapShot();const cl=clrList();const L=MAPS.map(M=>{if(!mapRel(M.id))return `<button class="sc mapc soon" disabled><div class="soonI"><b>?</b></div><span class="mn">COMING SOON</span><span class="best">次のマップ 準備中</span></button>`;const lk=M.need&&!cl.includes(M.need)&&!ADMIN&&!window.HP_TEST;return `<button class="sc mapc${lk?' mlk':''}" data-n="1" data-map="${M.id}"${lk?' disabled':''}><img src="${MAPIMG[M.id]||''}" alt=""><span class="mn">${M.n}</span><span class="best">${lk?mapName(M.need)+' を制圧で解放':cl.includes(M.id)?'CLEAR':'最高到達 STAGE '+Math.min(bestOf(M.id),MAXST)}</span></button>`});
   $('ssList').innerHTML=L.join('');$('stsel').classList.remove('hide')}
 $('ssList').addEventListener('click',e=>{const b=e.target.closest('.sc');if(!b||b.disabled)return;launch(+b.dataset.n,b.dataset.map)});
 $('ssBack').addEventListener('click',()=>{$('stsel').classList.add('hide')});
-function launch(n,map){endDemo();if(map&&MAPS.some(M=>M.id===map))MAP=map;hideAll();sortie(n)}
+function launch(n,map){if(map&&!mapRel(map))return;endDemo();if(map)MAP=map;hideAll();sortie(n)}
 // ===== home / attract demo =====
 let demo=null;
 const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lanc',G:'horse',A:'bulwark',W:['gat','flame']},{B:'chim',G:'spider',A:'deploy',W:['mini','tesla','flame','melt']},{B:'spec',G:'rev',A:'cloak',W:['shot','flame']},{B:'std',G:'horse',A:'missile',W:['twin','mini']},{B:'lite',G:'drone',A:'turret',W:['rkt','shot']},{B:'fort',G:'hover',A:'orbital',W:['gat','melt']},{B:'std',G:'bip',A:'missile',W:['gat','mini']},{B:'fort',G:'tank',A:'orbital',W:['gat','cannon']},{B:'quad',G:'spider',A:'turret',W:['mini','tesla','msl','mini']},{B:'lite',G:'rev',A:'missile',W:['mini','tesla']},{B:'fort',G:'bip',A:'barrier',W:['gat','gat']}];
@@ -2397,7 +2399,7 @@ const DEXE=[{k:'drone',n:'Surtling',j:'爆発虫',d:'群れで押し寄せ、取
  {k:'boss_quad',n:'FENRIR',j:'四足獣',d:'外縁区画の主。巨体で跳躍し、着地で周囲を吹き飛ばす。形態が進むと連続跳躍。',a:'弾幕・跳躍'},
  {k:'boss_spider',n:'NORN QUEEN',j:'女王蜘蛛',d:'背の巨砲から極太ビームを放つ。終盤は爆発虫を産み続ける。',a:'極太ビーム'},
  {k:'boss_arma',n:'JORMUNGANDR',j:'装甲転獣',d:'両脇の砲塔で砲撃し、丸まって転がり突進する。尾を噛む大蛇の名を持つ。',a:'砲撃・ローリング・跳躍'},
-  {k:'boss_turtle',n:'SURTR',j:'火山甲獣',d:'灼熱砂漠の主。背負った火山を噴火させ、溶岩弾を雨のように降らせる。近づくと甲羅を叩きつけて衝撃波を放つ。',a:'噴火爆撃・衝撃波・火炎弾'}];
+  {k:'boss_turtle',map:'desert',n:'SURTR',j:'火山甲獣',d:'灼熱砂漠の主。背負った火山を噴火させ、溶岩弾を雨のように降らせる。近づくと甲羅を叩きつけて衝撃波を放つ。',a:'噴火爆撃・衝撃波・火炎弾'}];
 let DEX={};try{DEX=JSON.parse(localStorage.getItem('rg_dex')||'{}')}catch(e){}
 function dexAdd(e){const k=e.type==='boss'?'boss_'+(e.kind||'quad'):e.type;DEX[k]=(DEX[k]||0)+1;try{localStorage.setItem('rg_dex',JSON.stringify(DEX))}catch(_){}}
 const DXI={};
@@ -2405,10 +2407,10 @@ function dexThumb(k){if(DXI[k])return DXI[k];if(!thR)thInit();const keep=stage,b
   if(boss)BK_OVR=kind;const mt=new THREE.MeshLambertMaterial({color:boss?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28}[kind]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c}[kind]||0x5a2448)});
   const q=makeQuad(boss?'boss':kind,mt);stage=keep;BK_OVR=null;q.root.position.set(0,q.cy,0);thS.add(q.root);q.root.updateMatrixWorld(true);
   const url=thShot(q.root,new V(.9,.55,1.1),boss?.95:1.05);thS.remove(q.root);DXI[k]=url;return url}
-function openDex(){let seen=0;$('dexList').innerHTML=DEXE.map(x=>{const c=DEX[x.k]||0;if(c)seen++;const bs=x.k.startsWith('boss_');
+function openDex(){let seen=0;const DL=DEXE.filter(x=>!x.map||mapRel(x.map));$('dexList').innerHTML=DL.map(x=>{const c=DEX[x.k]||0;if(c)seen++;const bs=x.k.startsWith('boss_');
     return `<div class="dx${bs?' bs':''}${c?'':' lk'}"><img src="${dexThumb(x.k)}" alt=""><div><b>${c?x.n:'???'}</b><i>${bs?'BOSS ／ ':''}${c?x.j:'未確認'}</i><br>${c?x.d:'まだ撃破記録がない。'}<em>${c?'攻撃：'+x.a+'　撃破 '+c:''}</em></div></div>`}).join('');
-  $('dexCnt').textContent=`確認 ${seen} / ${DEXE.length}`;$('dexW').classList.remove('hide');
-  setTimeout(()=>{if($('dexW').classList.contains('hide'))return;for(const k in DXI)delete DXI[k];const imgs=$('dexList').querySelectorAll('img');DEXE.forEach((x,i)=>{if(imgs[i])imgs[i].src=dexThumb(x.k)})},700)}
+  $('dexCnt').textContent=`確認 ${seen} / ${DL.length}`;$('dexW').classList.remove('hide');
+  setTimeout(()=>{if($('dexW').classList.contains('hide'))return;for(const k in DXI)delete DXI[k];const imgs=$('dexList').querySelectorAll('img');DL.forEach((x,i)=>{if(imgs[i])imgs[i].src=dexThumb(x.k)})},700)}
 $('hDex').addEventListener('click',openDex);$('dexBack').addEventListener('click',()=>$('dexW').classList.add('hide'));
 $('hSortie').addEventListener('click',()=>openStages('home'));$('hGarage').addEventListener('click',openGarage);$('twGo').addEventListener('click',startTutorial);$('twSkip').addEventListener('click',()=>{tutDone();$('tutW').classList.add('hide')});$('hSet').addEventListener('click',openSet);
 $('gBack').addEventListener('click',()=>{closeSheet();goHome()});$('overHome').addEventListener('click',goHome);
