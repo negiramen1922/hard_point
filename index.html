@@ -1671,7 +1671,7 @@ function makeQuad(type,mt){
   if(type==='drone'){const q=makeSculpt('drone',2.3,'drone',0);if(q)return q}
   if(type==='hound')return makeHound(mt);
   if(type==='boss'){const bk=bossKind();if(bk==='spider')return makeSpiderSculpt()||makeSpider(mt);if(bk==='arma')return makeArma(mt);if(bk==='turtle')return makeTurtle(mt);if(bk==='hrungnir')return makeScorp(mt,2.6,true);if(bk==='nidhogg')return makeWorm(mt);if(bk==='crab')return makeCrab(mt);if(bk==='whale')return makeWhale(mt);if(bk==='naglfar')return makeNaglfar(mt)}
-  if(type==='vargr')return makeWolf(mt);if(type==='thurs')return makeThurs(mt);if(type==='tentacle')return makeTentacle(mt);if(type==='manta')return makeManta(mt);if(type==='skoll')return makeScorp(mt,.9,false);if(type==='logi')return makeLizard(mt,1);if(type==='dvalin')return makeMole(mt,1);
+  if(type==='rosmar')return makeWalrus(mt);if(type==='tentacle')return makeTentacle(mt);if(type==='manta')return makeManta(mt);if(type==='skoll')return makeScorp(mt,.9,false);if(type==='logi')return makeLizard(mt,1);if(type==='dvalin')return makeMole(mt,1);
   if(type==='flyer')return makeFlyer(mt);
   const s={drone:.55,shooter:1,boss:2.6,mortar:1.3,sniper:.9,guard:1.1}[type],lh=1.6*s*(type==='sniper'?1.35:1),cy=lh+.3*s;
   const root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy;root.add(g);
@@ -1697,13 +1697,13 @@ function makeQuad(type,mt){
   return {root,legs,cy,s,muz,laser,ex};
 }
 function spawn(type,pos){
-  const mt=new THREE.MeshLambertMaterial({color:type==='boss'?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28,hrungnir:0x6e4628,nidhogg:0x7a5634,crab:0x8e3426,whale:0xf2f4f6,naglfar:0x5a3a6e}[bossKind()]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c,skoll:0x6a4a2a,logi:0x5e2a1a,dvalin:0x5a4636,manta:0x2e4a60,tentacle:0x6a3a7e,vargr:0xe6ecf0,thurs:0x86b0c8}[type]||0x5a2448)});
+  const mt=new THREE.MeshLambertMaterial({color:type==='boss'?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28,hrungnir:0x6e4628,nidhogg:0x7a5634,crab:0x8e3426,whale:0xf2f4f6,naglfar:0x5a3a6e}[bossKind()]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c,skoll:0x6a4a2a,logi:0x5e2a1a,dvalin:0x5a4636,manta:0x2e4a60,tentacle:0x6a3a7e,rosmar:0x6e4a3a}[type]||0x5a2448)});
   const q=makeQuad(type,mt),m=q.root;
   let x=0,z=0;for(let t=0;t<15;t++){const a=rnd()*TAU,rr=55+rnd()*30;x=P.pos.x+Math.cos(a)*rr;z=P.pos.z+Math.sin(a)*rr;const d=Math.hypot(x,z);if(d>ARENA-4){x*=(ARENA-4)/d;z*=(ARENA-4)/d}if(!inBld(tv.set(x,1,z),q.s*2.5))break}
   if(pos){x=pos.x;z=pos.z}
   m.position.set(x,q.cy,z);scene.add(m);
-  const sc=1+wave*.09,hp={drone:50,shooter:160,hound:85,flyer:70,mortar:240,sniper:110,guard:280,skoll:110,logi:150,dvalin:200,manta:900,tentacle:1500,vargr:120,thurs:650,boss:(13000+stage*5000)*({spider:1.25,arma:1.5,turtle:1.7,hrungnir:.95,nidhogg:1.1,crab:1,whale:1.15,naglfar:1.6}[q.kind]||.85)}[type]*(type==='boss'?1:sc);
-  enemies.push({type,m,mt:q.mt||mt,hp,mdl:q.mdl,mat3:q.mat3,max:hp,y:q.cy,legs:q.legs,wp:rnd()*6,r:{drone:1.2,shooter:1.6,hound:2.7,flyer:1.5,mortar:2,sniper:1.3,guard:1.9,skoll:1.7,logi:1.7,dvalin:2,manta:3.4,tentacle:3.4,vargr:1.6,thurs:2.4,boss:q.kind==='naglfar'?16:q.kind==='whale'?10:q.kind==='crab'?5.6:q.kind==='nidhogg'?7:q.kind==='hrungnir'?5.4:q.kind==='spider'?5:q.kind==='arma'?5.9:q.kind==='turtle'?6.6:3.8}[type],spd:{drone:10+Math.min(6,wave*.35),shooter:6,hound:15+Math.min(5,wave*.3),flyer:9,mortar:3.5,sniper:4.5,guard:5.5,skoll:13+Math.min(5,wave*.3),logi:6,dvalin:15,manta:9,tentacle:0,vargr:15+Math.min(5,wave*.3),thurs:4,boss:3.2}[type],kind:q.kind,ru:q.ru,tur:q.tur,ball:q.ball,bodyG:q.body,muz:q.muz,glow:q.glow,laser:q.laser,rot:q.rot,tail:q.tail,ex:q.ex,cd:1.5+rnd()*2,flash:0,ph:rnd()*6,k:0,mat:.7});m.scale.setScalar(.05);
+  const sc=1+wave*.09,hp={drone:50,shooter:160,hound:85,flyer:70,mortar:240,sniper:110,guard:280,skoll:110,logi:150,dvalin:200,manta:900,tentacle:1500,rosmar:520,boss:(13000+stage*5000)*({spider:1.25,arma:1.5,turtle:1.7,hrungnir:.95,nidhogg:1.1,crab:1,whale:1.15,naglfar:1.6}[q.kind]||.85)}[type]*(type==='boss'?1:sc);
+  enemies.push({type,m,mt:q.mt||mt,hp,mdl:q.mdl,mat3:q.mat3,max:hp,y:q.cy,legs:q.legs,wp:rnd()*6,r:{drone:1.2,shooter:1.6,hound:2.7,flyer:1.5,mortar:2,sniper:1.3,guard:1.9,skoll:1.7,logi:1.7,dvalin:2,manta:3.4,tentacle:3.4,rosmar:2.2,boss:q.kind==='naglfar'?16:q.kind==='whale'?10:q.kind==='crab'?5.6:q.kind==='nidhogg'?7:q.kind==='hrungnir'?5.4:q.kind==='spider'?5:q.kind==='arma'?5.9:q.kind==='turtle'?6.6:3.8}[type],spd:{drone:10+Math.min(6,wave*.35),shooter:6,hound:15+Math.min(5,wave*.3),flyer:9,mortar:3.5,sniper:4.5,guard:5.5,skoll:13+Math.min(5,wave*.3),logi:6,dvalin:15,manta:9,tentacle:0,rosmar:4.5,boss:3.2}[type],kind:q.kind,ru:q.ru,tur:q.tur,ball:q.ball,bodyG:q.body,muz:q.muz,glow:q.glow,laser:q.laser,rot:q.rot,tail:q.tail,ex:q.ex,cd:1.5+rnd()*2,flash:0,ph:rnd()*6,k:0,mat:.7});m.scale.setScalar(.05);
   if(type==='guard')enemies[enemies.length-1].shp=260*sc;
 }
 const portals=[];const ptCore=new THREE.MeshBasicMaterial({color:0x05000c});
@@ -1775,7 +1775,7 @@ function bossJump(e,p,d,dt){
 }
 
 // ===== STAGE 3 boss: armoured armadillo — side turrets, rolling charge, explosive leap =====
-const ENAME={vargr:'Vargr',thurs:'Hrímþurs',tentacle:'NAGLFARの触手',manta:'Rán',skoll:'Skoll',logi:'Logi',dvalin:'Dvalin',drone:'Surtling',shooter:'Draugr',hound:'Garm',flyer:'Huginn',mortar:'Muspel',sniper:'Ullr',guard:'Svalinn'},BNAME={quad:'FENRIR',spider:'NORN QUEEN',arma:'JORMUNGANDR',turtle:'SURTR',hrungnir:'HRUNGNIR',nidhogg:'NIDHOGG',crab:'AEGIR',whale:'BALDR',naglfar:'NAGLFAR'};
+const ENAME={rosmar:'Rosmar',tentacle:'NAGLFARの触手',manta:'Rán',skoll:'Skoll',logi:'Logi',dvalin:'Dvalin',drone:'Surtling',shooter:'Draugr',hound:'Garm',flyer:'Huginn',mortar:'Muspel',sniper:'Ullr',guard:'Svalinn'},BNAME={quad:'FENRIR',spider:'NORN QUEEN',arma:'JORMUNGANDR',turtle:'SURTR',hrungnir:'HRUNGNIR',nidhogg:'NIDHOGG',crab:'AEGIR',whale:'BALDR',naglfar:'NAGLFAR'};
 const eName=e=>e.type==='boss'?BNAME[e.kind||'quad']||'BOSS':ENAME[e.type]||'';
 const BOSSES={harbor:[0,'crab','whale','naglfar'],deadcity:[0,'quad','spider','arma'],desert:[0,'hrungnir','nidhogg','turtle']};let BK_OVR=null;const bossKind=()=>BK_OVR||(BOSSES[MAP]||BOSSES.deadcity)[cl(stage,1,3)];
 function makeArma(mt){const A=1.35,cy=3.3,root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy*A;g.scale.setScalar(A);root.add(g);
@@ -1940,10 +1940,10 @@ function breakShield(e){if(!e.ex||!e.ex.shd||!e.ex.shd.visible)return;e.shp=0;sh
 // lingering venom pools (HRUNGNIR); ticked with the shells
 const HZ=[];
 function addPool(x,z,R,life,dps,by){const m=new THREE.Mesh(new THREE.CircleGeometry(R,24),new THREE.MeshBasicMaterial({color:0x3fbf1a,transparent:true,opacity:.62,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,.06,z);onTop(m);scene.add(m);HZ.push({m,x,z,R,t:0,life,dps,by})}
-function updateHaz(dt){shardTick(dt);slashTick(dt);iceTick(dt);for(let i=HZ.length-1;i>=0;i--){const h=HZ[i];h.t+=dt;const f=Math.min(1,h.t/.25)*Math.min(1,(h.life-h.t)/.6);h.m.material.opacity=.62*f*(1+Math.sin(now*6+i)*.12);if(rnd()<dt*6)puff(t3.set(h.x+(rnd()-.5)*h.R*1.4,.3,h.z+(rnd()-.5)*h.R*1.4),.9,0x3a6a20,.8);
+function updateHaz(dt){shardTick(dt);slashTick(dt);for(let i=HZ.length-1;i>=0;i--){const h=HZ[i];h.t+=dt;const f=Math.min(1,h.t/.25)*Math.min(1,(h.life-h.t)/.6);h.m.material.opacity=.62*f*(1+Math.sin(now*6+i)*.12);if(rnd()<dt*6)puff(t3.set(h.x+(rnd()-.5)*h.R*1.4,.3,h.z+(rnd()-.5)*h.R*1.4),.9,0x3a6a20,.8);
   if(h.t>.3&&Math.hypot(P.pos.x-h.x,P.pos.z-h.z)<h.R&&P.y<2){t2.set(0,0,0);damage(h.dps*dt,t2,P.pos.clone().setY(1),h.by,1)}
   if(h.t>=h.life){scene.remove(h.m);h.m.geometry.dispose();h.m.material.dispose();HZ.splice(i,1)}}}
-function clearHaz(){for(const q of ICES)scene.remove(q.m);ICES.length=0;for(const q of SLASH)scene.remove(q.m);SLASH.length=0;for(const q of SHARDS)scene.remove(q.m);SHARDS.length=0;for(const h of HZ){scene.remove(h.m);h.m.geometry.dispose();h.m.material.dispose()}HZ.length=0}
+function clearHaz(){for(const q of SLASH)scene.remove(q.m);SLASH.length=0;for(const q of SHARDS)scene.remove(q.m);SHARDS.length=0;for(const h of HZ){scene.remove(h.m);h.m.geometry.dispose();h.m.material.dispose()}HZ.length=0}
 // ===== FROST HARBOR: AEGIR (giant crab boss) and RÁN (big manta) =====
 const iceM=new THREE.MeshLambertMaterial({color:0xd4eaf4});
 function crabLeg(g,sd,z,hy,mt,ph,legs){const hip=new THREE.Group();hip.position.set(sd*1.85,hy,z);g.add(hip);
@@ -2001,16 +2001,14 @@ function bossCrab(e,p,d,dt){if(e.kind!=='crab')return false;const ph=e.phs||0,C=
     for(let q=0;q<n;q++){const a=a0+(q-(n-1)/2)*.12;eShoot(e,t2.set(Math.sin(a),tv.y,Math.cos(a)).normalize(),16,70,'cyan',2.2,t3.clone())}curVol=0;SFX.bossShot(p)}
   if(ph>=1){e.icd=(e.icd==null?3:e.icd)-dt;if(e.icd<=0){e.icd=ph>=2?3.5:5;e.muz.getWorldPosition(t3);for(let k=0;k<3;k++){const a=rnd()*TAU,rr=k?4+rnd()*12:0;lobShell(t3.clone(),new V(P.pos.x+P.vel.x*1.2+Math.cos(a)*rr,0,P.pos.z+P.vel.z*1.2+Math.sin(a)*rr),'AEGIRの氷弾',{ice:1,T:1.5,R:4.5,dmg:150,h:14,sz:2.6})}}}
   return true}
-function makeWolf(mt){const hy=1.15,cy=hy+.45,root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy;root.add(g);const body=new THREE.Group();body.position.y=cy;g.add(body);
-  ell(body,mt,.75,.62,1.5,0,0,0);ell(body,iceM,.6,.3,1.0,0,.45,-.1);const hd=new THREE.Group();hd.position.set(0,.45,1.45);body.add(hd);ell(hd,mt,.45,.42,.55,0,0,0);ell(hd,mt,.24,.22,.5,0,-.08,.55);
-  for(const sd of[-1,1]){cone(hd,mt,.12,.35,sd*.22,.42,-.1);ell(hd,glowM,.07,.06,.05,sd*.2,.12,.42)}const tail=new THREE.Group();tail.position.set(0,.2,-1.4);body.add(tail);cone(tail,mt,.18,1.1,0,0,-.55,-Math.PI/2-.5);
-  const legs=[];[.85,-.8].forEach((zz,i)=>{for(const x of[-1,1])sLeg(g,x,zz,hy,1,mt,(i+(x>0?1:0))%2?Math.PI:0,legs,.35,.05,.6,0)});return{root,legs,cy,s:1,tail}}
-function makeThurs(mt){const hy=1.6,cy=hy+1.1,root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy;root.add(g);const body=new THREE.Group();body.position.y=cy;g.add(body);
-  ell(body,mt,1.25,1.3,.95,0,0,0);ell(body,iceM,1.0,.6,.7,0,.9,-.1);const hd=new THREE.Group();hd.position.set(0,1.35,.35);body.add(hd);ell(hd,mt,.5,.45,.5,0,0,0);for(const sd of[-1,1])ell(hd,glowM,.1,.07,.05,sd*.2,.05,.45);
-  for(const sd of[-1,1]){for(let k=0;k<3;k++)cone(body,iceM,.18,.7+k*.2,sd*(.7+k*.18),1.05+k*.1,-.2,0,0,-sd*.35);const ar=new THREE.Group();ar.position.set(sd*1.3,.5,0);body.add(ar);ell(ar,mt,.4,.9,.4,0,-.6,.1);ell(ar,iceM,.6,.6,.6,0,-1.5,.2)}
-  const legs=[];for(const x of[-1,1])sLeg(g,x,0,hy,1.4,mt,x>0?Math.PI:0,legs,.35,-.1,.55,0);return{root,legs,cy,s:1.6}}
-const ICES=[];function iceSpike(x,z,h){const m=new THREE.Mesh(new THREE.ConeGeometry(.6,h,6),iceM);m.position.set(x,-h/2,z);scene.add(m);ICES.push({m,t:0,h})}
-function iceTick(dt){for(let i=ICES.length-1;i>=0;i--){const q=ICES[i];q.t+=dt;const u=q.t<.15?q.t/.15:q.t>1.4?Math.max(0,1-(q.t-1.4)/.4):1;q.m.position.y=-q.h/2+q.h*u;if(q.t>1.8){scene.remove(q.m);q.m.geometry.dispose();ICES.splice(i,1)}}}
+function makeWalrus(mt){const root=new THREE.Group(),g=new THREE.Group();root.add(g);const body=new THREE.Group();body.position.y=0;g.add(body);const skin=new THREE.MeshLambertMaterial({color:0x8a6050});
+  ell(body,mt,1.35,1.05,2.1,0,0,0);ell(body,skin,1.15,.7,1.6,0,-.45,.2);ell(body,mt,.95,.85,.9,0,.25,1.75);
+  const hd=new THREE.Group();hd.position.set(0,.35,2.35);body.add(hd);ell(hd,mt,.75,.62,.6,0,0,0);ell(hd,skin,.55,.38,.4,0,-.18,.38);
+  for(const sd of[-1,1]){ell(hd,glowM,.08,.07,.05,sd*.34,.25,.42);const t=new THREE.Mesh(new THREE.ConeGeometry(.1,1.3,6),new THREE.MeshLambertMaterial({color:0xf2ead8}));t.position.set(sd*.2,-.85,.48);t.rotation.set(Math.PI+.15,0,0);hd.add(t);
+    for(let k=0;k<3;k++){const w=box(.4,.02,.02,legMat,sd*.42,-.12-k*.05,.48,hd);w.rotation.y=sd*.3}}
+  const fl=[];for(const sd of[-1,1]){const f=new THREE.Group();f.position.set(sd*1.15,-.55,1.1);body.add(f);const m=ell(f,mt,.75,.12,.4,sd*.45,0,0);m.rotation.y=-sd*.4;fl.push(f)}
+  const tail=new THREE.Group();tail.position.set(0,-.4,-2.05);body.add(tail);for(const sd of[-1,1]){const m=ell(tail,mt,.45,.1,.6,sd*.32,0,-.35);m.rotation.y=sd*.5}
+  const muz=new THREE.Object3D();muz.position.set(0,-.2,3.0);body.add(muz);return{root,legs:[],cy:1.05,s:1.6,tail,muz,ex:{fl,hd}}}
 function makeManta(mt){const cy=9,root=new THREE.Group(),body=new THREE.Group();root.add(body);
   ell(body,mt,1.7,.38,2.2,0,0,0);ell(body,new THREE.MeshLambertMaterial({color:0xcfe0ea}),1.4,.2,1.8,0,-.2,0);for(const x of[-.5,0,.5])ell(body,glowM,.18,.08,.18,x,-.38,.6-Math.abs(x));
   const wing=sd=>{const w=new THREE.Group();w.position.set(sd*1.3,0,.1);body.add(w);const m=ell(w,mt,2.6,.16,1.35,sd*2.2,0,-.3);m.rotation.y=-sd*.25;ell(w,legMat,1.6,.1,.5,sd*2.6,.1,.5);return w};
@@ -2241,7 +2239,7 @@ function kill(e){const i=enemies.indexOf(e);if(i<0)return;if(e.type!=='boss'&&e.
   if(state==='play'&&!TUT&&!TEST){dexAdd(e);dropScrap(e)}
   {const dd=(e.dacc||0)+((e.php!=null?e.php:e.max)-e.hp);if(dd>.5&&state==='play'&&(e===lockT||dd>=120||e.type==='boss'))popNum(e.m.position,dd,'big',e.r);e.dacc=0}
   if(e.type==='boss'){dropWarn(e.warn);e.warn=null;dropFx(e.wl);e.wl=null;dropFx(e.bm);dropFx(e.bc);if(e.glow)e.glow.visible=false;e.bs=null;megaLoop(false);e.js=null;e.m.scale.set(1,1,1);enemies.splice(i,1);if(lockT===e)lockT=null;score+=5000;dying.push({e,t:0,next:0});toSpawn=[];for(const q of portals)scene.remove(q.g);portals.length=0;for(const b of eb){b.on=false;b.m.visible=false}const rest=enemies.slice();rest.forEach(o=>o.wipe=1);rest.forEach((o,k)=>setTimeout(()=>{if(enemies.includes(o))kill(o)},300+k*90));return}
-  explode(e.m.position,{vargr:1.3,thurs:2.3,tentacle:2.4,manta:2.8,skoll:1.4,logi:1.5,dvalin:1.7,shooter:1.7,hound:1.3,flyer:1.5,mortar:2.1,sniper:1.5,guard:2}[e.type]||1.15);if(U.vamp)P.hp=Math.min(P.max,P.hp+P.max*.015*U.vamp);if(U.chain){const cp=e.m.position.clone();setTimeout(()=>{if(state==='play')aoe(cp,6+U.chain,110*U.chain)},90)}score+={vargr:250,thurs:600,tentacle:600,manta:800,skoll:250,logi:350,dvalin:400,drone:100,shooter:300,hound:200,flyer:250,mortar:400,sniper:350,guard:450,boss:5000}[e.type];if(e.laser){dropFx(e.laser);e.laser=null}for(let k=0;k<5;k++)puff(_pv.set(e.m.position.x+(rnd()-.5)*2,e.m.position.y,e.m.position.z+(rnd()-.5)*2),.8+rnd()*.6,0x2a5a40,.6);if(now-(P.scr||0)>.18){P.scr=now;play('screech',sp(e.m.position,e.type==='drone'?.35:.6,.15))}scene.remove(e.m);e.mt.dispose();enemies.splice(i,1);if(lockT===e)lockT=null;
+  explode(e.m.position,{rosmar:2,tentacle:2.4,manta:2.8,skoll:1.4,logi:1.5,dvalin:1.7,shooter:1.7,hound:1.3,flyer:1.5,mortar:2.1,sniper:1.5,guard:2}[e.type]||1.15);if(U.vamp)P.hp=Math.min(P.max,P.hp+P.max*.015*U.vamp);if(U.chain){const cp=e.m.position.clone();setTimeout(()=>{if(state==='play')aoe(cp,6+U.chain,110*U.chain)},90)}score+={rosmar:500,tentacle:600,manta:800,skoll:250,logi:350,dvalin:400,drone:100,shooter:300,hound:200,flyer:250,mortar:400,sniper:350,guard:450,boss:5000}[e.type];if(e.laser){dropFx(e.laser);e.laser=null}for(let k=0;k<5;k++)puff(_pv.set(e.m.position.x+(rnd()-.5)*2,e.m.position.y,e.m.position.z+(rnd()-.5)*2),.8+rnd()*.6,0x2a5a40,.6);if(now-(P.scr||0)>.18){P.scr=now;play('screech',sp(e.m.position,e.type==='drone'?.35:.6,.15))}scene.remove(e.m);e.mt.dispose();enemies.splice(i,1);if(lockT===e)lockT=null;
 }
 let eVol=0,curVol=0;const volHit=new Map();
 function eShoot(e,dir,spd,dmg,col,size,from3){const b=eb[ei++%eb.length];b.vol=curVol||++eVol;b.by=e?eName(e)+'の'+({shooter:'酸弾',flyer:'光弾',sniper:'狙撃',guard:'三連射',mortar:'砲撃',boss:'砲撃'}[e.type]||'攻撃'):'';if(from3){b.m.position.copy(from3);b.v.copy(dir).normalize().multiplyScalar(spd)}else{b.m.position.set(e.m.position.x,2.6,e.m.position.z);b.v.copy(dir).setY(0).normalize().multiplyScalar(spd)}if(P.clk)b.v.applyAxisAngle(up,(rnd()<.5?-1:1)*(.25+rnd()*.5));b.m.material=ebMats[col||'red'];b.m.scale.setScalar(size||1.5);b.life=7;b.dmg=dmg;b.on=true;b.m.visible=true}
@@ -2268,7 +2266,7 @@ function nextWave(){
   for(let i=0;i<28+wave*9;i++)toSpawn.push('drone');
   const mix=(t,n)=>{for(let i=0;i<n;i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,t)};
   if(wave>=2)mix('flyer',2+Math.floor(wave*.8));if(stage>=2)mix('mortar',1+Math.floor(stage*.7));if(stage>=3){mix('sniper',1+Math.floor(stage*.6));mix('guard',2+Math.floor(stage*.8))}
-  if(MAP==='harbor'){mix('manta',1+Math.floor(wave*.35));mix('vargr',3+Math.floor(wave*.8));if(stage>=2)mix('thurs',1+Math.floor(wave*.3))}
+  if(MAP==='harbor'){mix('manta',1+Math.floor(wave*.35));mix('rosmar',2+Math.floor(wave*.5))}
   if(MAP==='desert'){mix('skoll',3+Math.floor(wave*.9));mix('logi',1+Math.floor(wave*.5));if(stage>=2)mix('dvalin',2+Math.floor(wave*.4))}
   for(let i=0;i<5+Math.floor(wave*2);i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,'shooter');
   if(stage>=2&&MAP!=='desert')for(let i=0;i<4+Math.floor(wave*1.3);i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,'hound');
@@ -2796,8 +2794,7 @@ const DEXE=[{k:'drone',n:'Surtling',j:'爆発虫',d:'群れで押し寄せ、取
   {k:'logi',map:'desert',n:'Logi',j:'火蜥蜴',d:'喉に溶岩を溜めた蜥蜴型。距離を取って溶岩の塊を放物線で吐きかけてくる。',a:'溶岩弾'},
   {k:'dvalin',map:'desert',n:'Dvalin',j:'潜地獣',d:'砂の中を潜って近づき、足元から飛び出して襲いかかる。潜っている間は砂の盛り上がりしか見えず、攻撃も当たらない。',a:'奇襲・爪'},
   {k:'manta',map:'harbor',n:'Rán',j:'氷海鱝',d:'港の上空を旋回する巨大なエイ。腹から氷弾を撃ち、ときどき急降下して通り道に氷爆弾を落とす。',a:'氷弾・急降下爆撃'},
-  {k:'vargr',map:'harbor',n:'Vargr',j:'白狼',d:'雪に紛れて群れで迫る白い狼。素早く回り込み、距離を詰めると飛びかかってくる。',a:'飛びかかり・噛みつき'},
-  {k:'thurs',map:'harbor',n:'Hrímþurs',j:'霜の巨人',d:'氷をまとった鈍重な巨人。地面を叩くと、赤い線の上に氷柱が次々と突き出す。とても硬い。',a:'氷柱'},
+  {k:'rosmar',map:'harbor',n:'Rosmar',j:'氷原海象',d:'港の氷の上をのそのそ歩く大きなセイウチ。牙を構えると氷の上を滑って一直線に突進してくる。正面の皮と牙はとても硬いが、横や背後は柔らかい。',a:'滑走突進・牙'},
   {k:'boss_quad',n:'FENRIR',j:'四足獣',d:'外縁区画の主。巨体で跳躍し、着地で周囲を吹き飛ばす。形態が進むと連続跳躍。',a:'弾幕・跳躍'},
  {k:'boss_spider',n:'NORN QUEEN',j:'女王蜘蛛',d:'背の巨砲から極太ビームを放つ。終盤は爆発虫を産み続ける。',a:'極太ビーム'},
  {k:'boss_arma',n:'JORMUNGANDR',j:'装甲転獣',d:'両脇の砲塔で砲撃し、丸まって転がり突進する。尾を噛む大蛇の名を持つ。',a:'砲撃・ローリング・跳躍'},
@@ -2811,7 +2808,7 @@ let DEX={};try{DEX=JSON.parse(localStorage.getItem('rg_dex')||'{}')}catch(e){}
 function dexAdd(e){const k=e.type==='boss'?'boss_'+(e.kind||'quad'):e.type;DEX[k]=(DEX[k]||0)+1;try{localStorage.setItem('rg_dex',JSON.stringify(DEX))}catch(_){}}
 const DXI={};
 function dexThumb(k){if(DXI[k])return DXI[k];if(!thR)thInit();const keep=stage,boss=k.startsWith('boss_'),kind=boss?k.slice(5):k;
-  if(boss)BK_OVR=kind;const mt=new THREE.MeshLambertMaterial({color:boss?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28,hrungnir:0x6e4628,nidhogg:0x7a5634,crab:0x8e3426,whale:0xf2f4f6,naglfar:0x5a3a6e}[kind]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c,skoll:0x6a4a2a,logi:0x5e2a1a,dvalin:0x5a4636,manta:0x2e4a60,tentacle:0x6a3a7e,vargr:0xe6ecf0,thurs:0x86b0c8}[kind]||0x5a2448)});
+  if(boss)BK_OVR=kind;const mt=new THREE.MeshLambertMaterial({color:boss?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28,hrungnir:0x6e4628,nidhogg:0x7a5634,crab:0x8e3426,whale:0xf2f4f6,naglfar:0x5a3a6e}[kind]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c,skoll:0x6a4a2a,logi:0x5e2a1a,dvalin:0x5a4636,manta:0x2e4a60,tentacle:0x6a3a7e,rosmar:0x6e4a3a}[kind]||0x5a2448)});
   const q=makeQuad(boss?'boss':kind,mt);stage=keep;BK_OVR=null;q.root.position.set(0,q.cy,0);thS.add(q.root);q.root.updateMatrixWorld(true);
   const url=thShot(q.root,new V(.9,.55,1.1),boss?.95:1.05);thS.remove(q.root);DXI[k]=url;return url}
 function openDex(){let seen=0;const DL=DEXE.filter(x=>!x.map||mapRel(x.map));$('dexList').innerHTML=DL.map(x=>{const c=DEX[x.k]||0;if(c)seen++;const bs=x.k.startsWith('boss_');
@@ -3541,17 +3538,16 @@ function update(dt){
         if(e.aim<=0){e.aim=0;e.laser.visible=false;e.cd=4+rnd()*2;eShoot(e,dir,75,150,'yel',2,t3.clone());play('ar',sp(p,1,.3))}}}
     else if(e.type==='guard'){const want=d>18?1:d<11?-1:0;p.addScaledVector(want>0?md:tv,want*e.spd*dt);e.cd-=dt;
       if(e.cd<=0&&d<45){e.cd=2.6+rnd();for(let k=0;k<3;k++)setTimeout(()=>{if(!enemies.includes(e)||state!=='play')return;tv.set(P.pos.x-e.m.position.x,0,P.pos.z-e.m.position.z).normalize();eShoot(e,tv,20,45,'grn',1.5);SFX.enemyShot(e.m.position)},k*140)}}
-    else if(e.type==='vargr'){if(e.tail)e.tail.rotation.y=Math.sin(now*6+e.ph)*.4;
-      if(e.pj>0){e.pj-=dt;p.addScaledVector(e.pv,dt);const u=1-e.pj/.5;p.y=e.y+Math.sin(u*Math.PI)*2.2;if(!e.bit&&Math.hypot(P.pos.x-p.x,P.pos.z-p.z)<2.6&&P.y<3.5){e.bit=true;t2.copy(tv).negate();damage(70,t2,p,'Vargrの飛びかかり');SFX.clank(true)}if(e.pj<=0){p.y=e.y;e.cd=1.2+rnd()}}
-      else{const wv=Math.sin(now*3.6+e.ph)*(d>12?.8:.25);p.x+=(md.x-md.z*wv)*e.spd*dt;p.z+=(md.z+md.x*wv)*e.spd*dt;e.cd-=dt;
-        if(d<11&&d>3.5&&e.cd<=0){e.pj=.5;e.bit=false;e.pv=new V(tv.x,0,tv.z).multiplyScalar(d/.5);play('screech',sp(p,.9,.2))}
-        else if(d<2.5&&P.y<3.5){e.bc=(e.bc||0)-dt;if(e.bc<=0){e.bc=1;t2.copy(tv).negate();damage(25,t2,p,'Vargrの噛みつき');SFX.clank(false)}}}}
-    else if(e.type==='thurs'){const want=d>22?1:d<14?-1:0;if(!e.tl)p.addScaledVector(want>0?md:tv,want*e.spd*dt);e.cd-=dt;
-      if(!e.tl&&e.cd<=0&&d<36){e.tl=1.0;e.td=new V(tv.x,0,tv.z);e.to=p.clone().setY(0);e.wl=makeLine(3.2);e.wl.position.set(p.x,.09,p.z);e.wl.rotation.y=Math.atan2(tv.x,tv.z);e.wl.userData.fill.scale.z=32;e.wl.children.forEach(c=>c.scale.z=32);play('roar',sp(p,1.4,.3))}
-      if(e.tl){e.tl-=dt;const W=e.wl&&e.wl.userData;if(W)W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*14));
-        if(e.tl<=0){e.tl=0;e.cd=4.5+rnd()*2;dropFx(e.wl);e.wl=null;SFX.bossLand(p);shake=Math.max(shake,.4);
-          for(let k=1;k<=16;k++){const x=e.to.x+e.td.x*k*2,z=e.to.z+e.td.z*k*2;setTimeout(()=>{if(state==='play')iceSpike(x,z,2.4+rnd()*1.6)},k*35)}
-          _ta.copy(e.to).setY(1);_tb.copy(e.to).addScaledVector(e.td,32).setY(1);if(segHit(_ta,_tb,_tc.set(P.pos.x,1,P.pos.z),2.2)&&P.y<3){t2.set(-e.td.x,0,-e.td.z);damage(150,t2,P.pos.clone().setY(1),'Hrímþursの氷柱');P.vy=Math.max(P.vy,7)}}}}
+    else if(e.type==='rosmar'){const X=e.ex;if(e.wy==null)e.wy=Math.atan2(tv.x,tv.z);if(e.rs!=='slide')e.wy=la(e.wy,Math.atan2(tv.x,tv.z),dt*(e.rs==='aim'?2.5:1.1));
+      if(e.lhp==null)e.lhp=e.hp;{const dm=e.lhp-e.hp;if(dm>0){if(Math.sin(e.wy)*tv.x+Math.cos(e.wy)*tv.z>.45){e.hp+=dm*.7;if(now-(e.gk||0)>.12){e.gk=now;spark(t3.copy(p).addScaledVector(tv,1.6).setY(p.y+.4),2,8);play('clankL',sp(p,.6,.25))}}}e.lhp=e.hp}
+      if(e.rs==='aim'){e.rt-=dt;const W=e.wl&&e.wl.userData;if(W){W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*14));e.wl.rotation.y=e.wy}X.hd.rotation.x=-.25;
+        if(e.rt<=0){e.rs='slide';e.rt=1.1;e.rd.set(Math.sin(e.wy),0,Math.cos(e.wy));dropFx(e.wl);e.wl=null;e.hit=false;play('bshot',sp(p,.6,.3))}}
+      else if(e.rs==='slide'){e.rt-=dt;t3.set(p.x+e.rd.x*2.6,1,p.z+e.rd.z*2.6);if(inBld(t3,0)||e.rt<=0){e.rs=null;e.cd=3.5+rnd()*2;X.hd.rotation.x=0;if(e.rt>0){SFX.clank(true);shake=Math.max(shake,.25)}}
+        else{p.addScaledVector(e.rd,30*dt);if(rnd()<.8)puff(t3.set(p.x-e.rd.x*2+(rnd()-.5)*1.5,.3,p.z-e.rd.z*2+(rnd()-.5)*1.5),1,0xe8f2f8,1);propsAoe(p,2,600);
+          if(!e.hit&&Math.hypot(P.pos.x-p.x,P.pos.z-p.z)<3&&P.y<3){e.hit=true;t2.copy(tv).negate();damage(160,t2,p,'Rosmarの突進');P.vel.addScaledVector(e.rd,18);P.vy=Math.max(P.vy,6);SFX.clank(true);shake=Math.max(shake,.5)}}}
+      else{const want=d>20?1:d<8?-1:0;p.addScaledVector(want>0?md:tv,want*e.spd*dt);for(const [i,f] of X.fl.entries())f.rotation.x=Math.sin(now*4+e.ph+i*Math.PI)*.35;X.hd.rotation.x=Math.sin(now*2+e.ph)*.08;
+        e.cd-=dt;if(e.cd<=0&&d<32&&d>5){e.rs='aim';e.rt=.85;e.rd=new V(tv.x,0,tv.z);e.wl=makeLine(3.4);e.wl.position.set(p.x,.09,p.z);e.wl.rotation.y=Math.atan2(tv.x,tv.z);e.wl.userData.fill.scale.z=33;e.wl.children.forEach(c=>c.scale.z=33);play('roar',sp(p,1.5,.3))}
+        else if(d<3.2&&P.y<3.5){e.bc=(e.bc||0)-dt;if(e.bc<=0){e.bc=1.1;t2.copy(tv).negate();damage(40,t2,p,'Rosmarの牙');SFX.clank(false)}}}}
     else if(e.type==='tentacle'){tentacleAI(e,p,d,dt);continue}
     else if(e.type==='manta'){const X=e.ex,fl=Math.sin(now*2.2+e.ph)*.35;X.wl.rotation.z=fl;X.wr.rotation.z=-fl;if(e.tail)e.tail.rotation.y=Math.sin(now*1.6+e.ph)*.3;
       if(e.sw>0){e.sw-=dt;p.addScaledVector(e.sv,dt);e.bT-=dt;if(e.bT<=0){e.bT=.3;lobShell(p.clone().setY(p.y-1),new V(p.x+e.sv.x*.35,0,p.z+e.sv.z*.35),'Ránの氷爆弾',{ice:1,T:1,R:4,dmg:120,h:2,sz:2})}}
@@ -3587,7 +3583,7 @@ function update(dt){
       if(e.stk>=2){e.ph=e.ph>3?1:5;e.stk=0}}
     const ox=p.x,oz=p.z;pushOut(p,e.r,e.type==='flyer'||e.type==='manta'||e.kind==='whale'?p.y:0,true);if(e.type!=='flyer'&&e.type!=='manta'&&e.kind!=='whale')for(const pr of props){if(pr.alive&&Math.abs(p.x-pr.x)<pr.hw+e.r*.7&&Math.abs(p.z-pr.z)<pr.hd+e.r*.7)hitProp(pr,(e.type==='boss'?4000:500)*dt)}if(Math.abs(p.x-ox)+Math.abs(p.z-oz)>.001){const sd=e.ph>3?1:-1;p.x+=-tv.z*e.spd*.7*dt*sd;p.z+=tv.x*e.spd*.7*dt*sd}
     if(!(e.pj>0))p.y=(e.hid?-(e.r+6):e.y)+(e.type==='flyer'||e.type==='manta'?Math.sin(now*1.5+e.ph)*.8:0);}e.wp+=dt*e.spd*.9;if(e.type==='boss'){const si=Math.floor(e.wp/Math.PI);if(si!==e.ls){e.ls=si;SFX.bossStep(p);const dd=p.distanceTo(P.pos);if(dd<45)shake=Math.max(shake,.25*(1-dd/45));puff(tv.set(p.x+(rnd()-.5)*6,.5,p.z+(rnd()-.5)*6),1.5,0x5a4a3a,.4)}}if(e.type==='hound'){for(const L of e.legs)L.hip.rotation.x=e.pj>0?(L.hip.position.z>0?-.9:.9):Math.sin(e.wp*1.5+L.ph)*.85}else for(const L of e.legs){L.hip.rotation.y=Math.sin(e.wp+L.ph)*(e.kind==='spider'?.22:.35);L.hip.position.y=L.by+Math.max(0,Math.sin(e.wp+L.ph))*.25*(e.y/2)}
-    if(e.ru)rigStep(e,p,dt);else if(e.bs)e.m.rotation.set(0,Math.atan2(e.bdir.x,e.bdir.z),0);else if(e.kind==='turtle'||e.kind==='hrungnir'||e.kind==='nidhogg'||e.kind==='crab'||e.kind==='whale'||e.kind==='naglfar')e.m.rotation.set(0,(e.tyaw||0)+(e.spin||0),0);else e.m.lookAt(P.pos.x,p.y,P.pos.z);
+    if(e.ru)rigStep(e,p,dt);else if(e.bs)e.m.rotation.set(0,Math.atan2(e.bdir.x,e.bdir.z),0);else if(e.type==='rosmar')e.m.rotation.set(0,e.wy||0,0);else if(e.kind==='turtle'||e.kind==='hrungnir'||e.kind==='nidhogg'||e.kind==='crab'||e.kind==='whale'||e.kind==='naglfar')e.m.rotation.set(0,(e.tyaw||0)+(e.spin||0),0);else e.m.lookAt(P.pos.x,p.y,P.pos.z);
     e.flash-=dt;if(e.flash>0)e.mt.emissive.setHex(0x999999);else if(e.melt>.03){const m=e.melt;e.mt.emissive.setRGB(.25+.75*m,.05+.85*m*m,.7*m*m*m)}else if(e.phs)e.mt.emissive.setRGB(e.phs*.22*(.55+.45*Math.sin(now*(e.phs>1?9:5))),.02,0);else e.mt.emissive.setHex(0);
   }
   for(const b of eb){if(!b.on)continue;b.m.position.addScaledVector(b.v,dt);b.life-=dt;
