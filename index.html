@@ -834,7 +834,7 @@ function gatModel(a,R,L,rr,parent,bm){
 }
 let sawGeo=null,coilGeo=null;const MKB=new THREE.MeshLambertMaterial({color:0xc9a04a,emissive:0x2a1a00});const tipGeo=new THREE.ConeGeometry(.1,.3,8),tipMat=new THREE.MeshLambertMaterial({color:0xd8402a,emissive:0x401008});const sawMat=new THREE.MeshLambertMaterial({color:0xc4c7cc,emissive:0x221100});const silverMat=new THREE.MeshLambertMaterial({color:0xc2c6cc,emissive:0x15171a});
 // side-mounted arm weapons: how far out (x) and how low (y) the weapon pivot sits, per body
-const ARMO={std:[.62,-.5],lite:[.5,-.46],quad:[.56,-.5],fort:[1.2,-.55],chim:[.56,-.5],spec:[.46,-.48],lanc:[.58,-.52]};const armO=()=>ARMO[cfg.B]||ARMO.std;
+const ARMO={std:[.62,-.5],lite:[.5,-.46],quad:[.56,-.5],fort:[1.28,-.55],chim:[.56,-.5],spec:[.46,-.48],lanc:[.58,-.52]};const armO=()=>ARMO[cfg.B]||ARMO.std;
 function armJoint(g,s){const [x,y]=armO();cyl(.16,-y+.05,MK.dk,0,y/2,0,g);cyl(.19,x-.08,MK.gm,s*(x-.08)/2,y,0,g,'x')}
 function mtBuild(g,MT,s){g.position.set(MT.p[0],MT.p[1],MT.p[2]);
   if(MT.k==='arm'){cyl(.2,.42,MK.dk,0,0,0,g,'x');const pd=cbox(.62,.46,.86,MK.paint,s*.1,.16,0,g,.08);pd.rotation.z=-s*.16;box(.06,.06,.6,MK.acc,s*.42,.3,0,g);cbox(.1,.4,.7,MK.gm,s*.38,.02,0,g);armJoint(g,s)}
@@ -847,8 +847,9 @@ function buildMount(i,t){
   if(MT)mtBuild(g,MT,s);
   else if(arm){g.position.set(s*wid,1.25,0);const PS={lite:.7,quad:.88,fort:1.3}[cfg.B]||1,pg=new THREE.Group();pg.scale.setScalar(PS);pg.position.x=s*(PS-1)*.25;g.add(pg);
     if(cfg.B==='fort'){// Bastion: tall slab pauldrons reaching down past the elbow; the weapon bolts onto their outer face
-      cbox(.78,1.45,1.16,MK.paint,s*.2,-.36,0,pg,.1);cbox(.84,.14,1.2,MK.gm,s*.2,.42,0,pg,.04);cbox(.82,.16,1.2,MK.gm,s*.2,-1.05,0,pg,.04);box(.06,1.0,.12,MK.acc,s*.6,-.4,.42,pg);vents(4,.05,.07,MK.dk,s*.6,-.45,-.15,pg,.16);
-      for(const z of[-.38,.38])cyl(.07,.06,MK.dk,s*.6,.15,z,pg,'x')}
+      const cap=cbox(.95,.3,1.26,MK.paint,s*.2,.3,0,pg,.08);cap.rotation.z=-s*.32;const ct=box(.9,.05,1.0,MK.acc,s*.22,.46,0,pg);ct.rotation.z=-s*.32;
+      const sl=new THREE.Group();sl.position.set(s*.38,-.42,0);sl.rotation.z=-s*.08;pg.add(sl);cbox(.62,1.2,1.12,MK.paint,0,0,0,sl,.1);cbox(.68,.14,1.16,MK.gm,0,-.62,0,sl,.04);
+      const fp=cbox(.12,.9,.9,MK.paint,s*.33,-.02,0,sl,.04);box(.05,.7,.1,MK.acc,s*.4,0,.36,sl);vents(3,.05,.06,MK.dk,s*.4,-.15,-.15,sl,.14);for(const z of[-.36,.36])cyl(.06,.06,MK.dk,s*.4,.42,z,sl,'x')}
     else if(cfg.B==='lite'){const pd=cbox(.6,.46,.9,MK.paint,s*.12,.14,-.04,pg,.1);pd.rotation.z=-s*.28;for(let q=0;q<3;q++){const st=box(.62,.05,.1,q%2?MK.dk:MKY,s*.13,.38,-.25+q*.2,pg);st.rotation.z=-s*.28}}
     else if(cfg.B==='quad'){const pd=cbox(.72,.5,.96,MK.paint,s*.14,.12,0,pg);pd.rotation.z=-s*.12;cbox(.5,.16,.5,MK.gm,s*.1,.44,-.1,pg,.04);box(.08,.08,.5,cyMat,s*.38,.44,-.1,pg)}
     else{const pd=cbox(.74,.56,1.02,MK.paint,s*.14,.14,0,pg);pd.rotation.z=-s*.18;const tr=cbox(.62,.1,.8,MK.acc,s*.16,.45,.05,pg);tr.rotation.z=-s*.18}
@@ -1090,14 +1091,16 @@ function buildTorso(k,cw,P_,G_,D_){const U_=upper;
     for(const [x,h,lean,sc] of[[-.42,.5,.35,.85],[0,.72,.2,1],[.42,.5,.35,.85]]){const nk=new THREE.Group();nk.position.set(x,1.48,.22);nk.rotation.set(lean,0,-x*.5);U_.add(nk);
       cyl(.07,h,D_,0,h/2,0,nk);cyl(.1,.12,MK.gm,0,.05,0,nk);const hd=new THREE.Group();hd.position.y=h;hd.scale.setScalar(sc);nk.add(hd);
       cbox(.3,.2,.4,G_,0,0,.05,hd,.05);cbox(.32,.06,.3,P_,0,.12,0,hd,.02);box(.12,.07,.05,cyMat,0,0,.26,hd);box(.03,.03,.3,P_,.1,.14,-.15,hd).rotation.x=-.5}
-  }else if(k==='fort'){ // Bastion: かまぼこ型 — a half-cylinder bunker hull, sensor slit in the dome, armoured ribs, twin stacks
-    cbox(cw+.4,.42,1.7,G_,0,.62,0,U_,.1);
-    const dm=new THREE.Mesh(new THREE.CylinderGeometry(1.08,1.08,1.6,24,1,false,Math.PI/2,Math.PI),P_);dm.rotation.x=Math.PI/2;dm.position.y=.82;dm.scale.x=1.08;U_.add(dm);
-    for(const z of[-.62,0,.62]){const rb=new THREE.Mesh(new THREE.TorusGeometry(1.1,.06,6,20,Math.PI),G_);rb.position.set(0,.82,z);rb.scale.x=1.08;U_.add(rb)}
-    const fr=new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.0,.1,24,1,false,Math.PI/2,Math.PI),G_);fr.rotation.x=Math.PI/2;fr.position.set(0,.82,.82);fr.scale.x=1.08;U_.add(fr);
-    box(1.1,.1,.06,MKR,0,1.36,.85,U_);box(1.0,.05,.07,cyMat,0,1.36,.86,U_);vents(3,.8,.06,D_,0,1.02,.87,U_,.11);
-    cbox(.5,.22,.5,G_,0,1.92,-.05,U_,.06);box(.3,.05,.3,MK.acc,0,2.04,-.05,U_);
-    for(const s of[-1,1]){cyl(.16,.9,D_,s*.42,1.9,-.62,U_);cyl(.19,.1,MK.gm,s*.42,2.35,-.62,U_);box(.08,.6,1.4,MK.acc,s*1.17,.86,0,U_)}
+  }else if(k==='fort'){ // Bastion: angular fortress hull — sloped glacis, cheek plates leaning in, vision slit under a brow, flat deck with hatch, engine block and twin stacks at the back
+    cbox(cw+.3,.4,1.5,G_,0,.6,0,U_,.1);
+    cbox(cw*.92,1.0,1.36,P_,0,1.12,-.02,U_,.14);
+    const gl=cbox(cw*.86,.72,.2,P_,0,1.32,.68,U_,.06);gl.rotation.x=-.42;const lg=cbox(cw*.8,.46,.2,P_,0,.8,.7,U_,.06);lg.rotation.x=.38;
+    for(const s of[-1,1]){const ch=cbox(.26,1.0,1.3,P_,s*cw*.47,1.1,0,U_,.06);ch.rotation.z=s*.22;const st=box(.05,.62,.9,MK.acc,s*cw*.53,1.04,.1,U_);st.rotation.z=s*.22}
+    const brow=cbox(cw*.62,.16,.34,G_,0,1.6,.62,U_,.04);brow.rotation.x=-.25;cbox(cw*.5,.16,.08,D_,0,1.42,.86,U_,.02);box(cw*.42,.05,.04,cyMat,0,1.42,.9,U_);
+    box(cw*.7,.05,.05,MK.acc,0,1.1,.82,U_);vents(4,cw*.42,.05,D_,0,.86,.83,U_,.07);
+    cbox(cw*.7,.16,1.0,G_,0,1.68,-.1,U_,.05);cyl(.22,.08,G_,cw*.16,1.79,-.25,U_);cyl(.14,.1,D_,cw*.16,1.82,-.25,U_);box(.3,.05,.3,MK.acc,-cw*.16,1.79,-.2,U_);
+    cbox(cw*.74,.8,.5,G_,0,1.05,-.86,U_,.08);vents(3,cw*.5,.06,D_,0,1.05,-1.12,U_,.12);
+    for(const s of[-1,1]){cyl(.16,.9,D_,s*.42,1.9,-.72,U_);cyl(.19,.1,MK.gm,s*.42,2.35,-.72,U_)}
   }else{ // Vanguard: the balanced standard — angled chest, cockpit sensor, single mono-visor, V antenna
     cbox(cw,.86,.92,P_,0,1.03,0,U_,.16);
     for(const s of[-1,1]){const pl=cbox(cw*.5,.5,.22,P_,s*cw*.25,1.16,.47,U_);pl.rotation.set(-.2,-s*.22,0)}
@@ -1673,11 +1676,12 @@ function updatePortals(dt){
   }
 }
 const warns=[];
+function onTop(g){g.traverse(o=>{if(o.material){o.material.depthTest=false;o.renderOrder=3}});return g}
 function makeWarn(p,R){const g=new THREE.Group();g.position.set(p.x,.07,p.z);const mk=o=>new THREE.MeshBasicMaterial({color:0xff2010,transparent:true,opacity:o,depthWrite:false,side:THREE.DoubleSide});
   const fill=new THREE.Mesh(new THREE.CircleGeometry(R,48),mk(.22)),ring=new THREE.Mesh(new THREE.RingGeometry(R-.7,R,64),mk(.9)),inner=new THREE.Mesh(new THREE.RingGeometry(R-.5,R,64),mk(.9));
   for(const m of[fill,ring,inner]){m.rotation.x=-Math.PI/2;g.add(m)}
   for(let k=0;k<4;k++){const b=new THREE.Mesh(new THREE.PlaneGeometry(R*.9,.5),mk(.8));b.rotation.x=-Math.PI/2;b.rotation.z=k*Math.PI/4;g.add(b)}
-  scene.add(g);g.userData={fill,inner};warns.push(g);return g}
+  onTop(g);scene.add(g);g.userData={fill,inner};warns.push(g);return g}
 function dropWarn(g){if(!g)return;scene.remove(g);g.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose()});const i=warns.indexOf(g);if(i>=0)warns.splice(i,1)}
 function bossJump(e,p,d,dt){
   if(!e.js){if(e.jcd==null)e.jcd=6;e.jcd-=dt;if(e.jcd>0||(d<10&&!(e.jc>0))||e.bs)return false;
@@ -1858,7 +1862,7 @@ function bossNidhogg(e,p,d,dt){if(e.kind!=='nidhogg')return false;const ph=e.phs
   return true}
 // lingering venom pools (HRUNGNIR); ticked with the shells
 const HZ=[];
-function addPool(x,z,R,life,dps,by){const m=new THREE.Mesh(new THREE.CircleGeometry(R,24),new THREE.MeshBasicMaterial({color:0x3fbf1a,transparent:true,opacity:.62,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,.06,z);scene.add(m);HZ.push({m,x,z,R,t:0,life,dps,by})}
+function addPool(x,z,R,life,dps,by){const m=new THREE.Mesh(new THREE.CircleGeometry(R,24),new THREE.MeshBasicMaterial({color:0x3fbf1a,transparent:true,opacity:.62,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,.06,z);onTop(m);scene.add(m);HZ.push({m,x,z,R,t:0,life,dps,by})}
 function updateHaz(dt){for(let i=HZ.length-1;i>=0;i--){const h=HZ[i];h.t+=dt;const f=Math.min(1,h.t/.25)*Math.min(1,(h.life-h.t)/.6);h.m.material.opacity=.62*f*(1+Math.sin(now*6+i)*.12);if(rnd()<dt*6)puff(t3.set(h.x+(rnd()-.5)*h.R*1.4,.3,h.z+(rnd()-.5)*h.R*1.4),.9,0x3a6a20,.8);
   if(h.t>.3&&Math.hypot(P.pos.x-h.x,P.pos.z-h.z)<h.R&&P.y<2){t2.set(0,0,0);damage(h.dps*dt,t2,P.pos.clone().setY(1),h.by,1)}
   if(h.t>=h.life){scene.remove(h.m);h.m.geometry.dispose();h.m.material.dispose();HZ.splice(i,1)}}}
@@ -1939,7 +1943,7 @@ const lineGeo=new THREE.PlaneGeometry(1,1);lineGeo.translate(0,.5,0);lineGeo.rot
 function makeLine(W){const g=new THREE.Group();const fill=new THREE.Mesh(lineGeo,new THREE.MeshBasicMaterial({color:0xff2010,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide}));fill.scale.set(W,1,140);g.add(fill);
   for(const x of[-1,1]){const e=new THREE.Mesh(lineGeo,new THREE.MeshBasicMaterial({color:0xff3a20,transparent:true,opacity:.9,depthWrite:false,side:THREE.DoubleSide}));e.scale.set(.45,1,140);e.position.x=x*W/2;g.add(e)}
   const core=new THREE.Mesh(lineGeo,new THREE.MeshBasicMaterial({color:0xffc0a0,transparent:true,opacity:.6,depthWrite:false,side:THREE.DoubleSide}));core.scale.set(.25,1,140);g.add(core);
-  g.userData={fill,core};scene.add(g);bossFx.push(g);return g}
+  g.userData={fill,core};onTop(g);scene.add(g);bossFx.push(g);return g}
 function dropFx(o){if(!o)return;scene.remove(o);const i=bossFx.indexOf(o);if(i>=0)bossFx.splice(i,1)}
 let megaSrc=null;
 function megaLoop(on){if(!AC)return;if(on&&!megaSrc&&SBK.beamLoop&&!muted){const s=AC.createBufferSource();s.buffer=SBK.beamLoop[0];s.loop=true;s.playbackRate.value=.42;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=1800;const g=AC.createGain();g.gain.value=1.1;s.connect(f);f.connect(g);g.connect(sfxG);s.start();megaSrc={s,g}}
