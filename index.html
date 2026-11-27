@@ -409,21 +409,21 @@ const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 // ---------- parts ----------
 const WP={
-  gat:{n:'Tempest',s:'Tempest',ty:'ダブルガトリング',c:'重',wt:24,am:'AP',tr:95,kind:'gun',rate:14,rmax:40,heatT:4.5,dmg:9,spin:.9,spread:.055,mag:480,rl:3.2,vel:120,d:'上下2連の重ガトリング。装弾480。回転が上がるまで時間がかかるが、上下交互に撃ち、撃つほど連射が加速する。加速するほど弾がばらけ、遠くの敵に当たりにくくなる'},
-  cannon:{n:'Behemoth',s:'Behemoth',ty:'大砲',c:'重',wt:22,am:'HE',tr:70,kind:'gun',cannon:true,rate:.85,dmg:240,spin:0,spread:.004,mag:6,rl:2.8,vel:85,aoe:6,d:'榴弾砲。着弾地点で大爆発して周囲をまとめて吹き飛ばす。連射は遅い'},
+  gat:{n:'Tempest',s:'Tempest',ty:'ダブルガトリング',c:'重',wt:24,am:'AP',tr:95,kind:'gun',rate:14,rmax:40,heatT:4.5,dmg:9,spin:.9,spread:.055,mag:480,rl:4.5,vel:120,d:'上下2連の重ガトリング。装弾480。回転が上がるまで時間がかかるが、上下交互に撃ち、撃つほど連射が加速する。加速するほど弾がばらけ、遠くの敵に当たりにくくなる'},
+  cannon:{n:'Behemoth',s:'Behemoth',ty:'大砲',c:'重',wt:22,am:'HE',tr:70,kind:'gun',cannon:true,rate:.85,dmg:270,spin:0,spread:.004,mag:6,rl:2.8,vel:85,aoe:6,d:'榴弾砲。着弾地点で大爆発して周囲をまとめて吹き飛ばす。連射は遅い'},
   beam:{n:'Solar Lance',s:'Lance',ty:'ビーム',c:'重',wt:20,am:'AP',tr:46,kind:'beam',charge:1.5,dps:420,maxT:2.6,cd:2.4,d:'長押しでチャージ、離すとチャージした分だけビームを照射し続ける。敵を貫通。照射中は砲身がほとんど動かないので、機体の向きで薙ぎ払う。撃った後は2.4秒冷却'},
-  melt:{n:'Smelter',s:'Smelter',ty:'レーザー',c:'重',wt:17,am:'AP',tr:92,kind:'laser',dps:150,heatT:6,cool:2.6,range:95,d:'装甲を溶かす熱線。当て続けた敵は赤→白く灼熱し、全ての武器から受けるダメージが最大+60%。撃ちっぱなしはオーバーヒートに注意'},
-  twin:{n:'Gemini',s:'Gemini',ty:'連装砲',c:'重',wt:20,am:'HE',tr:90,kind:'gun',twin:true,rate:3.2,dmg:68,spin:0,spread:.016,mag:24,rl:2.6,regen:.3,vel:95,aoe:2.4,d:'2本の砲身が交互に後退しながらバンバン撃ち込む連装オートキャノン。着弾で小爆発。弾は撃ち切り式ではなく、撃つのをやめると少しずつ自動で装填される'},
-  burst:{n:'Hammerhead',s:'Hammer',ty:'バーストショットガン',c:'重',wt:21,am:'HE',tr:85,kind:'gun',shot:true,burst:3,bi:.1,pel:9,rate:.95,dmg:13,spin:0,spread:.075,mag:18,rl:2.9,vel:110,d:'1回引くと3連射するバースト式の重ショットガン。3つの銃口から散弾を叩き込む。後部のV型エンジンが唸りを上げる'},
-  pod:{n:'Trident',s:'Trident',ty:'ロケットポッド',c:'重',wt:23,am:'HE',tr:80,kind:'gun',rkt:true,rate:5,dmg:58,spin:0,spread:.035,mag:42,rl:6.5,vel:0,aoe:3,d:'7連装のロケットポッド3基を三方向に束ねた重武装。誘導しないロケット弾を3基から順番にまっすぐ撃ち出す。装弾42発と多いが、リロードは長い'},
-  shot:{n:'Breacher',s:'Breacher',ty:'ショットガン',c:'軽',wt:9,am:'HE',tr:220,kind:'gun',shot:true,pel:8,rate:1.7,dmg:15,spin:0,spread:.085,mag:6,rl:1.9,vel:110,d:'散弾を8発ばらまく。近距離で絶大、遠いと散って弱い。6発撃ち切りで素早くリロード'},
-  rkt:{n:'Volley',s:'Volley',ty:'ロケット',c:'軽',wt:9,am:'HE',tr:170,kind:'gun',rkt:true,rate:2.3,dmg:85,spin:0,spread:.02,mag:8,rl:3,vel:0,aoe:4.2,d:'誘導しないロケット弾をまっすぐ撃ち出す。着弾で爆発し群れをまとめて吹き飛ばす'},
-  mini:{n:'Squall',s:'Squall',ty:'ガトリング',c:'軽',wt:8,am:'HE',tr:200,kind:'gun',rate:14,rmax:36,heatT:3,dmg:6,spin:.35,spread:.065,mag:200,rl:2,vel:120,d:'軽ガトリング。装弾200。撃つほど赤熱して加速するが、加速するほど弾がばらける'},
+  melt:{n:'Smelter',s:'Smelter',ty:'レーザー',c:'重',wt:17,am:'AP',tr:92,kind:'laser',dps:120,heatT:12,cool:2.6,range:200,d:'装甲を溶かす熱線。当て続けた敵は赤→白く灼熱し、全ての武器から受けるダメージが最大+60%。撃ちっぱなしはオーバーヒートに注意'},
+  twin:{n:'Gemini',s:'Gemini',ty:'連装砲',c:'重',wt:20,am:'HE',tr:90,kind:'gun',twin:true,rate:3.2,dmg:68,spin:0,spread:.016,mag:24,rl:2.6,regen:.3,vel:95,rng:150,aoe:2.4,d:'2本の砲身が交互に後退しながらバンバン撃ち込む連装オートキャノン。着弾で小爆発。弾は撃ち切り式ではなく、撃つのをやめると少しずつ自動で装填される'},
+  burst:{n:'Hammerhead',s:'Hammer',ty:'バーストショットガン',c:'重',wt:21,am:'HE',tr:85,kind:'gun',shot:true,burst:3,bi:.1,pel:9,rate:.95,dmg:15,spin:0,spread:.075,mag:18,rl:2.9,vel:110,rng:80,d:'1回引くと3連射するバースト式の重ショットガン。3つの銃口から散弾を叩き込む。後部のV型エンジンが唸りを上げる'},
+  pod:{n:'Trident',s:'Trident',ty:'ロケットポッド',c:'重',wt:23,am:'HE',tr:80,kind:'gun',rkt:true,rate:5,dmg:80,spin:0,spread:.035,mag:42,rl:6.5,vel:0,rng:100,aoe:3,d:'7連装のロケットポッド3基を三方向に束ねた重武装。誘導しないロケット弾を3基から順番にまっすぐ撃ち出す。装弾42発と多いが、リロードは長い'},
+  shot:{n:'Breacher',s:'Breacher',ty:'ショットガン',c:'軽',wt:9,am:'HE',tr:220,kind:'gun',shot:true,pel:8,rate:1.7,dmg:21,spin:0,spread:.085,mag:6,rl:1.9,vel:110,d:'散弾を8発ばらまく。近距離で絶大、遠いと散って弱い。6発撃ち切りで素早くリロード'},
+  rkt:{n:'Volley',s:'Volley',ty:'ロケット',c:'軽',wt:9,am:'HE',tr:170,kind:'gun',rkt:true,rate:4,dmg:130,spin:0,spread:.02,mag:8,rl:5,vel:0,aoe:4.2,d:'誘導しないロケット弾を素早く連射する瞬間火力型。着弾で爆発し群れをまとめて吹き飛ばす。8発撃ち切るとリロードは長め'},
+  mini:{n:'Squall',s:'Squall',ty:'ガトリング',c:'軽',wt:8,am:'HE',tr:200,kind:'gun',rate:14,rmax:36,heatT:3,dmg:6,spin:.35,spread:.065,mag:300,rl:3.5,vel:120,rng:70,d:'軽ガトリング。装弾300。撃つほど赤熱して加速するが、加速するほど弾がばらける'},
   msl:{n:'Swarm',s:'Swarm',ty:'ミサイル',c:'軽',wt:9,am:'HE',tr:180,kind:'gun',msl:true,rate:4,dmg:70,spin:0,spread:0,mag:12,rl:3.2,vel:0,d:'照準の近くの敵を同時に複数ロックオン（最大で残弾数まで）。1回押すとロックした敵へ一斉射撃し、マガジンが空になるまで撃ち尽くす。ロックしていないと撃てない'},
   shield:{n:'Buckler',s:'Buckler',ty:'シールド',c:'軽',wt:10,kind:'shield',cut:.85,d:'押している間ガード。正面からの攻撃を85%カット（移動は遅くなる）'},
   saw:{n:'Grinder',s:'Grinder',ty:'回転ノコ',c:'軽',wt:10,am:'AP',kind:'saw',dps:520,range:8,d:'近接武器。振り回して周りの敵を切り刻む。切り続けるほど刃が赤熱して威力最大2倍、切った敵は怯んで攻撃が止まり弾き飛ばされる'},
-  flame:{n:'Inferno',s:'Inferno',ty:'火炎放射',c:'軽',wt:10,am:'HE',tr:160,kind:'flame',dps:170,rate:16,vel:30,burn:45,range:17,fuelT:5,rl:2.4,d:'炎の塊を連続で撃ち出す。弾速が遅いので動く敵には偏差撃ちが必要。当たった敵は数秒間燃え続ける。燃料5秒分で、切れると補給'},
-  tesla:{n:'Arc Chain',s:'Arc',ty:'テスラ',c:'軽',wt:9,am:'HE',tr:220,kind:'tesla',dmg:16,cd:.1,mag:80,rl:2.6,range:26,chain:3,jump:10,d:'射程は短いが、押している間ずっと電撃を流し続け、近くの敵へ最大3体まで連鎖する。装弾80'}
+  flame:{n:'Inferno',s:'Inferno',ty:'火炎放射',c:'軽',wt:10,am:'HE',tr:160,kind:'flame',dps:190,rate:16,vel:30,burn:45,range:80,fuelT:8,rl:2.4,d:'炎の塊を連続で撃ち出す。遠くまで届くが弾速がとても遅いので、離れた敵や動く敵には偏差撃ちが必要。当たった敵は数秒間燃え続ける。燃料8秒分で、切れると補給'},
+  tesla:{n:'Arc Chain',s:'Arc',ty:'テスラ',c:'軽',wt:9,am:'HE',tr:220,kind:'tesla',dmg:16,cd:.1,mag:80,rl:2.6,range:50,chain:3,jump:15,d:'押している間ずっと電撃を流し続け、近くの敵へ連鎖する（敵同士の隙間15m以内、最初の1体＋最大3体）。装弾80'}
 };
 const BODY={
   std:{n:'Vanguard',ab:'missile',turn:220,ty:'ミディアム',slots:['重','軽'],hp:620,wt:40,d:'重1・軽1。何でもこなす標準フレーム'},
@@ -2111,15 +2111,16 @@ const _ap=new V(),_aq=new THREE.Quaternion();
 function aimDir(from,tgt,out,a){if(a&&a.mz){a.mz.getWorldDirection(out);return out}if(tgt){out.copy(tgt.m.position).sub(from);const ty=Math.atan2(out.x,out.z),dy=Math.abs(((ty-upper.rotation.y+Math.PI)%TAU+TAU)%TAU-Math.PI);if(dy<.2)return out.normalize();const hd=Math.hypot(out.x,out.z),uy=upper.rotation.y;return out.set(Math.sin(uy)*hd,out.y,Math.cos(uy)*hd).normalize()}const uy=upper.rotation.y;t3.set(P.pos.x+Math.sin(uy)*60,2.8+P.y,P.pos.z+Math.cos(uy)*60);return out.copy(t3).sub(from).normalize()}
 function fireBullet(from,dir,spread,vel,dmg,scale){
   dir.x+=(rnd()-.5)*spread*2;dir.y+=(rnd()-.5)*spread;dir.z+=(rnd()-.5)*spread*2;dir.normalize();
-  const b=bullets[bi++%bullets.length];b.m.position.copy(from);b.p.set(P.pos.x,P.y+3,P.pos.z);b.v.copy(dir).multiplyScalar(vel);b.life=1;b.dmg=dmg;b.aoe=0;b.am=null;(b.o||(b.o=new V())).copy(from);b.on=true;b.m.visible=true;
+  const b=bullets[bi++%bullets.length];b.m.position.copy(from);b.p.set(P.pos.x,P.y+3,P.pos.z);b.v.copy(dir).multiplyScalar(vel);b.life=curLife||1;b.dmg=dmg;b.aoe=0;b.am=null;(b.o||(b.o=new V())).copy(from);b.on=true;b.m.visible=true;
   b.m.lookAt(from.x+dir.x,from.y+dir.y,from.z+dir.z);b.m.scale.setScalar(scale);return b;
 }
-function shoot(a,tgt){
+let curLife=0;function shoot(a,tgt){curLife=a.W.rng&&a.W.vel?a.W.rng/a.W.vel:0;try{shoot0(a,tgt)}finally{curLife=0}}
+function shoot0(a,tgt){
   const W=a.W;if(a.mzp){a.mzi=((a.mzi||0)+1)%a.mzp.length;a.mz.position.copy(a.mzp[a.mzi]);if(a.fl)a.fl.position.copy(a.mz.position)}a.mz.getWorldPosition(tv);
   if(W.msl){const LT=lockTargets();if(!LT.length)return;a.mk=(a.mk||0)+1;const lt0=LT[a.mk%LT.length];for(let q=0;q<U.mS;q++)setTimeout(()=>{const m2=missiles.find(x=>!x.on);if(!m2||state!=='play')return;a.mz.getWorldPosition(m2.m.position);m2.on=true;m2.lk=1;m2.delay=0;m2.dmg=W.dmg;m2.t=0;m2.life=4;const L2=lockTargets();m2.tgt=L2.length?L2[(a.mk+q+1)%L2.length]:lt0;m2.v.set(Math.sin(upper.rotation.y)*26+(rnd()-.5)*8,7+rnd()*3,Math.cos(upper.rotation.y)*26+(rnd()-.5)*8);m2.m.visible=true},(q+1)*70);
   const m=missiles.find(x=>!x.on);if(!m)return;aimDir(tv,tgt,t2,a);m.on=true;m.lk=1;m.delay=0;m.dmg=W.dmg;m.t=0;m.life=4;m.tgt=lt0;m.m.position.copy(tv);m.v.copy(t2).multiplyScalar(26);m.v.y+=6+rnd()*3;m.v.x+=(rnd()-.5)*5;m.v.z+=(rnd()-.5)*5;m.m.visible=true;if(a.rear){const rp=a.rear.clone();a.w.localToWorld(rp);a.w.getWorldDirection(t3);backblast(rp,t3.negate(),false)}play('mfire',{v:.65,rate:1.05+rnd()*.15,lim:200});puff(tv,.5,0x8a8580,.5);a.w.position.z=-.15;return}
   if(W.twin){a.lst=now;a.mz=a.mzs[a.side];a.mz.getWorldPosition(tv);a.brls[a.side].userData.k=1;a.side^=1;const dmT=W.dmg*U.cD*(a.t==='twin'&&U.ae.twin?1.2:1)*(U.twin&&firingCount>=2?1.35:1)*fpM();aimDir(tv,tgt,t2,a);
-    const b=fireBullet(tv,t2,W.spread,W.vel,dmT,1.9);b.aoe=W.aoe*U.cA*(U.ae[a.t]||1);b.am=W.am;b.life=1.4;a.fl.position.copy(a.mz.position);a.fl.visible=true;a.fl.scale.setScalar(1.3+rnd()*.5);
+    const b=fireBullet(tv,t2,W.spread,W.vel,dmT,1.9);b.aoe=W.aoe*U.cA*(U.ae[a.t]||1);b.am=W.am;b.life=curLife||1.4;a.fl.position.copy(a.mz.position);a.fl.visible=true;a.fl.scale.setScalar(1.3+rnd()*.5);
     muzL.intensity=3.5;muzL.color.setHex(0xffa040);muzL.position.copy(tv);shake=Math.max(shake,.22);play('ar',{v:.9,rate:.72});ejectCase(a,true);puff(tv,.6,0x8a8580,.8);return}
   if(W.shot){const dmS=W.dmg*(U.twin&&firingCount>=2?1.35:1)*fpM();if(!a.inB)a.lf=now;
     if(a.bores){a.rk=.3;if(W.burst&&!a.inB){a.bq=W.burst-1;a.bt=W.bi}if(a.inB&&a.bq===0)a.ejT=.14;
@@ -2127,11 +2128,11 @@ function shoot(a,tgt){
       a.mz.getWorldPosition(tv);muzL.intensity=4.5;muzL.color.setHex(0xffb050);muzL.position.copy(tv);shake=Math.max(shake,.3);a.w.position.z=-.35;play('sgun',{v:1.5,rate:.8+rnd()*.05,lim:170});play('boom',{v:.55,rate:1.4});puff(tv,1,0x8a8580,.8);return}
     aimDir(tv,tgt,t2,a);for(let q=0;q<W.pel+(U.pl[a.t]||0);q++){fireBullet(tv,t2.clone(),W.spread*(U.sp[a.t]||1),W.vel,dmS,.9).am='HE'}
     a.fl.visible=true;a.fl.scale.setScalar(1.6+rnd()*.6);muzL.intensity=4;muzL.color.setHex(0xffb050);muzL.position.copy(tv);shake=Math.max(shake,.28);a.w.position.z=-.4;play('sgun',{v:1.4,lim:170});play('boom',{v:.45,rate:1.55});if(a.fore)a.pmp=.2;puff(tv,.8,0x8a8580,.8);return}
-  if(W.rkt){const m=missiles.find(x=>!x.on);if(!m)return;aimDir(tv,tgt,t2,a);if(a.t==='pod'){t2.x+=(rnd()-.5)*W.spread*2;t2.y+=(rnd()-.5)*W.spread*2;t2.z+=(rnd()-.5)*W.spread*2;t2.normalize()}m.on=true;m.dumb=true;m.cl=a.t==='rkt'&&!!U.vlC;m.lk=0;m.tgt=null;m.delay=0;m.dmg=W.dmg*(U.ae[a.t]?1.2:1)*(U.twin&&firingCount>=2?1.35:1)*fpM();m.aoe=W.aoe*(U.ae[a.t]||1);m.t=0;m.life=3;m.m.position.copy(tv);m.v.copy(t2).multiplyScalar(36);m.m.visible=true;
+  if(W.rkt){const m=missiles.find(x=>!x.on);if(!m)return;aimDir(tv,tgt,t2,a);if(a.t==='pod'){t2.x+=(rnd()-.5)*W.spread*2;t2.y+=(rnd()-.5)*W.spread*2;t2.z+=(rnd()-.5)*W.spread*2;t2.normalize()}m.on=true;m.dumb=true;m.cl=a.t==='rkt'&&!!U.vlC;m.lk=0;m.tgt=null;m.delay=0;m.dmg=W.dmg*(U.ae[a.t]?1.2:1)*(U.twin&&firingCount>=2?1.35:1)*fpM();m.aoe=W.aoe*(U.ae[a.t]||1);m.t=0;m.life=W.rng?(W.rng<=43.6?(-36+Math.sqrt(1296+110*W.rng))/55:.764+(W.rng-43.6)/78):3;m.m.position.copy(tv);m.v.copy(t2).multiplyScalar(36);m.m.visible=true;
     SFX.missile();puff(tv,.7,0x8a8580,.6);a.fl.visible=true;a.fl.scale.setScalar(1.2);shake=Math.max(shake,.12);a.w.position.z=-.2;return}
   if(W.cannon){const dmC=W.dmg*U.cD*(U.twin&&firingCount>=2?1.35:1)*fpM(),R=W.aoe*U.cA;aimDir(tv,tgt,t2,a);
     if(tgt&&tgt.m.position.distanceTo(P.pos)<tgt.r+4.5){tgt.hp-=dmC*hitMul(tgt);tgt.flash=.08;blast(tgt.m.position.clone(),R,dmC*.6,tgt);if(tgt.hp<=0&&enemies.includes(tgt))kill(tgt)}
-    else{const b=fireBullet(tv,t2,W.spread,W.vel,dmC,2.6);b.aoe=R;b.life=1.4}
+    else{const b=fireBullet(tv,t2,W.spread,W.vel,dmC,2.6);b.aoe=R;b.life=curLife||1.4}
     a.fl.visible=true;a.fl.scale.setScalar(2+rnd()*.6);a.fl.rotation.z=rnd()*3;muzL.intensity=5;muzL.color.setHex(0xffa040);muzL.position.copy(tv);shake=Math.max(shake,.45);a.w.position.z=-.6;
     play('boom',{v:.7,rate:1.5});play('ar',{v:1,rate:.55});a.kick=1;if(a.rev){a.cylT-=TAU/6;const r=a.rims[a.ci%6];if(r)r.material=revSpent;a.ci++;a.spent=Math.min(6,a.spent+1);setTimeout(()=>play('chak',{v:.45,rate:1.35}),230)}else setTimeout(()=>ejectCase(a,true),180);puff(tv,1.1,0x8a8580,1);P.vel.x-=t2.x*5;P.vel.z-=t2.z*5;return}
   const dm=W.dmg*(a.t==='ar'?U.aD:1)*(U.gBurn&&a.bar&&a.heat>.8?1.45:1)*(U.twin&&firingCount>=2?1.35:1);const spr=W.spread*(a.bar?1+a.heat*.9:1);aimDir(tv,tgt,t2,a);if(tgt&&tgt.m.position.distanceTo(P.pos)<tgt.r+4.5&&rnd()>spr*3){tgt.hp-=dm*hitMul(tgt)*amBoss(W.am,tgt);tgt.flash=.05;spark(tgt.m.position,2,9);if(tgt.hp<=0)kill(tgt)}fireBullet(tv,t2,spr,W.vel,dm,a.t==='ar'?1.3:a.t==='mini'?.8:1).am=W.am;if(a.t==='ar'&&U.aBurst){for(const k of[-1,1]){aimDir(tv,tgt,t3,a);t3.x+=k*.035*Math.cos(upper.rotation.y);t3.z-=k*.035*Math.sin(upper.rotation.y);fireBullet(tv,t3,W.spread,W.vel,dm,1.1)}}
@@ -2168,7 +2169,7 @@ function zap(a,tgt){const W=a.W;a.mz.getWorldPosition(tv);const from=tv.clone(),
   muzL.intensity=3;muzL.color.setHex(0x9fdcff);muzL.position.copy(from);
   if(!f){t2.set(Math.sin(upper.rotation.y),0,Math.cos(upper.rotation.y));bolt(from,from.clone().addScaledVector(t2,4+rnd()*3).add(new V((rnd()-.5)*2,(rnd()-.5)*2,(rnd()-.5)*2)));if(rnd()<.2)play('zap',{v:.25,rate:1.3});return}
   const hit=[f];let cur=f,n=W.chain+U.tC;
-  while(n-->0){let nb=null,bd=W.jump;for(const e of enemies){if(e.mat>0||hit.includes(e))continue;const d=e.m.position.distanceTo(cur.m.position);if(d<bd){bd=d;nb=e}}if(!nb)break;hit.push(nb);cur=nb}
+  while(n-->0){let nb=null,bd=W.jump;for(const e of enemies){if(e.mat>0||hit.includes(e))continue;const d=e.m.position.distanceTo(cur.m.position)-e.r-cur.r;if(d<bd){bd=d;nb=e}}if(!nb)break;hit.push(nb);cur=nb}
   let pv=from,dm=W.dmg*(U.twin&&firingCount>=2?1.35:1)*fpM();
   for(const e of hit){const p=e.m.position.clone();bolt(pv,p);e.hp-=dm*hitMul(e)*amBoss('HE',e);e.flash=.08;spark(p,4,12);dm*=.85;pv=p}
   for(const e of hit)if(e.hp<=0&&enemies.includes(e))kill(e);
@@ -2350,7 +2351,7 @@ const LOCKT=.45,LKS={};let locks=[],lkStep=0;const lkEls=[];
 function lockCap(){let c=0;for(const a of arms)if(a.W.msl&&!(a.rl>0))c+=a.ammo;if(cfg.A==='missile'&&AB.body.cd<=0&&AB.body.act<=0)c=Math.max(c,12+U.abMis);return c}
 function lockedN(){let n=0;for(const l of locks)if(l.done)n++;return n}
 function lockTargets(){return locks.filter(l=>l.done&&enemies.includes(l.e)).map(l=>l.e)}
-function lockOK(e){if(!enemies.includes(e)||e.mat>0)return false;tv.copy(e.m.position);tv.y+=e.r*.4;const d=tv.distanceTo(cam.position);if(d>115)return false;t2.copy(tv).sub(cam.position).divideScalar(d);cam.getWorldDirection(t3);return t2.dot(t3)>.9}
+function lockOK(e){if(!enemies.includes(e)||e.mat>0)return false;tv.copy(e.m.position);tv.y+=e.r*.4;const d=tv.distanceTo(cam.position);if(d>127)return false;t2.copy(tv).sub(cam.position).divideScalar(d);cam.getWorldDirection(t3);return t2.dot(t3)>.9}
 function losOK(e){const c=cam.position,p=e.m.position;for(const b of blds){if(segBox(c.x,c.y,c.z,p.x,p.y+e.r*.5,p.z,b)<.97)return false}return true}
 function lockTick(dt){if(state!=='play'&&state!=='demo'){locks.length=0;return}const cap=lockCap();
   for(const l of locks)l.lost=lockOK(l.e)?0:(l.lost||0)+dt;
@@ -2398,9 +2399,9 @@ function flameP(p,dir,R,small){const q=fP[fpi++%fP.length];q.m.position.copy(p);
 function fpTick(dt){for(const q of fP){if(!q.m.visible)continue;q.t+=dt;const u=q.t/q.life;if(u>=1){q.m.visible=false;continue}q.m.position.addScaledVector(q.v,dt);q.v.multiplyScalar(Math.max(0,1-dt*2.2));q.v.y+=dt*4;q.m.scale.setScalar(q.s+q.g*u);q.m.material.color.setRGB(1,Math.max(.15,.9-.75*u),Math.max(0,.55-.7*u));q.m.material.opacity=u<.15?u/.15:1-(u-.15)/.85}}
 function burnTick(dt){for(const e of enemies){if(!(e.burn>0))continue;e.burn-=dt;if(e.mat>0)continue;e.hp-=WP.flame.burn*U.burnM*dt*(e.type==='boss'?.6:1);if(rnd()<dt*(e.r>3?30:12)){tv.copy(e.m.position);tv.x+=(rnd()-.5)*e.r;tv.z+=(rnd()-.5)*e.r;tv.y+=rnd()*e.r*.6;flameP(tv,null,0,true)}}}
 const fB=[];{const ft=glowTex('255,140,40');for(let i=0;i<90;i++){const m=new THREE.Sprite(new THREE.SpriteMaterial({map:ft,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));m.visible=false;scene.add(m);fB.push({m,v:new V(),t:0,life:1,on:false,hit:new Set(),dmg:0})}}let fbi=0;
-function fireFlame(p,dir,W){const b=fB[fbi++%fB.length];b.on=true;b.m.visible=true;b.m.position.copy(p);b.v.set(dir.x+(rnd()-.5)*.08,dir.y+(rnd()-.5)*.06,dir.z+(rnd()-.5)*.08).normalize().multiplyScalar(W.vel);b.t=0;b.life=W.range/W.vel;b.hit.clear();b.dmg=W.dps/W.rate*fpM()*(U.twin&&firingCount>=2?1.35:1)}
+function fireFlame(p,dir,W){const b=fB[fbi++%fB.length];b.on=true;b.m.visible=true;b.m.position.copy(p);b.v.set(dir.x+(rnd()-.5)*.08,dir.y+(rnd()-.5)*.06,dir.z+(rnd()-.5)*.08).normalize().multiplyScalar(W.vel);b.t=0;b.W=W;b.life=W.range/W.vel;b.hit.clear();b.dmg=W.dps/W.rate*fpM()*(U.twin&&firingCount>=2?1.35:1)}
 function fbTick(dt){for(const b of fB){if(!b.on)continue;b.t+=dt;const u=b.t/b.life;if(u>=1){b.on=false;b.m.visible=false;continue}
-  b.m.position.addScaledVector(b.v,dt);b.v.y+=dt*2.5;const q=b.m.position;const r=.45+u*1.9;
+  b.m.position.addScaledVector(b.v,dt);b.v.y+=dt*2.5*Math.min(1,17/((b.W&&b.W.range)||17));const q=b.m.position;const r=.45+u*1.9;
   if(inBld(q)||q.y<0){b.on=false;b.m.visible=false;flameP(q,null,0,true);continue}
   for(const e of enemies){if(e.mat>0||b.hit.has(e))continue;if(q.distanceTo(e.m.position)<e.r+r){b.hit.add(e);e.hp-=b.dmg*hitMul(e)*amBoss('HE',e);e.burn=2.6;e.flash=Math.max(e.flash||0,.04)}}
   if(rnd()<.35){let hp_=null;for(const pr of props){if(pr.alive&&q.y<pr.h&&Math.abs(q.x-pr.x)<pr.hw+r&&Math.abs(q.z-pr.z)<pr.hd+r){hp_=pr;break}}if(hp_)hitProp(hp_,b.dmg*.8)}
