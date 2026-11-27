@@ -306,6 +306,13 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 #tut .bt button{font:700 12px "Zen Kaku Gothic New";padding:5px 12px;background:transparent;border:1px solid var(--line);color:var(--dim);cursor:pointer}
 #tut .bt #tutNx{background:#7fe0ff;border-color:#7fe0ff;color:#10161a}
 #tutHi{position:fixed;z-index:19;border:2px solid #7fe0ff;border-radius:10px;pointer-events:none;box-shadow:0 0 16px #7fe0ff;animation:tutP 1.1s ease-in-out infinite;transition:left .2s,top .2s,width .2s,height .2s}
+#camNav{position:fixed;z-index:18;top:44%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:26px;pointer-events:none;color:#7fe0ff;filter:drop-shadow(0 0 10px rgba(127,224,255,.6))}
+@media (pointer:coarse){#camNav{left:66%;top:47%}#camNav .tx{margin-top:6px;font-size:14px}#camNav .ar{font-size:44px}#camNav .hd{width:58px;height:58px}}#camNav .ar{font-size:54px;line-height:1;animation:cnA 1.6s ease-in-out infinite}#camNav .ar.r{animation-delay:.8s}
+#camNav .hd{position:relative;width:70px;height:70px;animation:cnH 1.6s ease-in-out infinite}#camNav .hd i{position:absolute;inset:0}#camNav svg{width:100%;height:100%}
+#camNav .ms{display:none}@media (pointer:fine){#camNav .tc{display:none}#camNav .ms{display:block}}
+#camNav .tx{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:12px;white-space:nowrap;font:700 16px "Zen Kaku Gothic New";color:#fff;background:rgba(14,10,8,.75);padding:4px 14px;border:1px solid rgba(127,224,255,.6)}
+#camNav.dim{opacity:.45;transition:opacity .4s}
+@keyframes cnH{0%,100%{transform:translateX(-46px)}50%{transform:translateX(46px)}}@keyframes cnA{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
 #tutHi.mask{box-shadow:0 0 16px #7fe0ff,0 0 0 9999px rgba(0,0,0,.5)}
 @keyframes tutP{50%{border-color:rgba(127,224,255,.35)}}
 .card.tw p{color:#d8cfc0;line-height:1.7;margin:4px 0 14px}
@@ -335,7 +342,7 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
   <button class="snd" id="pauseB" aria-label="メニュー（一時停止）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button>
   <div id="plh">画面を<b>クリック</b>するとマウスで視点操作（Escで一時停止）</div>
 </div>
-<div id="tut" class="hide"></div><div id="tutHi" class="hide"></div>
+<div id="tut" class="hide"></div><div id="camNav" class="hide"><span class="ar l">◀</span><span class="hd"><i class="tc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11V4.5a1.5 1.5 0 0 1 3 0V10h.5V8.5a1.5 1.5 0 0 1 3 0V10h.5v-.5a1.5 1.5 0 0 1 3 0v5.8c0 3.7-2.6 6.2-6 6.2h-1c-2 0-3.3-.8-4.4-2.2L4.4 14.8a1.5 1.5 0 0 1 2.3-1.9L9 15.2z"/></svg></i><i class="ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="3" width="12" height="18" rx="6"/><path d="M12 3v6"/></svg></i></span><span class="ar r">▶</span><b class="tx"></b></div><div id="tutHi" class="hide"></div>
 <div id="tutW" class="ovl hide" style="z-index:12"><div class="card tw"><h2>WELCOME</h2><p>HARD POINT へようこそ。<br>まずは訓練施設で、基本の操作を覚えよう。</p><button class="pbtn main" id="twGo">訓練を開始</button><button class="pbtn" id="twSkip">スキップ</button></div></div>
 <div id="ctl" class="hide">
   <div id="look"></div>
@@ -1710,13 +1717,13 @@ function tutFw(side,fwd,y){y=y==null?tutYaw(fwd):y;const fx=Math.sin(y),fz=Math.
 function tutDummies(list){const y=tutYaw(26);for(const [sd,fw] of list){const [x,z]=tutFw(sd,fw,y);spawn('shooter',new V(x,0,z));const e=enemies[enemies.length-1];e.dummy=true;e.hp=e.max=260;e.mt.color.setHex(0x8f8676)}}
 const tutLeft=()=>enemies.filter(e=>e.dummy).length;
 function tutEnter(){const S=TSTEPS[TUT.i];TUT.p=0;TUT.done=false;
-  if(S.k==='cam'){TUT.yaw=camYaw;TUT.acc=0}
+  if(S.k==='cam'){TUT.yaw=camYaw;TUT.acc=0;$('camNav').querySelector('.tx').textContent=TOUCH?'画面の右側を左右にドラッグ':'マウスを左右に動かす（Q・Eキーでも可）';$('camNav').classList.remove('hide','dim')}else $('camNav').classList.add('hide');
   if(S.k==='move'){const [mx,mz]=tutFw(5,20);TUT.mk=tutMarker(mx,mz);TUT.d0=Math.max(4,Math.hypot(P.pos.x-mx,P.pos.z-mz))}
   if(S.k==='fire'){tutDummies([[-8,22],[0,26],[8,22]]);TUT.n=3}
   if(S.k==='body'&&tutLeft()<2)tutDummies([[-6,24],[6,24]]);
   tutPanel(`STEP ${TUT.i+1} / ${TSTEPS.length+1}`,S.t,S.d(),S.hi(),true,false)}
 function tutTick(dt){if(!TUT||TUT.done||TUT.i>=TSTEPS.length)return;const S=TSTEPS[TUT.i];
-  if(S.k==='cam'){const d=camYaw-TUT.yaw;TUT.yaw=camYaw;TUT.acc+=Math.abs(d);TUT.p=Math.min(1,TUT.acc/(TAU*.85))}
+  if(S.k==='cam'){const d=camYaw-TUT.yaw;TUT.yaw=camYaw;TUT.acc+=Math.abs(d);TUT.p=Math.min(1,TUT.acc/(TAU*.85));$('camNav').classList.toggle('dim',TUT.p>.25);if(TUT.p>=1)$('camNav').classList.add('hide')}
   else if(S.k==='move'&&TUT.mk){TUT.mk.children[0].rotation.z+=dt;const d=Math.hypot(P.pos.x-TUT.mk.position.x,P.pos.z-TUT.mk.position.z);TUT.p=d<3?1:Math.min(.99,Math.max(0,1-(d-3)/(TUT.d0-3)))}
   else if(S.k==='fire')TUT.p=1-tutLeft()/TUT.n;
   else if(S.k==='body'){if(AB.body.cd>0||AB.body.act>0)TUT.p=1}
@@ -1737,7 +1744,7 @@ function tutHiUpd(){const h=$('tutHi');if(!h)return;const el=TUTHI&&!$('tut').cl
   if(!r||!r.width||el.closest('.hide')){h.classList.add('hide');return}h.classList.remove('hide');h.classList.toggle('mask',!!GT);
   const pd=6;h.style.left=(r.left-pd)+'px';h.style.top=(r.top-pd)+'px';h.style.width=(r.width+pd*2)+'px';h.style.height=(r.height+pd*2)+'px'}
 setInterval(tutHiUpd,150);
-function tutHide(){$('tut').classList.add('hide');TUTHI=null;tutHiUpd()}
+function tutHide(){$('tut').classList.add('hide');$('camNav').classList.add('hide');TUTHI=null;tutHiUpd()}
 function tutSkip(){tutDone();if(TUT){TUT=null;GT=null;tutHide();goHome();return}GT=null;tutHide()}
 // ===== add to home screen =====
 let a2Evt=null;const a2Std=()=>matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true;
