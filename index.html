@@ -2000,7 +2000,10 @@ $('setReset').addEventListener('click',()=>{Object.assign(SET,SETD);saveSet();ap
 // ===== pause =====
 function pauseGame(){if(state!=='play')return;state='pause';pauseSync();inp.all=false;inp.w.fill(false);mb=mb2=false;joy.x=joy.y=0;for(const k in keys)keys[k]=false;$('pauseW').classList.remove('hide');try{document.pointerLockElement&&document.exitPointerLock()}catch(e){}}
 function resumeGame(){if(state!=='pause')return;$('pauseW').classList.add('hide');$('setW').classList.add('hide');$('help').classList.add('hide');state='play';if(matchMedia('(pointer:fine)').matches){try{const p=cv.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}}}
-function tapB(el,fn){el.addEventListener('pointerdown',e=>{e.stopPropagation()});el.addEventListener('pointerup',e=>{e.preventDefault();e.stopPropagation();fn()});el.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true})}
+// tapB fires on pointerup; the browser's follow-up click would land on whatever replaced the menu (e.g. the hangar's
+// test-drive button sits where 'back to hangar' was), so swallow clicks for a moment after a tapB action
+let clickBlock=0;document.addEventListener('click',e=>{if(performance.now()<clickBlock){e.stopPropagation();e.preventDefault()}},true);
+function tapB(el,fn){el.addEventListener('pointerdown',e=>{e.stopPropagation()});el.addEventListener('pointerup',e=>{e.preventDefault();e.stopPropagation();clickBlock=performance.now()+400;fn()});el.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true})}
 $('pauseB').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();pauseGame()});$('pauseB').addEventListener('touchstart',e=>{e.stopPropagation()},{passive:true});
 for(const id of['pauseB','sndH','helpH'])$('ctl').appendChild($(id));tapB($('pResume'),resumeGame);tapB($('pSet'),()=>{if(state==='pause')openSet()});tapB($('pHelp'),()=>{if(state==='pause')toggleHelp()});
 let pHomeT=0;tapB($('pHome'),()=>{if(state!=='pause')return;if(TEST){TEST=null;openGarage();return}if(Date.now()-pHomeT<3000){pHomeT=0;goHome();return}pHomeT=Date.now();$('pHome').classList.add('cf');$('pHomeL').textContent='本当に撤退する？（もう一度押す）';setTimeout(()=>{if(Date.now()-pHomeT>=2900){$('pHome').classList.remove('cf');pauseSync()}},3000)});
