@@ -539,7 +539,13 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 <script>
 {
 const $=id=>document.getElementById(id);
-const V=THREE.Vector3,rnd=Math.random,TAU=Math.PI*2;
+// rnd() normally = Math.random; level building swaps in a seeded generator so every run gets the same map
+let RNG=Math.random;const V=THREE.Vector3,rnd=()=>RNG(),TAU=Math.PI*2;
+function mkRng(a){a>>>=0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const hs=str=>{let h=2166136261;for(let i=0;i<str.length;i++)h=Math.imul(h^str.charCodeAt(i),16777619);return h>>>0};
+// fixed layouts / spawns: change a seed here to re-roll that layout
+const MAP_ID='deadcity',SEEDS={ruins:[0,1,2,3],boss:[0,1,2,3]};
+const seedOf=(what,n,k)=>hs(`${MAP_ID}:${what}:${n}:${k||0}`);
 const M_SCALE=2.5; // world unit -> displayed metres (mech is about 13m tall, War Robots scale)
 const fmt=n=>Math.max(0,Math.ceil(n*100)).toLocaleString();
 const la=(a,b,t)=>{let d=((b-a+Math.PI)%TAU+TAU)%TAU-Math.PI;return a+d*Math.min(1,t)};
@@ -728,7 +734,8 @@ function updateProps(dt){for(const pr of props){if(pr.fl>0){pr.fl-=dt;pr.g.posit
   if(!pr.alive&&pr.t<1){pr.t=Math.min(1,pr.t+dt*1.8);const k=1-Math.pow(1-pr.t,3);for(const m of pr.ms){m.scale.y=1-.74*k}pr.g.rotation.x=pr.rx*k;pr.g.rotation.z=pr.rz*k;if(pr.t>.35&&!pr.dk){pr.dk=1;for(const m of pr.ms)m.material=LM[4]}}}}
 function propSeg(ax,ay,az,bx,by,bz){let best=null,bt=1;for(const pr of props){if(!pr.alive)continue;if(Math.abs(bx-pr.x)>pr.hw+4&&Math.abs(ax-pr.x)>pr.hw+4)continue;if(Math.abs(bz-pr.z)>pr.hd+4&&Math.abs(az-pr.z)>pr.hd+4)continue;const t=segBox(ax,ay,az,bx,by,bz,pr);if(t<bt){bt=t;best=pr}}return best?{pr:best,t:bt}:null}
 function propsAoe(pos,r,dmg){for(const pr of props){if(!pr.alive)continue;const dx=Math.max(0,Math.abs(pos.x-pr.x)-pr.hw),dz=Math.max(0,Math.abs(pos.z-pr.z)-pr.hd);if(Math.hypot(dx,dz)<r)hitProp(pr,dmg)}}
-function buildLevel(kind){
+function buildLevel(kind){const keep=RNG;RNG=mkRng(seedOf(kind,cl(stage,1,3),(SEEDS[kind]||[])[cl(stage,1,3)]||0));try{buildLevel0(kind)}finally{RNG=keep}}
+function buildLevel0(kind){
   if(levelG)scene.remove(levelG);levelG=new THREE.Group();scene.add(levelG);blds.length=0;props.length=0;SB=LM.map(()=>[]);
   if(kind==='train'){buildTrain();flushSB();return}
   const boss=kind==='boss';ARENA=boss?85:120;
@@ -1574,14 +1581,19 @@ function openPortal(pos,types){
   portals.push({g,core,r1,r2,halo,L,types,t:0,next:1.1,big,cl:0});SFX.warp(pos);
 }
 // ===== squads: each reinforcement group arrives together from ONE bearing; bearings drift, never all sides at once =====
-let sqDir=null,sqT=0,sqLast=0;
-function freeSpot(x,z,m){const v=new V(x,1,z);for(let t=0;t<12;t++){const d=Math.hypot(v.x,v.z);if(d>ARENA-8)v.multiplyScalar((ARENA-8)/d);if(!inBld(v,m))return v;v.x+=(rnd()-.5)*10;v.z+=(rnd()-.5)*10}return v}
+let sqDir=null,sqT=0,sqLast=0,sqN=0,bmN=0;
+function freeSpot(x,z,m,r){r=r||rnd;const v=new V(x,1,z);for(let t=0;t<12;t++){const d=Math.hypot(v.x,v.z);if(d>ARENA-8)v.multiplyScalar((ARENA-8)/d);if(!inBld(v,m))return v;v.x+=(r()-.5)*10;v.z+=(r()-.5)*10}return v}
+// each squad's size and entry point come from its own seeded generator (stage / wave / squad number), in world coordinates,
+// so every run sees the same reinforcements from the same places; only when that spot is right next to the player is it mirrored
 function spawnSquad(){
-  const n=Math.min(toSpawn.length,8+Math.floor(rnd()*5)+Math.min(5,stage)),types=toSpawn.splice(0,n);
-  let a;if(sqDir==null)a=camYaw+(rnd()-.5)*1.2;else a=sqDir+(rnd()-.5)*Math.PI*.9;sqDir=a;
-  const dist=46+rnd()*16,ox=P.pos.x+Math.sin(a)*dist,oz=P.pos.z+Math.cos(a)*dist;
+  const r=demo?rnd:mkRng(seedOf('sq',stage,wave*100+(++sqN)));
+  const n=Math.min(toSpawn.length,8+Math.floor(r()*5)+Math.min(5,stage)),types=toSpawn.splice(0,n);
+  let a;if(sqDir==null)a=r()*TAU;else a=sqDir+(r()-.5)*Math.PI*.9;sqDir=a;
+  const dist=ARENA*(.45+r()*.25);let ox=Math.sin(a)*dist,oz=Math.cos(a)*dist;
+  if(demo){const d=46+r()*16;ox=P.pos.x+Math.sin(a)*d;oz=P.pos.z+Math.cos(a)*d}
+  else if(Math.hypot(ox-P.pos.x,oz-P.pos.z)<34){ox=-ox;oz=-oz}
   const k=types.length>6?3:types.length>3?2:1,groups=Array.from({length:k},()=>[]);types.forEach((t,i)=>groups[i%k].push(t));
-  groups.forEach((g,i)=>{const ang=a+Math.PI/2,off=(i-(k-1)/2)*7;openPortal(freeSpot(ox+Math.sin(ang)*off+(rnd()-.5)*3,oz+Math.cos(ang)*off+(rnd()-.5)*3,6),g)});
+  groups.forEach((g,i)=>{const ang=a+Math.PI/2,off=(i-(k-1)/2)*7;openPortal(freeSpot(ox+Math.sin(ang)*off+(r()-.5)*3,oz+Math.cos(ang)*off+(r()-.5)*3,6,r),g)});
   sqT=0;sqLast=n;toast('敵の増援が接近');
 }
 function updatePortals(dt){
@@ -1766,13 +1778,13 @@ function fadeTo(fn,label){state='trans';const f=$('fade');f.textContent=label||'
 let arenaBoss=false;
 function startStage(n){arenaBoss=false;stage=n;if(n>best){best=n;try{localStorage.setItem('rg_best',best)}catch(e){}}sub=0;phase='ruins';clearField();buildLevel('ruins');placePlayer(0,0);MUS.lvl=1;nextWave();startDrop()}
 function nextWave(){
-  if(phase==='ruins'&&sub>=3){fadeTo(()=>{phase='boss';arenaBoss=true;clearField();buildLevel('boss');placePlayer(0,-50);wave=(stage-1)*4+4;sqDir=null;sqLast=0;toSpawn=['boss'];for(let i=0;i<10+stage*4;i++)toSpawn.push('drone');if(stage>=2)for(let i=0;i<stage;i++)toSpawn.push('hound');for(let i=0;i<1+stage;i++)toSpawn.push('shooter','drone');spawnT=1.5;MUS.lvl=2;banner('WARNING');P.hp=Math.min(P.max,P.hp+P.max*.2);startDrop()},`STAGE ${stage}-BOSS`);return}
-  sub++;wave=(stage-1)*4+sub;toSpawn=[];sqDir=null;sqLast=0;spawnT=1.5;
+  if(phase==='ruins'&&sub>=3){fadeTo(()=>{phase='boss';arenaBoss=true;clearField();buildLevel('boss');placePlayer(0,-50);wave=(stage-1)*4+4;sqDir=null;sqLast=0;sqN=0;bmN=0;toSpawn=['boss'];for(let i=0;i<10+stage*4;i++)toSpawn.push('drone');if(stage>=2)for(let i=0;i<stage;i++)toSpawn.push('hound');for(let i=0;i<1+stage;i++)toSpawn.push('shooter','drone');spawnT=1.5;MUS.lvl=2;banner('WARNING');P.hp=Math.min(P.max,P.hp+P.max*.2);startDrop()},`STAGE ${stage}-BOSS`);return}
+  sub++;wave=(stage-1)*4+sub;toSpawn=[];sqDir=null;sqLast=0;sqN=0;spawnT=1.5;const wr=mkRng(seedOf('wave',stage,wave));
   for(let i=0;i<28+wave*9;i++)toSpawn.push('drone');
-  const mix=(t,n)=>{for(let i=0;i<n;i++)toSpawn.splice(Math.floor(rnd()*toSpawn.length),0,t)};
+  const mix=(t,n)=>{for(let i=0;i<n;i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,t)};
   if(wave>=2)mix('flyer',2+Math.floor(wave*.8));if(stage>=2)mix('mortar',1+Math.floor(stage*.7));if(stage>=3){mix('sniper',1+Math.floor(stage*.6));mix('guard',2+Math.floor(stage*.8))}
-  for(let i=0;i<5+Math.floor(wave*2);i++)toSpawn.splice(Math.floor(rnd()*toSpawn.length),0,'shooter');
-  if(stage>=2)for(let i=0;i<4+Math.floor(wave*1.3);i++)toSpawn.splice(Math.floor(rnd()*toSpawn.length),0,'hound');
+  for(let i=0;i<5+Math.floor(wave*2);i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,'shooter');
+  if(stage>=2)for(let i=0;i<4+Math.floor(wave*1.3);i++)toSpawn.splice(Math.floor(wr()*toSpawn.length),0,'hound');
   banner(stageLabel());if(sub>1)P.hp=Math.min(P.max,P.hp+P.max*.15);
 }
 
@@ -1904,11 +1916,12 @@ function clrList(){try{return JSON.parse(localStorage.getItem('rg_clr')||'[]')}c
 // ===== run timer: counts only while actually playing (pause / upgrade pick / drop excluded) =====
 const RUN={t:0,s0:1,sp:[]};
 function fmtT(t,cs){const m=Math.floor(t/60),x=t-m*60;return String(m).padStart(2,'0')+':'+(cs?x.toFixed(2).padStart(5,'0'):x.toFixed(1).padStart(4,'0'))}
-function bestTime(){try{return +localStorage.getItem('rg_bt')||0}catch(e){return 0}}
+const BT_K='rg_bt_fx';// fixed layouts started a new record table (old random-layout best stays in rg_bt)
+function bestTime(){try{return +localStorage.getItem(BT_K)||0}catch(e){return 0}}
 function mapClear(){for(const o of scraps)if(o.on){o.on=false;o.g.visible=false;SCRAP+=o.val;P.runScrap=(P.runScrap||0)+o.val}saveScrap();
   const c=clrList();if(!c.includes('deadcity'))c.push('deadcity');try{localStorage.setItem('rg_clr',JSON.stringify(c))}catch(e){}
   state='over';stopMotors();megaLoop(false);inp.all=false;inp.w.fill(false);mb=mb2=false;
-  const T=RUN.t,bt=bestTime(),full=RUN.s0===1,rec=full&&(!bt||T<bt);if(rec)try{localStorage.setItem('rg_bt',T)}catch(e){}
+  const T=RUN.t,bt=bestTime(),full=RUN.s0===1,rec=full&&(!bt||T<bt);if(rec)try{localStorage.setItem(BT_K,T)}catch(e){}
   const ov=$('over');ov.classList.add('win');ov.querySelector('h2').innerHTML='<span class="mc">MISSION</span><span class="mc2">COMPLETE!!</span>';
   $('upl').textContent=Object.keys(PK).length?'取得した強化：'+Object.entries(PK).map(([k,v])=>UP.find(u=>u.id===k).n+(v>1?'×'+v:'')).join('、'):'';
   const sp=RUN.sp.map((t,i)=>`<i>BOSS ${RUN.s0+i}　${fmtT(t,1)}</i>`).join('');
@@ -2159,7 +2172,7 @@ const HIST_K='rg_hist',HIST_MAX=60;
 function histList(){try{const h=JSON.parse(localStorage.getItem(HIST_K)||'[]');return Array.isArray(h)?h.filter(r=>r&&r.cfg&&BODY[r.cfg.B]&&LEGS[r.cfg.G]):[]}catch(e){return[]}}
 let LASTRUN=null;
 function histAdd(win,rec){LASTRUN=null;if(TUT||TEST||demo)return null;
-  const r={t:Date.now(),win:!!win,map:'DEAD CITY',st:win?'CLEAR':stageLabel(),score,time:+RUN.t.toFixed(2),s0:RUN.s0,scrap:P.runScrap||0,by:win?'':(P.hb||'敵の攻撃'),rec:!!rec,
+  const r={t:Date.now(),fx:1,win:!!win,map:'DEAD CITY',st:win?'CLEAR':stageLabel(),score,time:+RUN.t.toFixed(2),s0:RUN.s0,scrap:P.runScrap||0,by:win?'':(P.hb||'敵の攻撃'),rec:!!rec,
     sp:RUN.sp.map(t=>+t.toFixed(2)),up:Object.entries(PK),cfg:{B:cfg.B,G:cfg.G,A:cfg.A,P:cfg.P,W:BODY[cfg.B].slots.map((c,i)=>cfg.W[i])}};
   const h=histList();h.unshift(r);if(h.length>HIST_MAX)h.length=HIST_MAX;try{localStorage.setItem(HIST_K,JSON.stringify(h))}catch(e){}return LASTRUN=r}
 // build a detached copy of the mech for a given loadout, then rebuild the live one untouched
@@ -2256,7 +2269,7 @@ $('shrSave').addEventListener('click',()=>{if(!SHR||!SHR.url)return;const a=docu
 const fmtD=t=>{const d=new Date(t),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`};
 function openHist(){$('histD').classList.add('hide');$('histList').classList.remove('hide');$('histT').textContent='戦歴';const h=histList();$('histCnt').textContent=h.length?`${h.length}件（最新${HIST_MAX}件まで保存）`:'';
   if(!h.length){$('histList').innerHTML='<div class="hemp">まだ記録がありません。<br>出撃するとミッションの結果と使った機体がここに残ります。</div>';$('histW').classList.remove('hide');return}
-  const wins=h.filter(r=>r.win),bs=Math.max(...h.map(r=>r.score)),bt=wins.filter(r=>r.s0===1).map(r=>r.time);
+  const wins=h.filter(r=>r.win),bs=Math.max(...h.map(r=>r.score)),bt=wins.filter(r=>r.s0===1&&r.fx).map(r=>r.time);
   $('histList').innerHTML=`<div class="hsum"><span>出撃<b>${h.length}</b></span><span>制圧<b>${wins.length}</b></span><span>最高スコア<b>${bs.toLocaleString()}</b></span>${bt.length?`<span>最速クリア<b>${fmtT(Math.min(...bt),1)}</b></span>`:''}</div>`+
     h.map((r,i)=>{const c=r.cfg;return `<button class="hrow${r.win?' w':''}" data-i="${i}"><span class="dt">${fmtD(r.t).replace(' ','<br>')}</span><span class="bd">${r.win?'CLEAR':'大破'}</span><span class="mn">${esc(BODY[c.B].n)} ／ ${esc(LEGS[c.G].n)}<small>${esc(r.win?'DEAD CITY 制圧':r.st+' まで到達')} · ${BODY[c.B].slots.map((s,k)=>esc((WP[c.W[k]]||{n:'-'}).n)).join('・')}</small></span><span class="sc2">${r.score.toLocaleString()}<small>${fmtT(r.time,1)}</small></span></button>`}).join('');
   $('histW').classList.remove('hide')}
@@ -2979,7 +2992,7 @@ function update(dt){
     const r=P.bar>0?3.7:1.6;
     if(Math.hypot(b.m.position.x-P.pos.x,b.m.position.z-P.pos.z)<r&&Math.abs(b.m.position.y-(P.y+2.6))<2.2){t2.copy(b.v).normalize().negate();if(U.sRef&&guardCut(t2)){const tg=nearest(P.pos,90);_pv2.copy(b.m.position);if(tg)t3.copy(tg.m.position).sub(_pv2).normalize();else t3.copy(t2);fireBullet(_pv2,t3,.02,120,45,1.2)}if(!volHit.has(b.vol)){volHit.set(b.vol,now);damage(b.dmg,t2,b.m.position,b.by)}if(volHit.size>64)for(const [k,t] of volHit)if(now-t>3)volHit.delete(k);b.on=false;b.m.visible=false}}
   if(arenaBoss&&(phase==='clear'||dying.some(d=>d.e.type==='boss'))){toSpawn=[];if(portals.length){for(const q of portals)scene.remove(q.g);portals.length=0}for(const o of enemies.slice())if(!o.wipe){o.wipe=1;setTimeout(()=>{if(enemies.includes(o))kill(o)},150+rnd()*450)}}
-  if(arenaBoss&&phase==='boss'&&enemies.some(e=>e.type==='boss')){P.bsT=(P.bsT==null?8:P.bsT)-dt;if(P.bsT<=0){P.bsT=12;const minion=enemies.length-1+toSpawn.length+portals.reduce((a,q)=>a+q.types.length,0);if(minion<6+stage*2){for(let k=0;k<4+stage;k++)toSpawn.push(['drone','drone','drone','hound','shooter'][Math.floor(rnd()*(stage>=2?5:3)+(stage>=2?0:0))]);sqT=24}}}
+  if(arenaBoss&&phase==='boss'&&enemies.some(e=>e.type==='boss')){P.bsT=(P.bsT==null?8:P.bsT)-dt;if(P.bsT<=0){P.bsT=12;const minion=enemies.length-1+toSpawn.length+portals.reduce((a,q)=>a+q.types.length,0);if(minion<6+stage*2){const br=mkRng(seedOf('bm',stage,++bmN));for(let k=0;k<4+stage;k++)toSpawn.push(['drone','drone','drone','hound','shooter'][Math.floor(br()*(stage>=2?5:3))]);sqT=24}}}
   spawnT-=dt;updatePortals(dt);updateShells(dt);
   sqT+=dt;
   if(toSpawn.length&&spawnT<=0){
