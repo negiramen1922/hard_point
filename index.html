@@ -427,7 +427,7 @@ const WP={
   cannon:{n:'Behemoth',s:'Behemoth',ty:'大砲',c:'重',wt:22,am:'HE',tr:70,kind:'gun',cannon:true,rate:.85,dmg:270,spin:0,spread:.004,mag:6,rl:2.8,vel:85,aoe:6,d:'榴弾砲。着弾地点で大爆発して周囲をまとめて吹き飛ばす。連射は遅い'},
   beam:{n:'Solar Lance',s:'Lance',ty:'ビーム',c:'重',wt:20,am:'AP',tr:46,kind:'beam',charge:1.5,dps:420,maxT:2.6,cd:2.4,d:'長押しでチャージ、離すとチャージした分だけビームを照射し続ける。敵を貫通。照射中は砲身がほとんど動かないので、機体の向きで薙ぎ払う。撃った後は2.4秒冷却'},
   melt:{n:'Smelter',s:'Smelter',ty:'レーザー',c:'重',wt:17,am:'AP',tr:92,kind:'laser',dps:120,heatT:12,cool:2.6,range:200,d:'装甲を溶かす熱線。当て続けた敵は赤→白く灼熱し、全ての武器から受けるダメージが最大+60%。撃ちっぱなしはオーバーヒートに注意'},
-  twin:{n:'Gemini',s:'Gemini',ty:'連装砲',c:'重',wt:20,am:'HE',tr:90,kind:'gun',twin:true,rate:3.2,dmg:68,spin:0,spread:.016,mag:24,rl:2.6,regen:.3,vel:95,rng:150,aoe:2.4,d:'2本の砲身が交互に後退しながらバンバン撃ち込む連装オートキャノン。着弾で小爆発。弾は撃ち切り式ではなく、撃つのをやめると少しずつ自動で装填される'},
+  twin:{n:'Gemini',s:'Gemini',ty:'連装砲',c:'重',wt:20,am:'HE',tr:90,kind:'gun',twin:true,rate:3.2,rmax:5.5,heatT:4,dmg:68,spin:0,spread:.016,mag:40,rl:2.6,regen:.2,vel:95,rng:150,aoe:2.4,d:'2本の砲身が交互に後退しながらバンバン撃ち込む連装オートキャノン。撃ち続けると砲身が熱を持って連射が上がる（ヒートドライブ）。着弾で小爆発。弾は撃ち切り式ではなく、撃つのをやめると少しずつ自動で装填される'},
   burst:{n:'Hammerhead',s:'Hammer',ty:'バーストショットガン',c:'重',wt:21,am:'HE',tr:85,kind:'gun',shot:true,burst:3,bi:.1,pel:9,rate:.95,dmg:15,spin:0,spread:.075,mag:18,rl:2.9,vel:110,rng:80,d:'1回引くと3連射するバースト式の重ショットガン。3つの銃口から散弾を叩き込む。後部のV型エンジンが唸りを上げる'},
   pod:{n:'Trident',s:'Trident',ty:'ロケットポッド',c:'重',wt:23,am:'HE',tr:80,kind:'gun',rkt:true,rate:5,dmg:80,spin:0,spread:.035,mag:42,rl:6.5,vel:0,rng:100,aoe:3,d:'7連装のロケットポッド3基を三方向に束ねた重武装。誘導しないロケット弾を3基から順番にまっすぐ撃ち出す。装弾42発と多いが、リロードは長い'},
   shot:{n:'Breacher',s:'Breacher',ty:'ショットガン',c:'軽',wt:9,am:'HE',tr:220,kind:'gun',shot:true,pel:8,rate:1.7,dmg:21,spin:0,spread:.085,mag:6,rl:1.9,vel:110,rng:70,d:'散弾を8発ばらまく。近距離で絶大、遠いと散って弱い。6発撃ち切りで素早くリロード'},
@@ -437,7 +437,7 @@ const WP={
   shield:{n:'Buckler',s:'Buckler',ty:'シールド',c:'軽',wt:10,kind:'shield',cut:.85,d:'押している間ガード。正面からの攻撃を85%カット（移動は遅くなる）'},
   saw:{n:'Grinder',s:'Grinder',ty:'回転ノコ',c:'軽',wt:10,am:'AP',kind:'saw',dps:520,range:8,d:'近接武器。振り回して周りの敵を切り刻む。切り続けるほど刃が赤熱して威力最大2倍、切った敵は怯んで攻撃が止まり弾き飛ばされる'},
   flame:{n:'Inferno',s:'Inferno',ty:'火炎放射',c:'軽',wt:10,am:'HE',tr:160,kind:'flame',dps:190,rate:16,vel:30,burn:45,range:80,fuelT:8,rl:2.4,d:'炎の塊を連続で撃ち出す。遠くまで届くが弾速がとても遅いので、離れた敵や動く敵には偏差撃ちが必要。当たった敵は数秒間燃え続ける。燃料8秒分で、切れると補給'},
-  tesla:{n:'Arc Chain',s:'Arc',ty:'テスラ',c:'軽',wt:9,am:'HE',tr:220,kind:'tesla',dmg:16,cd:.1,mag:80,rl:2.6,range:50,chain:3,jump:15,d:'押している間ずっと電撃を流し続け、近くの敵へ連鎖する（敵同士の隙間15m以内、最初の1体＋最大3体）。装弾80'}
+  tesla:{n:'Arc Chain',s:'Arc',ty:'テスラ',c:'軽',wt:9,am:'HE',tr:220,kind:'tesla',dmg:20,cd:.1,mag:80,rl:2.6,range:50,chain:3,jump:15,d:'押している間ずっと電撃を流し続け、近くの敵へ連鎖する（敵同士の隙間15m以内、最初の1体＋最大3体）。装弾80'}
 };
 const BODY={
   std:{n:'Vanguard',ab:'missile',turn:220,ty:'ミディアム',slots:['重','軽'],hp:620,wt:40,d:'重1・軽1。何でもこなす標準フレーム'},
@@ -2469,6 +2469,7 @@ function updateArms(dt,tgt){
       if(a.ejT>0){a.ejT-=dt;if(a.ejT<=0){for(const pt of a.ports)ejectShell(a,pt,true,true);puff(t3.copy(a.ports[1]).applyMatrix4(a.w.matrixWorld),.5,0x8a8580,1)}}
       if(a.lev){a.lev.rotation.z+=(a.levA-a.lev.rotation.z)*Math.min(1,dt*30)}
       if(a.bq>0&&!(P.stun>0)){a.bt-=dt;if(a.bt<=0){if(a.ammo>0&&a.rl<=0){a.bt=W.bi;a.bq--;a.ammo--;a.inB=1;shoot(a,tgt);a.inB=0;if(a.ammo<=0)startReload(a)}else{a.bq=0;a.ejT=.14}}}
+      if(W.twin){const hot=pr&&a.ammo>0&&!(a.rl>0);a.heat=hot?Math.min(1,(a.heat||0)+dt/W.heatT):Math.max(0,(a.heat||0)-dt/2.5)}
       if(W.regen){const mx=magOf(a);if(a.ammo<mx&&now-(a.lst==null?-9:a.lst)>.8){a.rg=(a.rg||0)+dt/(W.regen*U.rl*(U.gmR||1));while(a.rg>=1&&a.ammo<mx){a.rg--;a.ammo++}}else a.rg=0}
       if(a.eng){a.rk=Math.max(0,(a.rk||0)-dt);const k=.012+a.rk*.16+(pr?.01:0);a.eng.position.set((rnd()-.5)*k,(rnd()-.5)*k,(rnd()-.5)*k*.5);for(const pp of a.pipes){pp.rotation.x=pp.userData.rx+(rnd()-.5)*k*5;pp.rotation.z=pp.userData.rz+(rnd()-.5)*k*5}for(const pu of a.pul)pu.rotation.z+=dt*(8+a.rk*60);if(a.rk>.15&&rnd()<.4){a.pipes[Math.floor(rnd()*a.pipes.length)].getWorldPosition(t3);puff(t3,.35,0x2a2420,1.6)}}
       if(a.bar){if(pr&&a.rl<=0)a.spin=Math.min(1,a.spin+dt*U.gS/W.spin);else a.spin=Math.max(0,a.spin-dt*1.1);a.bar.rotation.z+=a.spin*dt*(45+a.heat*40);if(a.bar2)a.bar2.rotation.z=-a.bar.rotation.z;
@@ -2491,7 +2492,7 @@ function updateArms(dt,tgt){
         const ready=a.bar?a.spin>.3:true;
         if(W.msl){const rise=pr&&!a.prv;a.prv=pr;if(rise&&!(a.sal>0)&&a.ammo>0&&!(a.rl>0)&&lockedN()>0){a.sal=a.ammo;a.salT=0}
           if(a.sal>0){a.salT-=dt;while(a.sal>0&&a.salT<=0){if(!lockTargets().length){a.sal=0;break}a.salT+=.075/rtM();a.sal--;a.ammo--;shoot(a,tgt);if(a.ammo<=0){a.sal=0;startReload(a)}}}}
-        if(pr&&a.ammo>0&&ready&&!(a.bq>0)&&!W.msl){a.acc+=(W.rmax?W.rate+(W.rmax*U.gR-W.rate)*a.heat:W.rate*(a.t==='ar'?U.aR:1)*(U.rt[a.t]||1))*(a.bar?a.spin:1)*rtM()*dt;while(a.acc>=1&&a.ammo>0){a.acc--;a.ammo--;shoot(a,tgt)}}
+        if(pr&&a.ammo>0&&ready&&!(a.bq>0)&&!W.msl){a.acc+=(W.rmax?W.rate+(W.rmax*(W.twin?1:U.gR)-W.rate)*(a.heat||0):W.rate*(a.t==='ar'?U.aR:1)*(U.rt[a.t]||1))*(a.bar?a.spin:1)*rtM()*dt;while(a.acc>=1&&a.ammo>0){a.acc--;a.ammo--;shoot(a,tgt)}}
         else if(!pr)a.acc=a.bar?0:Math.min(1,(now-(a.lf==null?-9:a.lf))*W.rate*rtM());
         if(a.ammo<=0)startReload(a);
       }
