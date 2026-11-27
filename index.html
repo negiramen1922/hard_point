@@ -548,7 +548,7 @@ function mkRng(a){a>>>=0;return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|
 const hs=str=>{let h=2166136261;for(let i=0;i<str.length;i++)h=Math.imul(h^str.charCodeAt(i),16777619);return h>>>0};
 // fixed layouts / spawns: change a seed here to re-roll that layout
 let MAP='deadcity';// the map being played (also drives the home / hangar backdrop)
-const SEEDS={deadcity:{ruins:[0,1,2,3],boss:[0,1,2,3]},desert:{ruins:[0,0,0,0],boss:[0,0,0,0]}};
+const SEEDS={deadcity:{ruins:[0,1,2,3],boss:[0,1,2,3]},desert:{ruins:[0,0,0,0],boss:[0,0,0,0]},harbor:{ruins:[0,0,0,0],boss:[0,0,0,0]}};
 const seedOf=(what,n,k)=>hs(`${MAP}:${what}:${n}:${k||0}`);
 const M_SCALE=2.5; // world unit -> displayed metres (mech is about 13m tall, War Robots scale)
 const fmt=n=>Math.max(0,Math.ceil(n*100)).toLocaleString();
@@ -672,7 +672,8 @@ function box(w,h,d,m,x,y,z,p){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d
 // ---------- level: ruined city / boss arena (merged geometry, few draw calls) ----------
 const blds=[];let levelG=null;
 const LM=[M(0x6a6258),M(0x56524c),M(0x76675a),M(0x221e1b),M(0x5e5246),M(0x7a3a1e),M(0x9a5030),M(0x4a3426),M(0x7e7262),M(0x8a2a12),
-  /*10- desert*/M(0xc29563),M(0xb07e4c),M(0x7e5838),M(0xe0d4b8),M(0x48423b),M(0x3a2c26),new THREE.MeshBasicMaterial({color:0xff6a1a}),M(0xb98a58),M(0x9a6c42)];
+  /*10- desert*/M(0xc29563),M(0xb07e4c),M(0x7e5838),M(0xe0d4b8),M(0x48423b),M(0x3a2c26),new THREE.MeshBasicMaterial({color:0xff6a1a}),M(0xb98a58),M(0x9a6c42),
+  /*19- harbor*/M(0xe9eff3),M(0xa8d2e4),M(0xa8402e),M(0x2e5c8c),M(0xcfa232),M(0x3e6e52),M(0x505860),M(0x9aa2a8),M(0xd8a224),M(0x6e7880)];
 const _m4=new THREE.Matrix4(),_eu=new THREE.Euler(),_q=new THREE.Quaternion(),_sc=new V(1,1,1),_ps=new V();let SB=null;
 function sgeo(g,mi,x,y,z,rx,ry,rz){g=g.index?g.toNonIndexed():g;_eu.set(rx||0,ry||0,rz||0);_q.setFromEuler(_eu);_m4.compose(_ps.set(x,y,z),_q,_sc);g.applyMatrix4(_m4);SB[mi].push(g)}
 function sbox(w,h,d,mi,x,y,z,rx,ry,rz){sgeo(new THREE.BoxGeometry(w,h,d),mi,x,y,z,rx,ry,rz)}
@@ -747,8 +748,10 @@ function propsAoe(pos,r,dmg){for(const pr of props){if(!pr.alive)continue;const 
 // ===== map themes: sky / fog / ground / light per map =====
 const THEME={deadcity:{bg:0x1a1410,bgB:0x1e0f0a,gr:0x3b2e23,grB:0x3a2620,grid:true,fog:[70,230],hemi:[0xffe2c4,0x2a1c12,.85],sun:[0xffc48a,.95]},
   desert:{bg:0xd9b98a,bgB:0x6a3e2a,gr:0xb48656,grB:0x4e3428,grid:false,fog:[80,290],fogB:[60,220],hemi:[0xffeedd,0x7a5a3c,.72],hemiB:[0xffc89a,0x3a2018,.8],sun:[0xfff0d2,.82],sunB:[0xff9a5a,.95]}};
+THEME.harbor={bg:0xb9c7d2,bgB:0x56687a,gr:0xa3b2bd,grB:0x9ab8cc,grid:false,fog:[60,240],fogB:[50,200],hemi:[0xf0f6ff,0x6a7a88,.8],hemiB:[0xc8dcff,0x24303c,.85],sun:[0xf4f8ff,.7],sunB:[0xb0c8ff,.8]};
+let WXF=230;
 function applyTheme(id,boss){const T=THEME[id]||THEME.deadcity,f=boss&&T.fogB||T.fog,h=boss&&T.hemiB||T.hemi,su=boss&&T.sunB||T.sun,bg=boss?T.bgB:T.bg;
-  scene.fog.color.setHex(bg);scene.background.setHex(bg);scene.fog.near=f[0];scene.fog.far=f[1];mat.ground.color.setHex(boss?T.grB:T.gr);grid.visible=T.grid;
+  scene.fog.color.setHex(bg);scene.background.setHex(bg);scene.fog.near=f[0];scene.fog.far=f[1];WXF=f[1];mat.ground.color.setHex(boss?T.grB:T.gr);grid.visible=T.grid;
   hemi.color.setHex(h[0]);hemi.groundColor.setHex(h[1]);hemi.intensity=h[2];sun.color.setHex(su[0]);sun.intensity=su[1]}
 // ===== SCORCHED DUNES: sandstone buttes, giant fossils, crashed hulls, low dunes; the boss arenas are volcanic basalt =====
 function mesa(x,z,R,h,col,dark){const sides=6+Math.floor(rnd()*3),L=2+Math.floor(rnd()*3),cs=dark?[15,12,15]:[11,18,10];let y=0,r=R;
@@ -789,6 +792,46 @@ function buildDesert(boss,free){const volc=boss&&stage>=3;
     for(let i=0;i<7;i++){const a=rnd()*TAU,rr=20+rnd()*(ARENA-30);sgeo(new THREE.CircleGeometry(1.8+rnd()*2.4,12),16,Math.cos(a)*rr,.035,Math.sin(a)*rr,-Math.PI/2,0,0)}
   }
 }
+// ===== FROZEN HARBOR: container yards, gantry cranes, warehouses, light towers, snow drifts and ice; the boss arenas are a frozen pier =====
+const CONT=[21,22,23,24,21,22];
+function container(x,z,alongX,lv,col){const L=4.8,W=2.0,H=2.1,ry=alongX?Math.PI/2:0;let top=0;
+  for(let k=0;k<lv;k++){const mi=CONT[Math.floor(rnd()*CONT.length)],y=k*H+H/2,ox=(rnd()-.5)*.25,oz=(rnd()-.5)*.25;sbox(W,H,L,mi,x+ox,y,z+oz,0,ry+(rnd()-.5)*.04,0);
+    for(let r=0;r<4;r++)sbox(W+.04,.08,.08,25,x+ox,y-H/2+.35+r*.45,z+oz+(alongX?0:(r%2?1:-1)*.01),0,ry,0);sbox(W*.96,.05,L*.98,25,x+ox,y+H/2,z+oz,0,ry,0);top=(k+1)*H}
+  sbox(W*.9,.18,L*.92,19,x,top+.09,z,0,ry,0);if(col)blds.push({x,z,hw:alongX?L/2:W/2,hd:alongX?W/2:L/2,h:top})}
+function yard(x,z,alongX,nx,nz,col){for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const lv=1+Math.floor(rnd()*3);if(rnd()<.15)continue;const dx=alongX?j*5.1:i*2.15,dz=alongX?i*2.15:j*5.1;container(x+dx-(alongX?(nz-1)*2.55:(nx-1)*1.07),z+dz-(alongX?(nx-1)*1.07:(nz-1)*2.55),alongX,lv,col)}}
+function crane(x,z,alongX,col){const H=16+rnd()*4,S=9,ry=alongX?Math.PI/2:0,c=Math.cos(ry),sn=Math.sin(ry),at=(u,v)=>[x+c*u+sn*v,z-sn*u+c*v];
+  for(const u of[-S/2,S/2])for(const v of[-2.4,2.4]){const [lx,lz]=at(u,v);sbox(.7,H,.7,27,lx,H/2,lz);for(let k=1;k<4;k++)sbox(.75,.12,.75,25,lx,k*H/4,lz);if(col)blds.push({x:lx,z:lz,hw:.5,hd:.5,h:H})}
+  for(const v of[-2.4,2.4]){const [bx,bz]=at(0,v);sbox(S+1.4,1.1,1.0,27,bx,H+.5,bz,0,ry,0)}const [mx,mz]=at(0,0);sbox(S+1.4,.6,5.6,27,mx,H+1.2,mz,0,ry,0);
+  const [cx,cz]=at(0,4.5);sbox(2.4,2,2.2,26,cx,H+2.4,cz,0,ry,0);sbox(1.6,.6,.1,20,cx+sn*1.12,H+2.6,cz+c*1.12,0,ry,0);
+  const [ex,ez]=at(0,-8);sbox(1.2,.9,16,27,ex,H+1.6,ez,0,ry,0);for(let k=0;k<3;k++){const [wx,wz]=at(0,-3-k*5);sbox(.08,H*.5,.08,25,wx,H*.75,wz)}
+  const [hx,hz]=at(0,-13);sbox(1.6,1.2,1.6,24,hx,H*.45,hz)}
+function warehouse(x,z,w,d,h,col){sbox(w,h,d,28,x,h/2,z);for(let k=0;k<Math.floor(d/1.2);k++)sbox(w+.1,.1,.12,25,x,h-.3,z-d/2+.6+k*1.2);
+  const rf=new THREE.CylinderGeometry(w*.62,w*.62,d,10,1,false,-Math.PI/2*.62,Math.PI*.62);sgeo(rf,26,x,h-w*.3,z,Math.PI/2,0,0);sbox(w*1.02,.3,d*1.02,19,x,h+w*.3,z);
+  for(let k=0;k<2;k++)sbox(w*.3,h*.6,.12,25,x+(k?1:-1)*w*.22,h*.3,z+d/2+.02);if(col)blds.push({x,z,hw:w/2,hd:d/2,h})}
+function lightTower(x,z){const H=12+rnd()*3;sbox(.4,H,.4,26,x,H/2,z);sbox(2.2,.5,1.0,26,x,H,z);for(let k=0;k<3;k++)sbox(.5,.35,.12,20,x-.7+k*.7,H-.1,z+.52)}
+function buildHarbor(boss,free){
+  for(let i=0;i<24;i++){const a=rnd()*TAU,rr=ARENA+16+rnd()*80;warehouse(Math.cos(a)*rr,Math.sin(a)*rr,8+rnd()*10,14+rnd()*18,7+rnd()*7,false)}
+  for(let i=0;i<18;i++){const a=rnd()*TAU,rr=ARENA+8+rnd()*40;yard(Math.cos(a)*rr,Math.sin(a)*rr,rnd()<.5,2+Math.floor(rnd()*3),2,false)}
+  for(let i=0;i<4;i++){const a=i/4*TAU+rnd()*.6,rr=ARENA+18+rnd()*20;crane(Math.cos(a)*rr,Math.sin(a)*rr,rnd()<.5,false)}
+  for(let i=0;i<30;i++){const a=rnd()*TAU,rr=ARENA+4+rnd()*110;dune(Math.cos(a)*rr,Math.sin(a)*rr,10+rnd()*20,1.5+rnd()*4,19)}
+  let tries=0;
+  if(!boss){
+    for(let i=0;i<2;i++)for(let t=0;t<300;t++){const a=rnd()*TAU,rr=45+rnd()*(ARENA-65),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(free(x,z,9,9,10)){crane(x,z,rnd()<.5,true);break}}
+    for(let i=0;i<2;i++)for(let t=0;t<300;t++){const a=rnd()*TAU,rr=40+rnd()*(ARENA-55),x=Math.cos(a)*rr,z=Math.sin(a)*rr,w=8+rnd()*4,d=12+rnd()*6;if(free(x,z,w/2,d/2,12)){warehouse(x,z,w,d,6+rnd()*3,true);break}}
+    let yards=0;while(yards<40&&tries++<8000){const a=rnd()*TAU,rr=26+rnd()*(ARENA-28),x=Math.cos(a)*rr,z=Math.sin(a)*rr,ax=rnd()<.5,nx=2+Math.floor(rnd()*4),nz=1+Math.floor(rnd()*3),hw=ax?nz*2.6:nx*1.1,hd=ax?nx*1.1:nz*2.6;if(free(x,z,hw,hd,8)){yard(x,z,ax,nx,nz,true);yards++}}
+    for(let i=0;i<8;i++){const a=rnd()*TAU,rr=20+rnd()*(ARENA-25),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(free(x,z,1.2,1.2,6))lightTower(x,z)}
+    for(let i=0;i<30;i++){const a=rnd()*TAU,rr=rnd()*(ARENA-6);dune(Math.cos(a)*rr,Math.sin(a)*rr,4+rnd()*9,.25+rnd()*.35,19)}
+    for(let i=0;i<14;i++){const a=rnd()*TAU,rr=8+rnd()*(ARENA-12);sgeo(new THREE.CircleGeometry(2+rnd()*4,14),20,Math.cos(a)*rr,.03,Math.sin(a)*rr,-Math.PI/2,0,0)}
+    for(let i=0,t=0;i<12&&t<500;t++){const a=rnd()*TAU,rr=16+rnd()*(ARENA-22),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(!free(x,z,2.4,2.4,4))continue;propBegin();
+      for(let k=0;k<3;k++)sgeo(new THREE.CylinderGeometry(.55,.55,1.5,10),k===1?21:26,x+(k-1)*1.15,.75,z+(k%2)*.8);sbox(3.2,.12,1.4,19,x,1.56,z+.3);propEnd(x,z,1.9,1.4,1.6,240,'tank');i++}
+    for(let i=0;i<14;i++){const a=rnd()*TAU,rr=14+rnd()*(ARENA-18),x=Math.cos(a)*rr,z=Math.sin(a)*rr,R=1+rnd()*.8;if(!free(x,z,R+.6,R+.6,3))continue;propBegin();sbox(R*2,R*1.4,R*2,24,x,R*.7,z,0,rnd(),0);sbox(R*2.05,.2,R*2.05,19,x,R*1.45,z,0,rnd()*.1,0);propEnd(x,z,R,R,R*1.5,220+R*80,'ruin')}
+  }else{
+    sgeo(new THREE.CircleGeometry(ARENA-2,48),20,0,.02,0,-Math.PI/2,0,0);
+    for(let i=0;i<14;i++){const a=rnd()*TAU,rr=rnd()*(ARENA-6);dune(Math.cos(a)*rr,Math.sin(a)*rr,5+rnd()*9,.3+rnd()*.3,19)}
+    for(let i=0;i<8;i++){const a=i/8*TAU+rnd()*.35,rr=32+rnd()*26,x=Math.cos(a)*rr,z=Math.sin(a)*rr;propBegin();for(let k=0;k<3;k++){const h=3+rnd()*4.5,ox=(rnd()-.5)*2.2,oz=(rnd()-.5)*2.2;sgeo(new THREE.CylinderGeometry(.2,.95,h,5),20,x+ox,h/2,z+oz,(rnd()-.5)*.2,rnd(),(rnd()-.5)*.2)}propEnd(x,z,1.8,1.8,5,480,'pillar')}
+    for(let i=0;i<8;i++){const a=rnd()*TAU,rr=16+rnd()*(ARENA-26),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(!free(x,z,2.6,1.2,6))continue;propBegin();container(x,z,rnd()<.5,1,false);propEnd(x,z,2.4,2.4,2.3,600,'wall')}
+  }
+}
 function buildLevel(kind){const keep=RNG;RNG=mkRng(seedOf(kind,cl(stage,1,3),((SEEDS[MAP]||SEEDS.deadcity)[kind]||[])[cl(stage,1,3)]||0));try{buildLevel0(kind)}finally{RNG=keep}}
 function buildLevel0(kind){
   if(levelG)scene.remove(levelG);levelG=new THREE.Group();scene.add(levelG);blds.length=0;props.length=0;SB=LM.map(()=>[]);
@@ -797,6 +840,7 @@ function buildLevel0(kind){
   const edge=new THREE.Mesh(new THREE.RingGeometry(ARENA+1.2,ARENA+1.7,96),new THREE.MeshBasicMaterial({color:0xff5a1f,transparent:true,opacity:.5,side:THREE.DoubleSide}));edge.rotation.x=-Math.PI/2;edge.position.y=.03;levelG.add(edge);
   const free=(x,z,hw,hd,gap)=>Math.hypot(x,z)>(boss?0:28)+Math.max(hw,hd)&&Math.hypot(x,z)<ARENA-6-Math.max(hw,hd)&&blds.every(b=>Math.abs(x-b.x)>hw+b.hw+gap||Math.abs(z-b.z)>hd+b.hd+gap);
   if(MAP==='desert'){buildDesert(boss,free);flushSB();return}
+  if(MAP==='harbor'){buildHarbor(boss,free);flushSB();return}
   for(let i=0;i<70;i++){const a=rnd()*TAU,rr=ARENA+10+rnd()*80,w=3+rnd()*7,d=3+rnd()*7,h=6+rnd()*(boss?18:30);ruin(Math.cos(a)*rr,Math.sin(a)*rr,w,d,h,false)}
   let tries=0;
   if(!boss){
@@ -1726,7 +1770,7 @@ function bossJump(e,p,d,dt){
 // ===== STAGE 3 boss: armoured armadillo — side turrets, rolling charge, explosive leap =====
 const ENAME={skoll:'Skoll',logi:'Logi',dvalin:'Dvalin',drone:'Surtling',shooter:'Draugr',hound:'Garm',flyer:'Huginn',mortar:'Muspel',sniper:'Ullr',guard:'Svalinn'},BNAME={quad:'FENRIR',spider:'NORN QUEEN',arma:'JORMUNGANDR',turtle:'SURTR',hrungnir:'HRUNGNIR',nidhogg:'NIDHOGG'};
 const eName=e=>e.type==='boss'?BNAME[e.kind||'quad']||'BOSS':ENAME[e.type]||'';
-const BOSSES={deadcity:[0,'quad','spider','arma'],desert:[0,'hrungnir','nidhogg','turtle']};let BK_OVR=null;const bossKind=()=>BK_OVR||(BOSSES[MAP]||BOSSES.deadcity)[cl(stage,1,3)];
+const BOSSES={harbor:[0,'quad','spider','arma'],deadcity:[0,'quad','spider','arma'],desert:[0,'hrungnir','nidhogg','turtle']};let BK_OVR=null;const bossKind=()=>BK_OVR||(BOSSES[MAP]||BOSSES.deadcity)[cl(stage,1,3)];
 function makeArma(mt){const A=1.35,cy=3.3,root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy*A;g.scale.setScalar(A);root.add(g);
   const body=new THREE.Group();body.position.y=cy;g.add(body);const plate=new THREE.MeshLambertMaterial({color:0x8a7458}),dkp=legMat;
   ell(body,dkp,2.5,1.3,3.6,0,-.55,0);
@@ -2398,14 +2442,14 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='p
 const STG=[{n:'外縁区画',d:'崩れたビル群の外周。小型の群れが中心'},{n:'旧市街',d:'猟犬型と迫撃型が出現'},{n:'工業区',d:'狙撃型と装甲型が加わる'},{n:'中央塔',d:'全種が入り乱れる激戦区'},{n:'深部',d:'異形の巣。終わりなき防衛線'},{n:'最深部',d:'ここから先は無限に続く'}];
 let best=1;try{best=Math.max(1,+localStorage.getItem('rg_best')||1)}catch(e){}
 let ssFrom='home';
-const MAPS=[{id:'deadcity',n:'DEAD CITY'},{id:'desert',n:'SCORCHED DUNES',need:'deadcity',rel:false}];// rel:false = not released yet: production shows a COMING SOON card, the test site plays it
+const MAPS=[{id:'deadcity',n:'DEAD CITY'},{id:'desert',n:'SCORCHED DUNES',need:'deadcity',rel:false},{id:'harbor',n:'FROZEN HARBOR',need:'desert',rel:false}];// rel:false = not released yet: production shows a COMING SOON card, the test site plays it
 const mapRel=id=>{const M=MAPS.find(m=>m.id===id);return !!M&&(M.rel!==false||!!window.HP_TEST)};const MAPIMG={};
 const mapName=id=>(MAPS.find(m=>m.id===id)||MAPS[0]).n;
 const bestKey=id=>id==='deadcity'?'rg_best':'rg_best_'+id,bestOf=id=>{try{return Math.max(1,+localStorage.getItem(bestKey(id))||1)}catch(e){return 1}};
 function mapShot(){if(MAPS.every(M=>MAPIMG[M.id]||!mapRel(M.id)))return;const keepM=MAP,keepS=stage,p=cam.position.clone(),q=cam.quaternion.clone();
   try{for(const M of MAPS){if(MAPIMG[M.id]||!mapRel(M.id))continue;MAP=M.id;stage=1;buildLevel('ruins');cam.position.set(62,40,78);cam.lookAt(0,6,0);R.render(scene,cam);MAPIMG[M.id]=R.domElement.toDataURL('image/jpeg',.82)}}catch(e){}
   MAP=keepM;stage=keepS;buildLevel('ruins');cam.position.copy(p);cam.quaternion.copy(q)}
-function openStages(from){ssFrom=from;mapShot();const cl=clrList();const L=MAPS.map(M=>{if(!mapRel(M.id))return `<button class="sc mapc soon" disabled><div class="soonI"><b>?</b></div><span class="mn">COMING SOON</span><span class="best">次のマップ 準備中</span></button>`;const lk=M.need&&!cl.includes(M.need)&&!ADMIN&&!window.HP_TEST;return `<button class="sc mapc${lk?' mlk':''}" data-n="1" data-map="${M.id}"${lk?' disabled':''}><img src="${MAPIMG[M.id]||''}" alt=""><span class="mn">${M.n}</span><span class="best">${lk?mapName(M.need)+' を制圧で解放':cl.includes(M.id)?'CLEAR':'最高到達 STAGE '+Math.min(bestOf(M.id),MAXST)}</span></button>`});
+function openStages(from){ssFrom=from;mapShot();const cl=clrList();let soon=0;const L=MAPS.map(M=>{if(!mapRel(M.id)){if(soon++)return '';return `<button class="sc mapc soon" disabled><div class="soonI"><b>?</b></div><span class="mn">COMING SOON</span><span class="best">次のマップ 準備中</span></button>`}const lk=M.need&&!cl.includes(M.need)&&!ADMIN&&!window.HP_TEST;return `<button class="sc mapc${lk?' mlk':''}" data-n="1" data-map="${M.id}"${lk?' disabled':''}><img src="${MAPIMG[M.id]||''}" alt=""><span class="mn">${M.n}</span><span class="best">${lk?mapName(M.need)+' を制圧で解放':cl.includes(M.id)?'CLEAR':'最高到達 STAGE '+Math.min(bestOf(M.id),MAXST)}</span></button>`});
   $('ssList').innerHTML=L.join('');$('stsel').classList.remove('hide')}
 $('ssList').addEventListener('click',e=>{const b=e.target.closest('.sc');if(!b||b.disabled)return;launch(+b.dataset.n,b.dataset.map)});
 $('ssBack').addEventListener('click',()=>{$('stsel').classList.add('hide')});
@@ -3021,6 +3065,16 @@ function glareTick(dt,act){if(rapTail)rapTail.rotation.y=Math.sin(now*2.1)*.12;
   for(const e of enemies.slice()){if(e.mat>0||e.hid)continue;if(segHit(t3,end,e.m.position,e.r+.8)){e.hp-=520*dt*amBoss('HE',e)*fpM();e.flash=.05;e.burn=Math.max(e.burn||0,1.2);if(rnd()<.3)spark(e.m.position,2,9);if(e.hp<=0)kill(e)}}
   for(const pr of props)if(pr.alive&&segBox(t3.x,1.2,t3.z,end.x,1.2,end.z,pr)<1)hitProp(pr,900*dt);
   for(let k=0;k<2;k++){const q=t2.copy(t3).addScaledVector(rapDir,rnd()*L);if(q.y<3)spark(q,1,6)}shake=Math.max(shake,.12)}
+// ===== FROZEN HARBOR weather: constant snowfall around the camera, and a blizzard every so often that pulls the fog in =====
+let SNOW=null;const WX={t:25,on:0,k:0};
+function weatherTick(dt){const act=MAP==='harbor'&&!TUT&&(state==='play'||state==='demo'||state==='menu'||state==='trans'||state==='drop');
+  if(!act){if(SNOW)SNOW.visible=false;WX.k=0;return}
+  if(!SNOW){const n=1400,g=new THREE.BufferGeometry(),a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=(rnd()-.5)*90;a[i*3+1]=rnd()*40;a[i*3+2]=(rnd()-.5)*90}g.setAttribute('position',new THREE.BufferAttribute(a,3));
+    SNOW=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.28,transparent:true,opacity:.85,depthWrite:false}));SNOW.frustumCulled=false;scene.add(SNOW)}
+  SNOW.visible=true;SNOW.position.set(cam.position.x,0,cam.position.z);const ps=SNOW.geometry.attributes.position,A=ps.array,wind=4+WX.k*22;
+  for(let i=0;i<A.length;i+=3){A[i+1]-=dt*(5+(i%7));A[i]+=dt*wind*(.6+(i%5)*.1);if(A[i+1]<0){A[i+1]=40;A[i]=(rnd()-.5)*90;A[i+2]=(rnd()-.5)*90}if(A[i]>45)A[i]-=90}ps.needsUpdate=true;
+  if(state==='play'&&!arenaBoss){WX.t-=dt;if(!WX.on&&WX.t<=0){WX.on=1;WX.t=12;banner('BLIZZARD');toast('吹雪が来る！ 視界が悪くなる')}else if(WX.on&&WX.t<=0){WX.on=0;WX.t=30+rnd()*15}}else if(state==='play'&&arenaBoss){WX.on=0}
+  WX.k+=((WX.on?1:0)-WX.k)*Math.min(1,dt*.7);scene.fog.far=WXF-(WXF-70)*WX.k;scene.fog.near=Math.min(60,scene.fog.far*.3);SNOW.material.size=.28+WX.k*.25}
 function bodyTick(dt){const act=AB.body.act>0;hailTick();
   if(cfg.A==='overload'){const u=act?1-AB.body.act/(ABIL.overload.dur+(U.abX.overload||0)):0;
     if(act){P.ovW=true;P.ovH=Math.max(P.ovH||0,u)}
@@ -3601,7 +3655,7 @@ function loop(t){
   else if(state==='drop'){updateDrop(dt);hudUpdate()}
   else if(state==='dead'){overT-=dt;for(const b of eb)if(b.on)b.m.position.addScaledVector(b.v,dt);if(overT<=0){state='over';$('over').querySelector('h2').innerHTML=`機体大破<small>${esc(P.hb||'敵の攻撃')}で大破</small>`;$('upl').textContent=Object.keys(PK).length?'取得した強化：'+Object.entries(PK).map(([k,v])=>UP.find(u=>u.id===k).n+(v>1?'×'+v:'')).join('、'):'';$('res').innerHTML=`<span class="dc">${TUT||TEST?stageLabel():mapName(MAP)+' ― '+stageLabel()+' まで到達'}</span><span class="bx"><span class="tl">TIME</span><b>${fmtT(RUN.t,1)}</b></span><span class="bx"><span class="tl">SCORE</span><b>${score.toLocaleString()}</b></span><span class="meta"><span class="scrapIn">${SCRI}+${(P.runScrap||0).toLocaleString()}<small>（所持 ${SCRAP.toLocaleString()}）</small></span></span>`;$('over').classList.remove('win');$('over').classList.remove('hide');$('hud').classList.add('hide');$('ctl').classList.add('hide');try{document.exitPointerLock&&document.exitPointerLock()}catch(e){}showRunMech(histAdd(false))}}
   updateShip(dt);updateZaps(sdt);updateCasings(sdt);updateProps(sdt);if(state==='play'||state==='drop')updateScraps(sdt);
-  fx(sdt);camUpdate(dt);R.render(scene,cam);
+  fx(sdt);camUpdate(dt);weatherTick(dt);R.render(scene,cam);
 }
 applyCtl();helpKeys();resetU();buildLevel('ruins');renderMenu();buildMech();applyQuality();goHome();requestAnimationFrame(loop);tutWelcome();
 }
