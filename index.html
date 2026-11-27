@@ -83,7 +83,7 @@ canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:
 #plh{position:absolute;left:50%;top:58%;transform:translateX(-50%);padding:6px 14px;border-radius:4px;background:rgba(12,10,8,.72);font:700 13px "Zen Kaku Gothic New";color:var(--ink);white-space:nowrap;display:none}
 #plh b{color:var(--acc)}
 @media (pointer:fine){#plh.on{display:block}}
-#help{position:fixed;inset:0;background:rgba(8,6,4,.78);display:flex;justify-content:center;align-items:center;z-index:7;padding:10px}
+#help{position:fixed;inset:0;background:rgba(8,6,4,.78);display:flex;justify-content:center;align-items:center;z-index:11;padding:10px}
 .hp{background:#1f1812;border-top:3px solid var(--acc);width:min(860px,96vw);max-height:94vh;overflow:auto;padding:14px 18px;touch-action:pan-y}
 .hp h3{margin:0 0 10px;font-size:18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .hcols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
@@ -142,6 +142,7 @@ header p{margin:3px 0 0;color:var(--dim);font-weight:700;font-size:13px}
 #stats{position:absolute;left:18px;bottom:12px;display:flex;gap:16px;pointer-events:none!important}
 .st{font-size:12px;color:var(--dim);font-weight:700}
 .st b{display:block;font:700 18px/1.2 "Chakra Petch";color:var(--ink)}
+#goT{position:absolute;right:198px;bottom:14px;min-height:50px;padding:0 18px;border:1px solid var(--acc);background:rgba(26,20,16,.8);color:var(--acc);font:700 15px "Zen Kaku Gothic New";cursor:pointer}#dpsH{position:absolute;left:50%;top:64px;transform:translateX(-50%);font:700 14px "Chakra Petch";color:#ffd24a;background:rgba(12,16,20,.6);padding:3px 12px;text-align:center}#dpsH small{display:block;font:500 11px "Zen Kaku Gothic New";color:var(--dim)}
 #go{position:absolute;right:18px;bottom:14px;min-width:168px;min-height:50px;border:0;background:var(--acc);color:#1a1410;font:700 19px "Zen Kaku Gothic New";letter-spacing:.2em;cursor:pointer}
 .hint{position:absolute;left:50%;transform:translateX(-50%);bottom:72px;width:min(420px,40vw);margin:0;font-size:12px;color:var(--dim);text-align:center;pointer-events:none!important}
 @media (pointer:coarse){.hint{display:none}}
@@ -208,12 +209,20 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .sup{display:inline-block;padding:7px 16px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;font:700 13px "Zen Kaku Gothic New";border-radius:2px;text-align:center}.sup:active,.sup:hover{background:var(--acc);color:#1a1410}
 .fq label{display:block;margin:10px 0 4px;font-weight:700;font-size:13px;color:var(--dim)}.fq textarea,.fq input[type=text]{width:100%;background:#120d09;border:1px solid var(--line);color:var(--ink);font:500 15px "Zen Kaku Gothic New";padding:8px;border-radius:2px;user-select:text;-webkit-user-select:text;touch-action:auto}
 .fq textarea{height:140px;resize:vertical}.fq .seg button{min-height:36px}.fq .ck{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--dim);margin-top:10px}.fq .ft{display:flex;gap:12px;align-items:center;margin-top:14px}.fq .ft em{font-style:normal;font-size:13px;color:var(--cy)}
+.kbh{font-size:12px;color:var(--dim);padding:2px 2px 6px}.kbs{display:flex;gap:8px}.kbb{min-width:92px;min-height:34px;background:#2a2019;border:1px solid var(--line);color:var(--ink);font:700 13px "Chakra Petch","Zen Kaku Gothic New";cursor:pointer;padding:0 10px}.kbb.on{border-color:var(--acc);color:var(--acc);animation:blink .8s infinite}.srow.kbr2{padding:4px 2px}
+#uiPvW{position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:20;background:rgba(31,24,18,.94);border-top:3px solid var(--acc);padding:8px 14px;width:min(520px,70vw);pointer-events:auto}#uiPvW .pv{grid-template-columns:110px 1fr 46px}#uiPvW .row{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+#ctl.pv *{pointer-events:none!important}
 .cred{padding:8px 2px 12px;font-size:13px;line-height:1.7;color:var(--dim)}.cred b{color:var(--ink)}.cred a{color:var(--cy)}.cred p{margin:0 0 8px}
 .sgrp{margin:12px 0 2px;font:700 12px "Zen Kaku Gothic New";color:var(--acc);letter-spacing:.2em}
 .seg{display:flex;gap:6px}.seg button,.tg{min-height:34px;padding:0 14px;background:#2a2019;border:1px solid var(--line);color:var(--dim);font:700 13px "Zen Kaku Gothic New";cursor:pointer}.seg button.on,.tg.on{background:var(--acc);color:#1a1410;border-color:var(--acc)}
-#pauseW .card{display:flex;flex-direction:column;gap:9px}#pauseW h2{font:700 32px "Chakra Petch";letter-spacing:.2em;margin:0 0 6px}
+#pauseW .card{display:flex;flex-direction:column;gap:9px;width:min(94vw,620px);max-height:94vh;overflow:auto}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left}@media (max-width:520px){.pgrid{grid-template-columns:1fr}}
+.pbs{display:flex;flex-direction:column;gap:8px}.pvol{display:flex;flex-direction:column;gap:4px}.pvh{font:700 12px "Zen Kaku Gothic New";color:var(--acc);letter-spacing:.2em}
+.pv{display:grid;grid-template-columns:64px 1fr 42px;align-items:center;gap:8px;font-weight:700;font-size:13px}.pv input{width:100%;accent-color:var(--acc);height:30px}.pv em{font:700 13px "Chakra Petch";font-style:normal;color:var(--acc);text-align:right}
+.pbtn.sm{min-height:40px;font-size:14px;margin-top:4px;justify-content:center}.pbtn.warn{border-color:#6a3020}.pbtn.warn.cf{background:#8a2a14;border-color:#ff5a1f;color:#fff}
+#pauseW .pbtn{min-height:46px}#pauseW h2{font:700 32px "Chakra Petch";letter-spacing:.2em;margin:0 0 6px}
 .pbtn{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 16px;background:#2a2019;border:1px solid var(--line);color:var(--ink);font:700 16px "Zen Kaku Gothic New";cursor:pointer}.pbtn svg{width:24px;height:24px}.pbtn.main{background:var(--acc);color:#1a1410;border-color:var(--acc)}
-#pauseB{right:64px;top:52px;z-index:6;pointer-events:auto;touch-action:none}#pauseB svg,#gBack svg{width:22px;height:22px}
+#sndH,#helpH{display:none!important}#pauseB{right:12px;top:52px;width:48px;height:48px;z-index:6;pointer-events:auto;touch-action:none}#pauseB svg,#gBack svg{width:22px;height:22px}
 #gBack{position:absolute;left:174px;top:86px;pointer-events:auto;z-index:3;background:rgba(20,16,12,.55)}
 #over .card .row{display:flex;gap:8px;justify-content:center}
 #over .tm{display:block;margin-top:6px;font:700 15px "Chakra Petch";color:var(--dim)}
@@ -302,10 +311,10 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
   <div id="bossW" class="hide"><span id="bossN">BOSS</span><div class="hpb"><i id="bossB"></i><b class="tk" style="left:60%"></b><b class="tk" style="left:20%"></b></div></div>
   <div id="marks"></div>
   <div id="cross"></div><svg id="gauge" viewBox="0 0 140 140"></svg><div id="aimP"></div><div id="lock"><b id="lockD"></b></div><div id="locks"></div>
-  <div id="banner"></div><div id="toast"></div>
+  <div id="banner"></div><div id="toast"></div><div id="dpsH" class="hide"></div>
   <button class="snd" id="sndH" aria-label="サウンド切替"></button>
   <button class="snd" id="helpH" aria-label="操作方法"><b>?</b></button>
-  <button class="snd" id="pauseB" aria-label="一時停止"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5v14M15.5 5v14" stroke-width="3"/></svg></button>
+  <button class="snd" id="pauseB" aria-label="メニュー（一時停止）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg></button>
   <div id="plh">画面を<b>クリック</b>するとマウスで視点操作（Escで一時停止）</div>
 </div>
 <div id="tut" class="hide"></div><div id="tutHi" class="hide"></div>
@@ -335,8 +344,14 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
 <label for="fqContact">返信先（任意：XのIDなど）</label><input type="text" id="fqContact" maxlength="100" placeholder="@xxxx">
 <div class="ck"><input type="checkbox" id="fqEnv" checked><label for="fqEnv" style="margin:0">端末・ブラウザの情報を添える（バグ調査用）</label></div>
 <div class="ft"><a class="sup" href="#" id="fqSend">送信する</a><em id="fqMsg"></em></div></div></div>
+<div id="uiPvW" class="hide"><div class="pv"><span>ボタンの大きさ</span><input type="range" min="70" max="140" step="5" data-uk="ui"><em data-uv="ui"></em></div><div class="pv"><span>ボタンの濃さ</span><input type="range" min="30" max="100" step="5" data-uk="uiA"><em data-uv="uiA"></em></div><div class="row"><button class="kbb" id="uiPvR">元に戻す</button><button class="pbtn main sm" id="uiPvOk" style="min-height:36px;margin:0;padding:0 22px">決定</button></div></div>
 <div id="pauseW" class="ovl hide" style="z-index:8"><div class="card"><h2>PAUSE</h2>
-  <button class="pbtn main" id="pResume"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5l12.5 7.5L7 19.5z" fill="currentColor"/></svg>再開</button><button class="pbtn" id="pSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>設定</button><button class="pbtn" id="pHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H5v16h5"/><path d="M14 8l4 4-4 4M18 12H9"/></svg>撤退してホームへ</button></div></div>
+<div class="pgrid"><div class="pvol"><div class="pvh">サウンド</div>
+<div class="pv"><span>マスター</span><input type="range" min="0" max="100" step="5" data-pk="vol"><em data-pv="vol"></em></div>
+<div class="pv"><span>効果音</span><input type="range" min="0" max="100" step="5" data-pk="sfx"><em data-pv="sfx"></em></div>
+<div class="pv"><span>BGM</span><input type="range" min="0" max="100" step="5" data-pk="bgm"><em data-pv="bgm"></em></div>
+<button class="pbtn sm" id="pMute"></button></div>
+<div class="pbs"><button class="pbtn main" id="pResume"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5l12.5 7.5L7 19.5z" fill="currentColor"/></svg>再開</button><button class="pbtn" id="pSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>設定</button><button class="pbtn" id="pHelp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>操作方法</button><button class="pbtn hide" id="pTgt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg><span id="pTgtL">敵を出す</span></button><button class="pbtn warn" id="pHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h5v16h-5"/><path d="M10 8l-4 4 4 4M6 12h10"/></svg><span id="pHomeL">撤退してホームへ</span></button></div></div></div></div>
 <div id="menu" class="hide">
   <button class="bk" id="gBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>ホーム</button>
   <header><h1>格納庫 <span>HANGAR</span></h1><p>パーツをタップして換装<span id="scrapG" class="scrapIn"></span></p></header>
@@ -347,7 +362,7 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
   <div class="col" id="colR"></div>
   <p class="hint">PCで遊ぶ場合：左上の <b>?</b> ボタン か Hキー で操作方法を確認できます</p>
   <div id="stats"></div><div id="mdrag">ドラッグで機体を回転</div>
-  <button id="go">出撃</button>
+  <button id="goT">訓練場で試す</button><button id="go">出撃</button>
 </div>
 <div id="sheet" class="hide"><div class="sh"><h3><span id="shT"></span><span id="shScrap" class="scrapIn"></span><button id="shClose">決定</button></h3><div id="shHint">タップすると機体に反映されます（左側で見た目を確認）</div><div id="shSum"></div><div id="shDet" class="hide"></div><div id="opts"></div></div></div>
 <div id="help" class="hide"><div class="hp"><h3><span>操作方法</span><button id="helpClose" class="hcl" style="background:none;border:1px solid var(--line);color:var(--ink);min-height:40px;padding:0 16px;font:700 13px 'Zen Kaku Gothic New'">閉じる</button></h3>
@@ -1584,7 +1599,7 @@ function updateShells(dt){for(let i=shells.length-1;i>=0;i--){const q=shells[i];
   if(u>=1){scene.remove(q.m);dropWarn(q.warn);shells.splice(i,1);const c=new V(q.to.x,.8,q.to.z);explode(c,2.2,false,true);propsAoe(c,5,300);const dd=Math.hypot(P.pos.x-c.x,P.pos.z-c.z);if(dd<5.5&&P.y<4){t2.set(c.x-P.pos.x,0,c.z-P.pos.z).normalize();damage(150*(1-dd/7),t2,P.pos.clone().setY(2),q.by||'Muspelの迫撃弾',1)}}}}
 function kill(e){const i=enemies.indexOf(e);if(i<0)return;
   if(e.type==='boss'&&e.js==='air'){e.hp=Math.max(e.hp,1);return}
-  if(state==='play'&&!TUT){dexAdd(e);dropScrap(e)}
+  if(state==='play'&&!TUT&&!TEST){dexAdd(e);dropScrap(e)}
   {const dd=(e.dacc||0)+((e.php!=null?e.php:e.max)-e.hp);if(dd>.5&&state==='play'&&(e===lockT||dd>=120||e.type==='boss'))popNum(e.m.position,dd,'big',e.r);e.dacc=0}
   if(e.type==='boss'){dropWarn(e.warn);e.warn=null;dropFx(e.wl);e.wl=null;dropFx(e.bm);dropFx(e.bc);if(e.glow)e.glow.visible=false;e.bs=null;megaLoop(false);e.js=null;e.m.scale.set(1,1,1);enemies.splice(i,1);if(lockT===e)lockT=null;score+=5000;dying.push({e,t:0,next:0});toSpawn=[];for(const q of portals)scene.remove(q.g);portals.length=0;for(const b of eb){b.on=false;b.m.visible=false}const rest=enemies.slice();rest.forEach(o=>o.wipe=1);rest.forEach((o,k)=>setTimeout(()=>{if(enemies.includes(o))kill(o)},300+k*90));return}
   explode(e.m.position,{shooter:1.7,hound:1.3,flyer:1.5,mortar:2.1,sniper:1.5,guard:2}[e.type]||1.15);if(U.vamp)P.hp=Math.min(P.max,P.hp+P.max*.015*U.vamp);if(U.chain){const cp=e.m.position.clone();setTimeout(()=>{if(state==='play')aoe(cp,6+U.chain,110*U.chain)},90)}score+={drone:100,shooter:300,hound:200,flyer:250,mortar:400,sniper:350,guard:450,boss:5000}[e.type];if(e.laser){dropFx(e.laser);e.laser=null}for(let k=0;k<5;k++)puff(_pv.set(e.m.position.x+(rnd()-.5)*2,e.m.position.y,e.m.position.z+(rnd()-.5)*2),.8+rnd()*.6,0x2a5a40,.6);if(now-(P.scr||0)>.18){P.scr=now;play('screech',sp(e.m.position,e.type==='drone'?.35:.6,.15))}scene.remove(e.m);e.mt.dispose();enemies.splice(i,1);if(lockT===e)lockT=null;
@@ -1602,7 +1617,7 @@ const keys={},inp={all:false,w:[false,false,false,false]},joy={x:0,y:0,id:null};
 let mb=false,mb2=false;
 function banner(t){const b=$('banner');b.textContent=t;b.classList.remove('go');void b.offsetWidth;b.classList.add('go')}
 let toastT=0;function toast(t){$('toast').textContent=t;$('toast').style.opacity=1;toastT=1.2}
-function stageLabel(){if(TUT)return 'TRAINING';return !arenaBoss?`STAGE ${stage}-${sub}`:`STAGE ${stage}-BOSS`}
+function stageLabel(){if(TUT)return 'TRAINING';if(TEST)return 'TEST DRIVE';return !arenaBoss?`STAGE ${stage}-${sub}`:`STAGE ${stage}-BOSS`}
 function placePlayer(x,z){P.pos.set(x,0,z);P.vel.set(0,0,0);P.y=0;P.vy=0;P.hov=0;camYaw=0;camPos.set(x,8,z-9);lockT=null}
 function fadeTo(fn,label){state='trans';const f=$('fade');f.textContent=label||'';f.style.opacity=1;setTimeout(()=>{fn();setTimeout(()=>{f.style.opacity=0;if(state==='trans')state='play'},250)},700)}
 let arenaBoss=false;
@@ -1648,13 +1663,13 @@ function clearScraps(){for(const o of scraps){o.on=false;o.g.visible=false}}
 function clearSupply(){if(supply){scene.remove(supply.pod);scene.remove(supply.shd);if(supply.swr)dropWarn(supply.swr);supply=null}}
 function clearField(){clearSupply();clearScraps();for(const o of orbs){for(const m of[o.g,o.bo,o.bc])scene.remove(m);dropWarn(o.w)}orbs.length=0;for(const q of shells)scene.remove(q.m);shells.length=0;while(bossFx.length)dropFx(bossFx[0]);megaLoop(false);while(warns.length)dropWarn(warns[0]);for(const q of portals)scene.remove(q.g);portals.length=0;for(const e of enemies){scene.remove(e.m);e.mt.dispose()}enemies=[];for(const d of dying)scene.remove(d.e.m);dying=[];toSpawn=[];lockT=null;for(const d of debris)d.m.visible=false;for(const d of drops)scene.remove(d.m);drops.length=0;for(const b of bullets){b.on=false;b.m.visible=false}for(const b of eb){b.on=false;b.m.visible=false}for(const m of missiles){m.on=false;m.lk=0;m.m.visible=false}locks.length=0}
 // ===== チュートリアル（訓練施設 → 格納庫） =====
-let TUT=null,GT=null;const TOUCH=matchMedia('(pointer:coarse)').matches;
+let TUT=null,GT=null,TEST=null;const TOUCH=matchMedia('(pointer:coarse)').matches;
 const TSTEPS=[
  {k:'cam',t:'カメラ操作',d:()=>TOUCH?'画面の右半分をドラッグして、視点をぐるっと一周させよう':'画面をクリックしてから、マウスを動かして視点をぐるっと一周させよう（右ドラッグ、Q・Eキーでも回せる）',hi:()=>null},
  {k:'move',t:'移動',d:()=>TOUCH?'左下のスティックで、光っているマーカーまで移動しよう':'W・A・S・Dキーで、光っているマーカーまで移動しよう',hi:()=>TOUCH?'#joy':null},
  {k:'fire',t:'攻撃',d:()=>TOUCH?'FIREボタンで全部の武器をまとめて撃てる。周りの武器ボタンで1つずつ撃つこともできる。標的を全部破壊しよう':'左クリック（またはFキー）で全部の武器を発射。1・2キーで武器を1つずつ撃てる。照準は近くの敵へ自動で合う。標的を全部破壊しよう',hi:()=>'#ring'},
  {k:'body',t:'ボディアビリティ',d:()=>`ボディには固有のアビリティがある。${TOUCH?'右下の右側のボタン':'Gキー'}で「${ABIL[cfg.A].n}」を使ってみよう`,hi:()=>'#abil .ab:nth-child(2)'},
- {k:'leg',t:'ドライブアビリティ',d:()=>`ドライブ（脚）にもアビリティがある。${TOUCH?'右下の左側のボタン':'Shiftキー'}で「${LEGS[cfg.G].ab.n}」を使ってみよう`,hi:()=>'#abil .ab:nth-child(1)'}];
+ {k:'leg',t:'ドライブアビリティ',d:()=>`ドライブ（脚）にもアビリティがある。${TOUCH?'右下の左側のボタン':keyName(KB.leg[0])+'キー'}で「${LEGS[cfg.G].ab.n}」を使ってみよう`,hi:()=>'#abil .ab:nth-child(1)'}];
 const GSTEPS=[
  {t:'格納庫',d:'ここで機体を組み替える。まずは「ボディ」をタップしてみよう',sel:'.slot[data-k=B]',wait:1},
  {t:'パーツを選ぶ',d:'パーツをタップするとすぐ機体に反映される。鍵マークのパーツはスクラップで解禁できる（2回タップで購入）',sel:'#opts'},
@@ -1712,7 +1727,7 @@ function sortie(n){
   fixW();buildMech();clearField();
   const hp=BODY[cfg.B].hp+LEGS[cfg.G].hp;Object.assign(P,{runScrap:0,anc:0,ancK:0,ancT:0,hb:'',hp,max:hp,wm:wtMul(),legA:0,y:0,vy:0,dash:0,bar:0,bhp:0,slam:0,jmp:0,slI:0,dep:0,stun:0,ovW:false,amb:0,blk:0});P.pos.set(0,0,0);P.vel.set(0,0,0);
   AB.leg.cd=AB.leg.act=AB.body.cd=AB.body.act=0;AB.leg.ch=null;AB.leg.lock=0;
-  resetU();camPitch=.3;score=0;waveT=0;spawnT=1;P.hov=0;RUN.t=0;RUN.s0=n;RUN.sp=[];if(TUT)startTraining();else startStage(n);
+  resetU();camPitch=.3;score=0;waveT=0;spawnT=1;P.hov=0;RUN.t=0;RUN.s0=n;RUN.sp=[];if(TUT)startTraining();else if(TEST)startTest();else startStage(n);
   buildButtons();stopMotors();arms.forEach(a=>{if(a.bar)motors.push(a.motor=motor('gat'));else if(a.W.kind==='beam'||a.W.kind==='laser')motors.push(a.motor=motor('beam'));else if(a.W.kind==='saw')motors.push(a.motor=motor('gat'));else if(a.W.kind==='tesla')motors.push(a.motor=motor('arc'))});if(turretG)motors.push(turretG.userData.motor=motor('gat'));if(cfg.G==='tank'||cfg.G==='hover'||cfg.G==='drone')motors.push(P.eng=motor('eng'));else P.eng=null;
   if(state!=='drop')state='play';$('menu').classList.add('hide');$('over').classList.add('hide');$('hud').classList.remove('hide');$('ctl').classList.remove('hide');
 }
@@ -1828,6 +1843,19 @@ const ray=new THREE.Raycaster();
 $('c').addEventListener('click',e=>{if(state!=='menu'||mMoved>8)return;ray.setFromCamera(new THREE.Vector2(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1),cam);const h=ray.intersectObject(mech,true)[0];let o=h&&h.object;
   while(o){const ai=arms.findIndex(a=>a.g===o);if(ai>=0)return openSheet('w'+ai);if(o===abMod)return openSheet('B');if(o===legsRoot)return openSheet('G');if(o===upper)return openSheet('B');o=o.parent}});
 $('go').addEventListener('click',()=>{closeSheet();openStages('garage')});
+// ===== test drive: current loadout in the training ground, no damage taken, no rewards, DPS readout =====
+$('goT').addEventListener('click',()=>{closeSheet();TEST={log:[],rt:0};sortie(1)});
+const TEST_D=[[-10,15],[0,15],[10,15],[-14,30],[14,30],[0,50],[0,75]];
+function testDummies(){const y=tutYaw(30);for(const [sd,fw] of TEST_D){const [x,z]=tutFw(sd,fw,y);spawn('shooter',new V(x,0,z));const e=enemies[enemies.length-1];e.dummy=true;e.hp=e.max=4000;e.mt.color.setHex(0x8f8676);e.tdist=fw}}
+function startTest(){arenaBoss=false;stage=1;sub=0;wave=0;phase='train';toSpawn=[];clearField();buildLevel('train');placePlayer(0,-30);MUS.lvl=1;TEST.hp={};
+  setTimeout(()=>{if(!TEST)return;banner('TEST DRIVE');toast('標的までの距離：15m・30m・50m・75m');testDummies()},400);$('dpsH').classList.remove('hide')}
+function testTick(dt){P.hp=P.max;let dmg=0;const seen=new Set();for(const e of enemies){if(!e.dummy)continue;seen.add(e);const prev=TEST.m&&TEST.m.get(e);if(prev!=null&&prev>e.hp)dmg+=prev-e.hp}
+  for(const [e,h] of (TEST.m||new Map()))if(!seen.has(e)&&h>0)dmg+=h;TEST.m=new Map([...seen].map(e=>[e,e.hp]));
+  TEST.log.push([now,dmg]);while(TEST.log.length&&now-TEST.log[0][0]>3)TEST.log.shift();const tot=TEST.log.reduce((a,x)=>a+x[1],0),span=TEST.log.length?Math.max(1,now-TEST.log[0][0]):1;
+  TEST.pk=Math.max(TEST.pk||0,tot/span);if(TEST.log.length&&tot===0&&now-(TEST.lh||0)>3)TEST.pk=0;if(dmg>0)TEST.lh=now;
+  $('dpsH').innerHTML=`DPS ${Math.round(tot/span).toLocaleString()}　最大 ${Math.round(TEST.pk).toLocaleString()}<small>標的：15m・30m・50m・75m（被ダメージなし・報酬なし）</small>`;
+  if(!enemies.some(e=>e.dummy)&&phase==='train'){TEST.rt+=dt;if(TEST.rt>1.5){TEST.rt=0;testDummies()}}}
+function testFoes(){for(let k=0;k<6;k++){const a=rnd()*TAU;spawn(['drone','drone','hound','hound','shooter','guard'][k],new V(P.pos.x+Math.cos(a)*40,0,P.pos.z+Math.sin(a)*40))}toast('敵を出しました（こちらはダメージを受けません）')}
 // ===== settings =====
 const SETD={vol:90,sfx:100,bgm:60,fov:62,quality:'high',shake:100,sens:100,sensT:100,sensY:100,invY:false,stk:100,ui:100,uiA:100,vib:true,tmr:true,dmgN:true,drop:true,slow:true,lines:true,hurt:true};
 const SET=Object.assign({},SETD);try{Object.assign(SET,JSON.parse(localStorage.getItem('rg_set')||'{}'))}catch(e){}
@@ -1840,22 +1868,42 @@ const SROWS=[['サウンド'],['vol','マスター音量','r',0,100,5,'%'],['sfx
   ['画面'],['fov','視野角','r',50,85,1,'°'],['quality','画質','s',[['low','低'],['mid','標準'],['high','高']]],['shake','画面の揺れ','r',0,100,10,'%'],
   ['操作'],...(TOUCH?[['sensT','視点の感度','r',30,300,10,'%'],['stk','スティックの感度','r',50,200,10,'%'],['ui','ボタンの大きさ','r',70,140,5,'%'],['uiA','ボタンの濃さ','r',30,100,5,'%'],['vib','被弾時の振動','t']]:[['sens','マウスの感度','r',30,300,10,'%']]),['sensY','上下方向の感度','r',50,200,10,'%'],['invY','視点の上下反転','t'],
   ['演出'],['drop','出撃時の降下演出','t'],['slow','ボス撃破のスローモーション','t'],['lines','加速時の集中線','t'],['hurt','被弾時の赤いフラッシュ','t'],['tmr','タイムの表示','t'],['dmgN','ダメージ数値の表示','t']];
-function renderSet(){$('setList').innerHTML=tutSetHTML()+admHTML()+SROWS.map(r=>{if(r.length===1)return `<div class="sgrp">${r[0]}</div>`;const [k,l,ty]=r;
+function renderSet(){$('setList').innerHTML=tutSetHTML()+admHTML()+SROWS.map(r=>{if(r[0]==='uiA'&&TOUCH)return srowHTML(r)+`<div class="srow"><span></span><div><a class="sup" href="#" id="uiPv">実際の画面で確かめる</a></div><em></em></div>`;return srowHTML(r)}).join('')+(TOUCH?'':kbHTML())+supHTML()}
+function srowHTML(r){if(r.length===1)return `<div class="sgrp">${r[0]}</div>`;const [k,l,ty]=r;
   if(ty==='r')return `<div class="srow"><span>${l}</span><input type="range" data-k="${k}" min="${r[3]}" max="${r[4]}" step="${r[5]}" value="${SET[k]}"><em id="sv_${k}">${SET[k]}${r[6]}</em></div>`;
   if(ty==='s')return `<div class="srow"><span>${l}</span><div class="seg">${r[3].map(([v,t])=>`<button data-k="${k}" data-v="${v}" class="${SET[k]===v?'on':''}">${t}</button>`).join('')}</div><em></em></div>`;
-  return `<div class="srow"><span>${l}</span><div class="seg"><button class="tg${SET[k]?' on':''}" data-k="${k}" data-t="1">${SET[k]?'ON':'OFF'}</button></div><em></em></div>`}).join('')+`<div class="sgrp">ご支援</div><div class="srow"><span>開発を応援する</span><div><a class="sup" href="https://ofuse.me/820d068b" target="_blank" rel="noopener">OFUSEで支援する ↗</a></div><em></em></div>${FORM.action?`<div class="srow"><span>バグ報告・要望</span><div><a class="sup" href="#" id="fqOpen">お問い合わせ</a></div><em></em></div>`:''}<div class="srow"><span>制作者のX</span><div><a class="sup" href="https://x.com/Negi_RLabo" target="_blank" rel="noopener">@Negi_RLabo ↗</a></div><em></em></div>`
+  return `<div class="srow"><span>${l}</span><div class="seg"><button class="tg${SET[k]?' on':''}" data-k="${k}" data-t="1">${SET[k]?'ON':'OFF'}</button></div><em></em></div>`}
+function kbHTML(){return `<div class="sgrp">キー割り当て</div><div class="kbh">変えたいキーを押してから、割り当てるキーを押してください（Esc：取り消し／Delete：空にする）</div>`+KBA.map(([a,l])=>`<div class="srow kbr2"><span>${l}</span><div class="kbs">${[0,1].map(i=>`<button class="kbb${kbCap&&kbCap.a===a&&kbCap.i===i?' on':''}" data-kb="${a}" data-ki="${i}">${kbCap&&kbCap.a===a&&kbCap.i===i?'キーを押す…':keyName(KB[a][i])}</button>`).join('')}</div><em></em></div>`).join('')+`<div class="srow"><span></span><div><button class="kbb" id="kbRst">キー割り当てを初期値に戻す</button></div><em></em></div>`}
+let kbCap=null;
+$('setList').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='kbRst'){kbReset();kbSave();kbCap=null;renderSet();return}if(!b.dataset.kb)return;kbCap={a:b.dataset.kb,i:+b.dataset.ki};renderSet()});
+addEventListener('keydown',e=>{if(!kbCap)return;e.preventDefault();e.stopPropagation();const c=e.code;
+  if(c!=='Escape'){if(c==='Delete'||c==='Backspace')KB[kbCap.a][kbCap.i]='';else{for(const [a] of KBA)for(let i=0;i<2;i++)if(KB[a][i]===c)KB[a][i]=KB[kbCap.a][kbCap.i]&&!(a===kbCap.a&&i===kbCap.i)?KB[kbCap.a][kbCap.i]:'';KB[kbCap.a][kbCap.i]=c}kbSave();helpKeys()}
+  kbCap=null;renderSet()},true);
+function helpKeys(){const t=document.querySelector('#help .hcols table');if(!t)return;const K=a=>KB[a].filter(Boolean).map(c=>`<kbd>${keyName(c)}</kbd>`).join(' / ')||'—';
+  t.innerHTML=`<tr><td>${K('up')} ${K('left')} ${K('down')} ${K('right')}</td><td>移動</td></tr><tr><td><kbd>Esc</kbd> / ${K('pause')}</td><td>一時停止（メニュー）</td></tr><tr><td>マウス</td><td>視点（最初に画面をクリック。<kbd>Esc</kbd>で解除）</td></tr>
+<tr><td>${K('turnL')} ${K('turnR')}</td><td>視点を左右に旋回（マウスなしでも可）</td></tr><tr><td>左クリック / ${K('fire')}</td><td>全武装を一斉射撃</td></tr><tr><td>右クリック</td><td>右腕の武装だけ使う（シールドのガードにも）</td></tr>
+<tr><td>${['w1','w2','w3','w4'].map(K).join(' ')}</td><td>各スロットの武装だけ使う（左腕・右腕・左肩・右肩）</td></tr><tr><td>${K('reload')}</td><td>リロード</td></tr><tr><td>${K('leg')}</td><td>ドライブのアビリティ（スラスター・ジャンプ・アンカー等）</td></tr>
+<tr><td>${K('body')}</td><td>背部アビリティ</td></tr><tr><td>${K('help')}</td><td>この画面を開く／閉じる（ゲーム中は一時停止）</td></tr><tr><td colspan="2" style="color:var(--dim)">キーは 設定 → キー割り当て で変更できます</td></tr>`}
+function supHTML(){return `<div class="sgrp">ご支援</div><div class="srow"><span>開発を応援する</span><div><a class="sup" href="https://ofuse.me/820d068b" target="_blank" rel="noopener">OFUSEで支援する ↗</a></div><em></em></div>${FORM.action?`<div class="srow"><span>バグ報告・要望</span><div><a class="sup" href="#" id="fqOpen">お問い合わせ</a></div><em></em></div>`:''}<div class="srow"><span>制作者のX</span><div><a class="sup" href="https://x.com/Negi_RLabo" target="_blank" rel="noopener">@Negi_RLabo ↗</a></div><em></em></div>`
   +`<div class="sgrp">クレジット</div><div class="cred">
 <p><b>制作</b>　<a href="https://x.com/Negi_RLabo" target="_blank" rel="noopener">@Negi_RLabo</a></p>
 <p><b>3Dモデル</b>　敵キャラクターの3Dモデルの一部は <a href="https://www.meshy.ai/" target="_blank" rel="noopener">Meshy</a> で生成したものです（<a href="https://creativecommons.org/licenses/by/4.0/deed.ja" target="_blank" rel="noopener">CC BY 4.0</a>）。ゲーム用に軽量化し、アニメーション用の加工を加えています。</p>
 <p><b>3Dエンジン</b>　<a href="https://threejs.org/" target="_blank" rel="noopener">three.js</a>（MIT License）</p>
 <p><b>フォント</b>　Chakra Petch／Zen Kaku Gothic New（<a href="https://fonts.google.com/" target="_blank" rel="noopener">Google Fonts</a>・SIL Open Font License）</p></div>`}
 $('setList').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;SET[k]=+e.target.value;const r=SROWS.find(x=>x[0]===k);$('sv_'+k).textContent=SET[k]+r[6];saveSet()});
-$('setList').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;if(b.dataset.t)SET[k]=!SET[k];else SET[k]=b.dataset.v;saveSet();if(k==='quality')applyQuality();renderSet();play('ui',{v:.4})});
+$('setList').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;if(!k)return;if(b.dataset.t)SET[k]=!SET[k];else SET[k]=b.dataset.v;saveSet();if(k==='quality')applyQuality();renderSet();play('ui',{v:.4})});
 function tutSetHTML(){if(state==='pause'||state==='play')return '';return `<div class="sgrp">チュートリアル</div><div class="srow"><span>基本操作の練習</span><div class="seg"><button class="tg" id="setTut">訓練を開始</button></div><em></em></div>`}
 function admHTML(){return `<div class="sgrp">管理者</div><div class="adm">${ADMIN?'<span style="flex:1;color:#7fe0ff;font-weight:700">管理者モード：全パーツ解禁中（動作テスト用）</span><button class="tg on" id="admOff">解除</button>':'<input id="admPw" type="password" placeholder="管理者コード" autocomplete="off"><button class="tg" id="admGo">認証</button>'}</div>`}
 $('setList').addEventListener('click',e=>{if(e.target.id==='setTut'){e.stopImmediatePropagation();$('setW').classList.add('hide');startTutorial();return}if(e.target.id==='admGo'||e.target.id==='admOff')e.stopImmediatePropagation();if(e.target.id==='admGo'){if(($('admPw').value||'').trim().toLowerCase()==='rustadmin'){ADMIN=true;try{localStorage.setItem('rg_admin','1')}catch(_){}play('ui',{v:.7})}else{$('admPw').value='';$('admPw').placeholder='コードが違います'}renderSet();renderMenu();homeCur()}
   if(e.target.id==='admOff'){ADMIN=false;try{localStorage.removeItem('rg_admin')}catch(_){}renderSet();renderMenu();homeCur()}},true);
-let setFrom=null;function openSet(){renderSet();$('setW').classList.remove('hide')}
+let setFrom=null;function openSet(){kbCap=null;renderSet();$('setW').classList.remove('hide')}
+// live preview of the touch controls while resizing them
+let uiPv=null;function uiPvSync(){for(const el of document.querySelectorAll('[data-uk]')){el.value=SET[el.dataset.uk];document.querySelector(`[data-uv="${el.dataset.uk}"]`).textContent=SET[el.dataset.uk]+'%'}}
+function uiPvOpen(){const c=$('ctl');uiPv={hid:c.classList.contains('hide'),ui:SET.ui,uiA:SET.uiA,pw:!$('pauseW').classList.contains('hide')};if(!$('ring').innerHTML.trim())buildButtons();c.classList.remove('hide');c.classList.add('pv');$('setW').classList.add('hide');$('pauseW').classList.add('hide');$('uiPvW').classList.remove('hide');uiPvSync()}
+function uiPvClose(){if(!uiPv)return;const c=$('ctl');c.classList.remove('pv');if(uiPv.hid)c.classList.add('hide');if(uiPv.pw)$('pauseW').classList.remove('hide');$('uiPvW').classList.add('hide');uiPv=null;openSet()}
+$('setList').addEventListener('click',e=>{if(e.target.id==='uiPv'){e.preventDefault();uiPvOpen()}});
+$('uiPvW').addEventListener('input',e=>{const k=e.target.dataset.uk;if(!k)return;SET[k]=+e.target.value;saveSet();uiPvSync()});
+$('uiPvOk').addEventListener('click',uiPvClose);$('uiPvR').addEventListener('click',()=>{SET.ui=uiPv.ui;SET.uiA=uiPv.uiA;saveSet();uiPvSync()});
 $('setBack').addEventListener('click',()=>{$('setW').classList.add('hide')});
 // ===== contact form: posts to a Google Form (set FORM.action and entry ids from its prefilled link) =====
 const FORM={action:'https://docs.google.com/forms/d/e/1FAIpQLSffaNH9n1dNgJtPe3w9rv7-1W-DpRRaWWCUARDaAnZFELiYrg/formResponse',type:'entry.1196685478',body:'entry.292422066',contact:'entry.981804384',env:'entry.538024704'};
@@ -1872,11 +1920,16 @@ $('fqSend').addEventListener('click',e=>{e.preventDefault();const body=$('fqBody
   m.textContent='送信中…';fetch(FORM.action,{method:'POST',mode:'no-cors',body:fd}).then(()=>{fqLast=Date.now();m.textContent='送信しました。ありがとうございます！';$('fqBody').value=''}).catch(()=>{m.textContent='送信できませんでした。通信環境を確認してください'})});
 $('setReset').addEventListener('click',()=>{Object.assign(SET,SETD);saveSet();applyQuality();renderSet()});
 // ===== pause =====
-function pauseGame(){if(state!=='play')return;state='pause';inp.all=false;inp.w.fill(false);mb=mb2=false;joy.x=joy.y=0;for(const k in keys)keys[k]=false;$('pauseW').classList.remove('hide');try{document.pointerLockElement&&document.exitPointerLock()}catch(e){}}
-function resumeGame(){if(state!=='pause')return;$('pauseW').classList.add('hide');$('setW').classList.add('hide');state='play';if(matchMedia('(pointer:fine)').matches){try{const p=cv.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}}}
+function pauseGame(){if(state!=='play')return;state='pause';pauseSync();inp.all=false;inp.w.fill(false);mb=mb2=false;joy.x=joy.y=0;for(const k in keys)keys[k]=false;$('pauseW').classList.remove('hide');try{document.pointerLockElement&&document.exitPointerLock()}catch(e){}}
+function resumeGame(){if(state!=='pause')return;$('pauseW').classList.add('hide');$('setW').classList.add('hide');$('help').classList.add('hide');state='play';if(matchMedia('(pointer:fine)').matches){try{const p=cv.requestPointerLock();if(p&&p.catch)p.catch(()=>{})}catch(e){}}}
 function tapB(el,fn){el.addEventListener('pointerdown',e=>{e.stopPropagation()});el.addEventListener('pointerup',e=>{e.preventDefault();e.stopPropagation();fn()});el.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true})}
 $('pauseB').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();pauseGame()});$('pauseB').addEventListener('touchstart',e=>{e.stopPropagation()},{passive:true});
-for(const id of['pauseB','sndH','helpH'])$('ctl').appendChild($(id));tapB($('pResume'),resumeGame);tapB($('pSet'),()=>{if(state==='pause')openSet()});tapB($('pHome'),()=>{if(state==='pause')goHome()});
+for(const id of['pauseB','sndH','helpH'])$('ctl').appendChild($(id));tapB($('pResume'),resumeGame);tapB($('pSet'),()=>{if(state==='pause')openSet()});tapB($('pHelp'),()=>{if(state==='pause')toggleHelp()});
+let pHomeT=0;tapB($('pHome'),()=>{if(state!=='pause')return;if(TEST){TEST=null;openGarage();return}if(Date.now()-pHomeT<3000){pHomeT=0;goHome();return}pHomeT=Date.now();$('pHome').classList.add('cf');$('pHomeL').textContent='本当に撤退する？（もう一度押す）';setTimeout(()=>{if(Date.now()-pHomeT>=2900){$('pHome').classList.remove('cf');pauseSync()}},3000)});
+tapB($('pMute'),()=>{toggleSnd({preventDefault(){},stopPropagation(){}});pauseSync()});tapB($('pTgt'),()=>{if(state==='pause'&&TEST){testFoes();resumeGame()}});
+function pauseSync(){for(const el of document.querySelectorAll('[data-pk]')){el.value=SET[el.dataset.pk];document.querySelector(`[data-pv="${el.dataset.pk}"]`).textContent=SET[el.dataset.pk]+'%'}
+  $('pMute').textContent=muted?'ミュート中（タップで解除）':'ミュート';$('pHome').classList.remove('cf');$('pHomeL').textContent=TEST?'格納庫へ戻る':'撤退してホームへ';$('pTgt').classList.toggle('hide',!TEST);pHomeT=0}
+$('pauseW').addEventListener('input',e=>{const k=e.target.dataset.pk;if(!k)return;SET[k]=+e.target.value;saveSet();pauseSync()});
 document.addEventListener('pointerlockchange',()=>{if(!document.pointerLockElement&&state==='play'&&matchMedia('(pointer:fine)').matches)pauseGame()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='play')pauseGame()});
 // ===== stages =====
@@ -1895,7 +1948,7 @@ let demo=null;
 const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lanc',G:'horse',A:'bulwark',W:['gat','flame']},{B:'chim',G:'spider',A:'deploy',W:['mini','tesla','flame','melt']},{B:'spec',G:'rev',A:'cloak',W:['shot','flame']},{B:'std',G:'horse',A:'missile',W:['twin','mini']},{B:'lite',G:'drone',A:'turret',W:['rkt','shot']},{B:'fort',G:'hover',A:'orbital',W:['gat','melt']},{B:'std',G:'bip',A:'missile',W:['gat','mini']},{B:'fort',G:'tank',A:'orbital',W:['gat','cannon']},{B:'quad',G:'spider',A:'turret',W:['mini','tesla','msl','mini']},{B:'lite',G:'rev',A:'missile',W:['mini','tesla']},{B:'fort',G:'bip',A:'barrier',W:['gat','gat']}];
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
-function goHome(){TUT=null;if(!GT)tutHide();hideAll();stopMotors();megaLoop(false);inp.all=false;inp.w.fill(false);mb=mb2=false;joy.x=joy.y=0;try{document.pointerLockElement&&document.exitPointerLock()}catch(e){}startDemo()}
+function goHome(){TUT=null;TEST=null;$('dpsH').classList.add('hide');if(!GT)tutHide();hideAll();stopMotors();megaLoop(false);inp.all=false;inp.w.fill(false);mb=mb2=false;joy.x=joy.y=0;try{document.pointerLockElement&&document.exitPointerLock()}catch(e){}startDemo()}
 function homeCur(){const c=demo?JSON.parse(demo.keep):cfg;$('hScrap').innerHTML=SCRI+SCRAP.toLocaleString()+(ADMIN?' <small>管理者</small>':'');$('hCur').innerHTML=`現在の機体<b>${BODY[c.B].n} ／ ${LEGS[c.G].n}</b>${BODY[c.B].slots.map((x,i)=>WP[c.W[i]].n).join('・')} ／ ${ABIL[c.A].n}`}
 function startDemo(){if(!demo)demo={keep:JSON.stringify(cfg)};Object.assign(demo,{t:0,sw:0,shot:0,ang:rnd()*TAU,ab:3,lg:5,cut:true,look:null});
   Object.assign(cfg,JSON.parse(JSON.stringify(DEMO_L[Math.floor(rnd()*DEMO_L.length)])));fixW(true);
@@ -1920,7 +1973,7 @@ function demoCam(dt){const d=demo;d.sw-=dt;if(d.sw<=0){d.sw=6+rnd()*3;d.shot=(d.
   t2.set(P.pos.x,P.y+2.8,P.pos.z);if(lockT&&enemies.includes(lockT)&&d.shot!==1)t2.lerp(lockT.m.position,.3);
   if(!d.look||d.cut)d.look=t2.clone();else d.look.lerp(t2,Math.min(1,dt*4));d.cut=false;cam.lookAt(d.look);
   cam.fov=50;cam.updateProjectionMatrix();cam.setViewOffset(innerWidth,innerHeight,-innerWidth*.15,0,innerWidth,innerHeight);shake=Math.max(0,shake-dt*2.5)}
-function openGarage(){endDemo();hideAll();clearField();buildLevel('ruins');placePlayer(0,0);state='menu';MUS.lvl=0;renderMenu();buildMech();$('menu').classList.remove('hide')}
+function openGarage(){TEST=null;$('dpsH').classList.add('hide');endDemo();hideAll();clearField();buildLevel('ruins');placePlayer(0,0);state='menu';MUS.lvl=0;renderMenu();buildMech();$('menu').classList.remove('hide')}
 
 // ===== bestiary =====
 const DEXE=[{k:'drone',n:'Surtling',j:'爆発虫',d:'群れで押し寄せ、取り付いて自爆する小型個体。とにかく数が多い。',a:'自爆'},
@@ -1961,8 +2014,17 @@ $('menu').addEventListener('pointerdown',()=>setTimeout(()=>SFX.ui(),0));
 $('again').addEventListener('click',openGarage);
 
 // ---------- input ----------
-const WK=['Digit1','Digit2','Digit3','Digit4'];
-addEventListener('keydown',e=>{if(e.repeat){keys[e.code]=true;return}keys[e.code]=true;if(e.code==='KeyH'){toggleHelp();return}if(e.code==='KeyP'||e.code==='Escape'){if(state==='play'){pauseGame();return}if(state==='pause'){resumeGame();return}}if(state!=='play')return;if(e.code==='KeyR')reloadAll();if(e.code==='ShiftLeft'||e.code==='ShiftRight'||e.code==='Space')useLeg();if(e.code==='KeyG')useBody()});
+// ===== key bindings (two slots per action, saved in rg_keys; Esc always pauses) =====
+const KBA=[['up','前進',['KeyW','ArrowUp']],['down','後退',['KeyS','ArrowDown']],['left','左へ移動',['KeyA','']],['right','右へ移動',['KeyD','']],['turnL','視点を左に旋回',['KeyQ','ArrowLeft']],['turnR','視点を右に旋回',['KeyE','ArrowRight']],
+  ['fire','全武装で射撃',['KeyF','']],['w1','スロット1の武装',['Digit1','']],['w2','スロット2の武装',['Digit2','']],['w3','スロット3の武装',['Digit3','']],['w4','スロット4の武装',['Digit4','']],
+  ['reload','リロード',['KeyR','']],['leg','ドライブのアビリティ',['ShiftLeft','Space']],['body','背部アビリティ',['KeyG','']],['pause','一時停止',['KeyP','']],['help','操作方法',['KeyH','']]];
+const KB={};function kbReset(){for(const [a,,d] of KBA)KB[a]=d.slice()}kbReset();try{const sv=JSON.parse(localStorage.getItem('rg_keys')||'null');if(sv)for(const a in sv)if(KB[a])KB[a]=sv[a]}catch(e){}
+function kbSave(){try{localStorage.setItem('rg_keys',JSON.stringify(KB))}catch(e){}}
+const kd=a=>KB[a][0]&&keys[KB[a][0]]||KB[a][1]&&keys[KB[a][1]];const kis=(a,c)=>!!c&&KB[a].includes(c);
+function keyName(c){if(!c)return '—';const m={Space:'Space',ShiftLeft:'左Shift',ShiftRight:'右Shift',ControlLeft:'左Ctrl',ControlRight:'右Ctrl',AltLeft:'左Alt',AltRight:'右Alt',ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',Tab:'Tab',Enter:'Enter',CapsLock:'CapsLock',Backquote:'`',Minus:'-',Equal:'=',BracketLeft:'[',BracketRight:']',Semicolon:';',Quote:"'",Comma:',',Period:'.',Slash:'/',Backslash:'\\'};
+  return m[c]||c.replace(/^Key|^Digit/,'').replace(/^Numpad/,'テンキー')}
+const WK=['w1','w2','w3','w4'];
+addEventListener('keydown',e=>{if(kbCap)return;if(e.repeat){keys[e.code]=true;return}keys[e.code]=true;if(kis('help',e.code)){toggleHelp();return}if(kis('pause',e.code)||e.code==='Escape'){if(state==='play'){pauseGame();return}if(state==='pause'){resumeGame();return}}if(state!=='play')return;if(kis('reload',e.code))reloadAll();if(kis('leg',e.code))useLeg();if(kis('body',e.code))useBody()});
 addEventListener('keyup',e=>{keys[e.code]=false});
 const cv=$('c');
 cv.addEventListener('mousedown',e=>{if(state!=='play')return;if(document.pointerLockElement!==cv){try{const p=cv.requestPointerLock();if(p&&p.catch)p.catch(()=>{plFail=true;plHint()})}catch(err){plFail=true;plHint()}setTimeout(()=>{if(document.pointerLockElement!==cv&&state==='play'){plFail=true;plHint()}},600)}if(e.button===0)mb=true;if(e.button===2)mb2=true});
@@ -2020,11 +2082,11 @@ function buildButtons(){
   let svg=`<svg viewBox="0 0 240 240"><defs><radialGradient id="rg" cx=".4" cy=".35"><stop offset="0" stop-color="#ff7a5a"/><stop offset=".8" stop-color="#c41a0c"/></radialGradient></defs>`;
   ringRefs=[];buildGauge();
   arms.forEach((a,i)=>{const am=(BODY[cfg.B].lay||LAY[n])[i]*Math.PI/180,a0=am-span/2,a1=am+span/2,rm=(R1+R2)/2,tx=(RC+rm*Math.cos(am)).toFixed(1),ty=RC+rm*Math.sin(am);
-    svg+=`<rect class="kbt kbr" x="${(+tx-9).toFixed(1)}" y="${(ty+20).toFixed(1)}" width="18" height="12" rx="3"/><text class="kbt" x="${tx}" y="${(ty+29.5).toFixed(1)}">${i+1}</text>`;svg+=`<path class="sg hit" id="sg${i}" d="${arcP(R1,R2,a0,a1)}"/><path class="pg" id="pg${i}"/><text class="lab k" x="${tx}" y="${(ty-13).toFixed(1)}">${sln(i)}</text><text class="lab" x="${tx}" y="${(ty).toFixed(1)}">${a.W.s}</text><text class="lab n" id="tx${i}" x="${tx}" y="${(ty+14).toFixed(1)}"></text>`;
+    svg+=`<rect class="kbt kbr" x="${(+tx-9).toFixed(1)}" y="${(ty+20).toFixed(1)}" width="18" height="12" rx="3"/><text class="kbt" x="${tx}" y="${(ty+29.5).toFixed(1)}">${keyName(KB['w'+(i+1)][0])}</text>`;svg+=`<path class="sg hit" id="sg${i}" d="${arcP(R1,R2,a0,a1)}"/><path class="pg" id="pg${i}"/><text class="lab k" x="${tx}" y="${(ty-13).toFixed(1)}">${sln(i)}</text><text class="lab" x="${tx}" y="${(ty).toFixed(1)}">${a.W.s}</text><text class="lab n" id="tx${i}" x="${tx}" y="${(ty+14).toFixed(1)}"></text>`;
     ringRefs.push({a0,a1})});
-  svg+=`<circle class="hit" id="fireC" cx="${RC}" cy="${RC}" r="${FR}"/><text class="lab n" x="${RC}" y="${RC+6}" style="font-size:17px">FIRE</text><rect class="kbt kbr" x="${RC-32}" y="${RC+16}" width="64" height="13" rx="3"/><text class="kbt" x="${RC}" y="${RC+25.5}">左クリック / F</text>`;
+  svg+=`<circle class="hit" id="fireC" cx="${RC}" cy="${RC}" r="${FR}"/><text class="lab n" x="${RC}" y="${RC+6}" style="font-size:17px">FIRE</text><rect class="kbt kbr" x="${RC-32}" y="${RC+16}" width="64" height="13" rx="3"/><text class="kbt" x="${RC}" y="${RC+25.5}">左クリック / ${keyName(KB.fire[0])}</text>`;
   const hasGun=arms.some(a=>a.W.kind==='gun');
-  if(hasGun)svg+=`<circle class="hit" id="rlC" cx="${RC}" cy="${RC+80}" r="21"/><rect class="kbt kbr" x="${RC+12}" y="${RC+60}" width="14" height="12" rx="3"/><text class="kbt" x="${RC+19}" y="${RC+69.5}">R</text><g transform="translate(${RC-15} ${RC+65}) scale(.5)" style="color:#fff;pointer-events:none">${IC.reload}</g>`;
+  if(hasGun)svg+=`<circle class="hit" id="rlC" cx="${RC}" cy="${RC+80}" r="21"/><rect class="kbt kbr" x="${RC+12}" y="${RC+60}" width="14" height="12" rx="3"/><text class="kbt" x="${RC+19}" y="${RC+69.5}">${keyName(KB.reload[0])}</text><g transform="translate(${RC-15} ${RC+65}) scale(.5)" style="color:#fff;pointer-events:none">${IC.reload}</g>`;
   svg+='</svg>';
   $('ring').innerHTML=svg;
   hold($('fireC'),v=>inp.all=v,true);
@@ -2035,7 +2097,7 @@ function buildButtons(){
   const ab=$('abil');ab.innerHTML='';abBtns=[];
   for(const [k,def,fn] of [['leg',LEGS[cfg.G].ab,useLeg],['body',ABIL[cfg.A],useBody]]){
     const b=document.createElement('button');b.className='ab';
-    b.innerHTML=`<svg viewBox="0 0 60 60"><circle class="trk" cx="30" cy="30" r="26"/><circle class="cdc" cx="30" cy="30" r="26" style="stroke-dasharray:${CC.toFixed(1)}"/><g class="ic">${IC[def.ic]}</g></svg><span class="sec"></span><span class="nm">${def.sn}</span><span class="kb">${k==='leg'?'Shift':'G'}</span><span class="stk"></span>`;
+    b.innerHTML=`<svg viewBox="0 0 60 60"><circle class="trk" cx="30" cy="30" r="26"/><circle class="cdc" cx="30" cy="30" r="26" style="stroke-dasharray:${CC.toFixed(1)}"/><g class="ic">${IC[def.ic]}</g></svg><span class="sec"></span><span class="nm">${def.sn}</span><span class="kb">${keyName(KB[k][0]||KB[k][1])}</span><span class="stk"></span>`;
     ab.appendChild(b);tap(b,fn);abBtns.push({k,def,el:b,sec:b.querySelector('.sec'),cdc:b.querySelector('.cdc'),stk:b.querySelector('.stk')});
   }
 }
@@ -2238,7 +2300,7 @@ const RLS={
 function startReload(a){if(a.W.regen)return;if(a.W.kind==='tesla'&&!(a.rl>0)&&a.ammo<magOf(a)){a.rlT=a.W.rl*U.rl;a.rl=a.rlT;a.rq=0;a.dropped=a.clicked=false;return}if(a.W.kind==='flame'&&!(a.rf>0)&&a.fuel<.98){a.rf=a.W.rl*U.rl*(1-a.fuel);return}if(a.W.kind!=='gun'||a.rl>0||a.ammo===magOf(a))return;a.rlT=a.W.rl*U.rl*(a.W.cannon?U.cR:1);a.rl=a.rlT;a.rq=0;a.dropped=false;a.clicked=false;a.spin=0}
 function dropMag(a){const m=a.mag.clone();a.mag.getWorldPosition(m.position);a.mag.getWorldQuaternion(m.quaternion);a.mag.getWorldScale(m.scale);scene.add(m);drops.push({m,v:new V((rnd()-.5)*2+P.vel.x*.4,.5,(rnd()-.5)*2+P.vel.z*.4),av:new V(rnd()*5,rnd()*3,rnd()*5),life:9,h:(a.t==='gat'?.38:a.t==='mini'?.28:.16)*m.scale.x,b:0});if(drops.length>16){scene.remove(drops[0].m);drops.shift()}}
 function guardCut(dir){let cut=0;for(const a of arms){if(a.W.kind==='shield'&&a.guard>.7){t3.set(Math.sin(upper.rotation.y),0,Math.cos(upper.rotation.y));if(t3.dot(dir)>.35)cut=U.sCut?.95:a.W.cut}}return cut}
-function damage(d,dir,at,by,ex){if(TUT)return;
+function damage(d,dir,at,by,ex){if(TUT||TEST)return;
   if(by)P.hb=by;
   if(cfg.G==='rev'){if(P.slam||now<(P.slI||0))return;if(P.jmp)d*=.6}
   if(!ex&&lancSh&&((P.blk||0)>.7||(P.blk||0)<.25)){const yw=upper.rotation.y,br=(P.blk||0)>.7;if(br)t3.set(Math.sin(yw),0,Math.cos(yw));else t3.set(Math.cos(yw),0,-Math.sin(yw));if(t3.dot(dir)>(br?.3:.5)){if(lancSh){lancSh.getWorldPosition(tv);spark(tv.set(tv.x+dir.x*.8,at.y||tv.y,tv.z+dir.z*.8),5,10)}if(now-(P.bks||0)>.12){SFX.block();P.bks=now}shake=Math.max(shake,.12);return}}
@@ -2365,9 +2427,9 @@ function useBody(){
 
 let firingCount=0;
 function updateArms(dt,tgt){
-  {const allF0=inp.all||mb||keys.KeyF;firingCount=arms.filter((a,i)=>a.W.kind!=='shield'&&armOK(a)&&(inp.w[i]||keys[WK[i]]||allF0)).length}
+  {const allF0=inp.all||mb||kd('fire');firingCount=arms.filter((a,i)=>a.W.kind!=='shield'&&armOK(a)&&(inp.w[i]||kd(WK[i])||allF0)).length}
   if(P.clk&&firingCount>0){AB.body.act=0;P.amb=.8}
-  const allF=inp.all||mb||keys.KeyF;
+  const allF=inp.all||mb||kd('fire');
   arms.forEach((a,i)=>{
     const W=a.W,pr=armOK(a)&&(inp.w[i]||keys[WK[i]]||(i===1&&mb2)||(allF&&W.kind!=='shield'));
     if(a.ap){if(a.ap.rotation.order!=='YXZ')a.ap.rotation.order='YXZ';let ty=0,tp=0;
@@ -2455,10 +2517,10 @@ function update(dt){
   for(const k of['leg','body']){if(AB[k].act<=0&&!(k==='leg'&&P.jmp))AB[k].cd=Math.max(0,AB[k].cd-dt);AB[k].act=Math.max(0,AB[k].act-dt)}
   bodyTick(dt);fpTick(dt);fbTick(dt);burnTick(dt);slamRingTick();lockTick(dt);
   if(AB.leg.ch===0&&AB.leg.cd<=0&&AB.leg.act<=0)AB.leg.ch=legStock();
-  if(keys.KeyQ||keys.ArrowLeft)camYaw+=dt*2.2;if(keys.KeyE||keys.ArrowRight)camYaw-=dt*2.2;
+  if(kd('turnL'))camYaw+=dt*2.2;if(kd('turnR'))camYaw-=dt*2.2;
   fw.set(Math.sin(camYaw),0,Math.cos(camYaw));rt.set(-Math.cos(camYaw),0,Math.sin(camYaw));
   let ix=0,iz=0;
-  if(keys.KeyA)ix--;if(keys.KeyD)ix++;if(keys.KeyW||keys.ArrowUp)iz--;if(keys.KeyS||keys.ArrowDown)iz++;
+  if(kd('left'))ix--;if(kd('right'))ix++;if(kd('up'))iz--;if(kd('down'))iz++;
   ix+=joy.x;iz+=joy.y;const il=Math.hypot(ix,iz);if(il>1){ix/=il;iz/=il}
   const mvx=rt.x*ix-fw.x*iz,mvz=rt.z*ix-fw.z*iz;
   if(il>.15)P.last.set(mvx,0,mvz).normalize();else P.last.copy(fw);
@@ -2521,7 +2583,7 @@ function update(dt){
     const cur=lockT&&enemies.includes(lockT)?tsc(lockT):1e9;if(cur>=1e9)lockT=best;else if(best&&bs<cur*.8)lockT=best}
   const tgt=lockT,aimY=tgt?Math.atan2(tgt.m.position.x-P.pos.x,tgt.m.position.z-P.pos.z):camYaw;
   {let dy=((aimY-upper.rotation.y+Math.PI)%TAU+TAU)%TAU-Math.PI;const mx=BODY[cfg.B].turn*Math.PI/180*(U.trn||1)*dt;upper.rotation.y+=Math.max(-mx,Math.min(mx,dy))}
-  const anyFire=inp.all||mb||keys.KeyF||inp.w.some(x=>x);
+  const anyFire=inp.all||mb||kd('fire')||inp.w.some(x=>x);
   lookActive-=dt;
   updateArms(dt,tgt);
   // back turret
@@ -2650,7 +2712,7 @@ function hudUpdate(){
   $('apT').textContent=fmt(P.hp);{const t=String(P.runScrap||0);if($('scrapN').textContent!==t)$('scrapN').textContent=t}$('apB').style.width=(P.hp/P.max*100)+'%';
   $('apB').style.background=P.hp/P.max<.3?'linear-gradient(#ff8a5a,#d8321e)':'';
   $('bbW').classList.toggle('hide',!(P.bar>0));if(P.bar>0)$('bbB').style.width=(P.bhp/(ABIL.barrier.cap*(1+U.abBar*.6))*100)+'%';
-  $('waveT').textContent=stageLabel();$('scoreT').textContent=score.toLocaleString();{const te=$('tmr');te.textContent=TUT?'':fmtT(RUN.t);const bt=bestTime();te.classList.toggle('pb',RUN.s0===1&&bt>0&&RUN.t<bt)}
+  $('waveT').textContent=stageLabel();$('scoreT').textContent=score.toLocaleString();{const te=$('tmr');te.textContent=TUT||TEST?'':fmtT(RUN.t);const bt=bestTime();te.classList.toggle('pb',RUN.s0===1&&bt>0&&RUN.t<bt)}
   const left=enemies.length+toSpawn.length+portals.reduce((a,q)=>a+q.types.length,0),ps='残り '+left;if(ps!==pipS){$('pips').textContent=ps;pipS=ps}
   const boss=enemies.find(e=>e.type==='boss');$('bossW').classList.toggle('hide',!boss);if(boss){const f=Math.max(0,boss.hp/boss.max),fin=(boss.phs||0)>=2;$('bossB').style.width=Math.min(100,(fin&&boss.fin0?.2*boss.hp/boss.fin0:f)*100)+'%';$('bossW').classList.toggle('fin',fin);const nm=eName(boss)+(fin?'  —  FINAL':boss.phs?'  —  PHASE 2':'');if($('bossN').textContent!==nm)$('bossN').textContent=nm}
   $('hurt').style.opacity=hurtT>0&&SET.hurt?.8:0;
@@ -2865,14 +2927,14 @@ function loop(t){
   const sdt=slowT>0?dt*.3:dt;slowT-=dt;
   applyVol();
   if(state!=='play'&&state!=='demo')quietMotors();
-  if(state==='play'){update(sdt);updateOrbs(sdt);updateSupply(sdt);if(!TUT&&phase!=='clear'&&phase!=='next')RUN.t+=dt}
+  if(state==='play'){update(sdt);updateOrbs(sdt);updateSupply(sdt);if(!TUT&&!TEST&&phase!=='clear'&&phase!=='next')RUN.t+=dt;if(TEST)testTick(dt)}
   else if(state==='demo'&&demo){demoTick(sdt);update(sdt);updateOrbs(sdt);$('speed').style.opacity=0;hurtT=0}
   else if(state==='drop'){updateDrop(dt);hudUpdate()}
   else if(state==='dead'){overT-=dt;for(const b of eb)if(b.on)b.m.position.addScaledVector(b.v,dt);if(overT<=0){state='over';$('over').querySelector('h2').textContent='機体大破';$('upl').textContent=Object.keys(PK).length?'取得した強化：'+Object.entries(PK).map(([k,v])=>UP.find(u=>u.id===k).n+(v>1?'×'+v:'')).join('、'):'';$('res').innerHTML=`<span style="display:block;color:#ff8a60;margin-bottom:6px">${P.hb||'敵の攻撃'}で大破</span><span class="scrapIn" style="margin-bottom:6px">${SCRI}+${(P.runScrap||0).toLocaleString()}<small>（所持 ${SCRAP.toLocaleString()}）</small></span>${stageLabel()} まで到達<b>${score.toLocaleString()}</b><span class="tm">TIME ${fmtT(RUN.t,1)}</span>`;$('over').classList.remove('win');$('over').classList.remove('hide');$('hud').classList.add('hide');$('ctl').classList.add('hide');try{document.exitPointerLock&&document.exitPointerLock()}catch(e){}}}
   updateShip(dt);updateZaps(sdt);updateCasings(sdt);updateProps(sdt);if(state==='play'||state==='drop')updateScraps(sdt);
   fx(sdt);camUpdate(dt);R.render(scene,cam);
 }
-applyCtl();resetU();buildLevel('ruins');renderMenu();buildMech();applyQuality();goHome();requestAnimationFrame(loop);tutWelcome();
+applyCtl();helpKeys();resetU();buildLevel('ruins');renderMenu();buildMech();applyQuality();goHome();requestAnimationFrame(loop);tutWelcome();
 }
 </script>
 <script>
