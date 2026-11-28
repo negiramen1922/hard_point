@@ -3270,7 +3270,7 @@ function ejectShell(a,lp,back,quiet){let c=shellP.find(x=>!x.on);if(!c){if(shell
   else{const sx=Math.cos(yw)*a.s,sz=-Math.sin(yw)*a.s;c.v.set(sx*(3+rnd()*1.5)+P.vel.x*.8,3.5+rnd()*2,sz*(3+rnd()*1.5)+P.vel.z*.8)}
   c.m.rotation.set(rnd()*3,rnd()*3,rnd()*3);c.life=2.2;c.b=0;c.q=!!quiet;c.on=true;c.m.visible=true}
 function updateCasings(dt){for(const c of shellP){if(!c.on)continue;c.life-=dt;c.v.y-=22*dt;c.m.position.addScaledVector(c.v,dt);c.m.rotation.x+=dt*10*(1-c.b*.3);c.m.rotation.z+=dt*7;
-    if(c.m.position.y<.08){c.m.position.y=.08;if(c.v.y<-2&&c.b<2){if(!c.b&&!c.q)play('shellDrop',Object.assign(sp(c.m.position,.55),{rate:.95+rnd()*.15}));c.b++}c.v.y*=-.32;c.v.x*=.5;c.v.z*=.5}if(c.life<=0){c.on=false;c.m.visible=false}}
+    if(c.m.position.y<.08){c.m.position.y=.08;if(c.v.y<-2&&c.b<2){c.b++}c.v.y*=-.32;c.v.x*=.5;c.v.z*=.5}if(c.life<=0){c.on=false;c.m.visible=false}}
 for(const c of casings){if(!c.on)continue;c.life-=dt;c.v.y-=22*dt;c.m.position.addScaledVector(c.v,dt);c.m.rotation.x+=dt*14;c.m.rotation.z+=dt*9;if(c.m.position.y<.06){c.m.position.y=.06;c.v.y*=-.3;c.v.x*=.55;c.v.z*=.55}if(c.life<=0){c.on=false;c.m.visible=false}}}
 function laserTick(a,tgt,dt){const W=a.W;a.mz.getWorldPosition(tv);aimDir(tv,tgt,t2,a);let len=W.range;t3.copy(t2).multiplyScalar(len).add(tv);
   let tm=1;for(const b of blds){const q=segBox(tv.x,tv.y,tv.z,t3.x,t3.y,t3.z,b);if(q<tm)tm=q}
