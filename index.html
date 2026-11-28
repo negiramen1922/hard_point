@@ -634,7 +634,7 @@ const SCRI='<svg class="si" viewBox="0 0 24 24"><path d="M12 2.5l8.2 4.75v9.5L12
 const PAINT={bone:{n:'Bone',c:[0xcfc6b4,0x3b3e46,0xff5a1f]},desert:{n:'Desert',c:[0xc4a06a,0x5a4a32,0x3a7a3e]},arctic:{n:'Arctic',c:[0xe6ecef,0x66727c,0x2aa8e0]},woodland:{n:'Woodland',c:[0x5f6b40,0x34392a,0xe0b232]},crimson:{n:'Crimson',c:[0x8e2020,0x2a2226,0xf0c040]},navy:{n:'Navy',c:[0x34465e,0x1e242e,0xff8a2a]},shadow:{n:'Shadow',c:[0x2e3035,0x17181b,0x7fe0ff]},gilded:{n:'Gilded',c:[0xc9a43a,0x3a2e1c,0x8a1a1a]}};
 function applyPaint(){const P=PAINT[cfg.P]||PAINT.bone;MK.paint.color.setHex(P.c[0]);MK.gm.color.setHex(P.c[1]);MK.acc.color.setHex(P.c[2]);try{localStorage.setItem('rg_paint',cfg.P)}catch(e){}}
 // not released yet: only on the test site (remove from this list to release)
-const WIP={B:['rapt'],W:['harpoon'],tempestModel:true,bugModel:true,fenrirModel:true,jellyModel:true,snipModel:true,armaModel:true,mortModel:true,shldModel:true};if(!window.HP_TEST){for(const k of WIP.B)delete BODY[k];for(const k of WIP.W)delete WP[k]}
+const WIP={B:['rapt'],W:['harpoon'],tempestModel:true,bugModel:true,fenrirModel:true,jellyModel:true,snipModel:true,armaModel:true,mortModel:true,shldModel:true,wpModels:true};if(!window.HP_TEST){for(const k of WIP.B)delete BODY[k];for(const k of WIP.W)delete WP[k]}
 const COST={B:{},G:{},W:{},P:{}};for(const [k,T] of [['B',BODY],['G',LEGS],['W',WP],['P',PAINT]])for(const id in T)COST[k][id]=UNLOCK_COST;
 const isUnl=(k,id)=>ADMIN||DEF_UNL[k].includes(id)||UNL.includes(k+':'+id);
 try{cfg.P=localStorage.getItem('rg_paint')||'bone'}catch(e){cfg.P='bone'}
@@ -932,6 +932,24 @@ function mtBuild(g,MT,s){g.position.set(MT.p[0],MT.p[1],MT.p[2]);
   else{if(MT.neck){cyl(.13,MT.neck,MK.dk,0,-MT.neck/2-.05,0,g);cyl(.2,.1,MK.gm,0,-MT.neck-.02,0,g);for(const q of[-1,1])cyl(.04,MT.neck*.9,MK.gm,q*.16,-MT.neck/2,-.08,g)}
     if(MT.boom){box(.7,.2,.28,MK.gm,-s*.38,-.12,0,g);cyl(.14,.3,MK.dk,-s*.72,-.12,0,g,'x');box(.05,.05,.5,MK.acc,-s*.3,0,0,g)}
     cbox(.62,.2,.72,MK.gm,0,-.05,0,g,.05);for(const q of[-1,1])box(.08,.3,.52,MK.dk,q*.31,.08,0,g);cyl(.15,.3,MK.dk,0,.2,0,g,'x')}}
+// ===== weapon sculpts (Meshy models in models/w_<type>.json): the procedural weapon is still built (its parts keep driving muzzles,
+// reload timing and effects) but hidden; the model is fitted over its bounds with the muzzle end at the front. Moving pieces are
+// separate parts: 'cyl' (Behemoth's cylinder cap, turns with the revolver) and 'eng' (Hammerhead's V-engine, shakes) =====
+const WPM={shot:1,melt:1,beam:1,cannon:1,burst:1},WPT={};
+function wpMat(t){if(WPT[t])return WPT[t];const d=MD['w_'+t],tl=src=>{const x=new THREE.TextureLoader().load(src);x.flipY=false;return x};
+  return WPT[t]=new THREE.MeshLambertMaterial(d.em?{map:tl(d.tex),emissive:0xffffff,emissiveMap:tl(d.em),emissiveIntensity:1}:{map:tl(d.tex)})}
+function wpGeo(t,nm){const q=MD['w_'+t].parts[nm],b=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0)).buffer,g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(b(q.p)),3));g.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(b(q.u)),2));g.setIndex(new THREE.BufferAttribute(new Uint16Array(b(q.i)),1));g.computeVertexNormals();return g}
+function wpSculpt(a,w,t){if(!WPM[t]||(WIP.wpModels&&!window.HP_TEST)||!MD['w_'+t])return;
+  w.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(w.matrixWorld).invert(),bb=new THREE.Box3(),tb=new THREE.Box3(),m4=new THREE.Matrix4();
+  w.traverse(o=>{if(o.isMesh&&o.visible&&o!==a.orb){o.geometry.computeBoundingBox();tb.copy(o.geometry.boundingBox).applyMatrix4(m4.multiplyMatrices(inv,o.matrixWorld));bb.union(tb)}});if(bb.isEmpty())return;
+  for(const c of w.children)if(c!==a.mz&&c!==a.orb)c.visible=false;
+  const G=new THREE.Group();G.scale.setScalar(bb.max.z-bb.min.z);G.position.set((bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,bb.max.z);w.add(G);
+  let M=wpMat(t);if(t==='melt'){M=M.clone();a.smat=M}
+  for(const nm in MD['w_'+t].parts){const o=MD['w_'+t].parts[nm].o,ms=new THREE.Mesh(wpGeo(t,nm),M);
+    if(nm==='body'){G.add(ms);continue}const pv=new THREE.Group();pv.position.set(o[0],o[1],o[2]);G.add(pv);const inner=new THREE.Group();pv.add(inner);inner.add(ms);
+    if(nm==='cyl')a.scyl=inner;if(nm==='eng')a.eng=inner}
+  a.sculpt=G}
 function buildMount(i,t){
   const MT=(BODY[cfg.B].mt||[])[i],W=WP[t],arm=MT?MT.k==='arm':i<2,s=MT?(MT.s||1):i%2===0?1:-1,wid=cfg.B==='fort'?1.22:cfg.B==='lite'?.92:1.0;
   const g=new THREE.Group();upper.add(g);
@@ -1093,6 +1111,7 @@ function buildMount(i,t){
     a.fld=new THREE.Mesh(new THREE.CircleGeometry(1.9,6),new THREE.MeshBasicMaterial({color:0x7fe0ff,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending}));a.fld.rotation.y=Math.PI/2;a.fld.position.x=s*.3;sg.add(a.fld);
     a.fldE=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CircleGeometry(1.9,6)),new THREE.LineBasicMaterial({color:0xbff4ff,transparent:true,opacity:0}));a.fldE.rotation.y=Math.PI/2;a.fldE.position.x=s*.31;sg.add(a.fldE);
   }
+  wpSculpt(a,w,t);
   if(W.kind==='gun'){a.fl=new THREE.Mesh(flashGeo,flashMat);a.fl.position.copy(a.mz.position);a.fl.visible=false;w.add(a.fl);a.magHome=a.mag.position.clone()}
   if(a.bores){a.fls=a.bores.map(b=>{const f=new THREE.Mesh(flashGeo,flashMat);f.position.copy(b);f.visible=false;w.add(f);return f})}
   if(t==='tesla'){a.magHome=a.mag.position.clone()}
@@ -2976,9 +2995,9 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=11;
+const BUILD=12;
 // ===== 3D models live in models/<id>.json and load in the background (the page itself stays light) =====
-const MODEL_IDS=["drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
+const MODEL_IDS=["w_shot", "w_melt", "w_beam", "w_cannon", "w_burst", "drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
 const MP={},getModel=id=>MP[id]||(MP[id]=fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}).then(()=>{modelsN++;ldProg()}));
 function loadModels(first){const f=Promise.all((first||[]).map(getModel));modelsP=f.then(()=>Promise.all(MODEL_IDS.filter(id=>!(first||[]).includes(id)).map(getModel))).then(()=>{modelsOK=true;
   for(const k in MESH)if(MESH[k]==null)delete MESH[k];if(state==='menu'||state==='demo')try{buildMech()}catch(e){}});return f}
@@ -2987,7 +3006,7 @@ const LD_MODEL={drone:['drone'],hound:['hound'],shooter:WIP.bugModel&&!window.HP
   boss_quad:WIP.fenrirModel&&!window.HP_TEST?[]:['fenrir'],boss_spider:['spider'],boss_arma:WIP.armaModel&&!window.HP_TEST?[]:['arma']};
 let LD=null;
 function ldProg(){const p=$('ldP'),c=$('ldC');if(!p)return;const k=Math.min(1,modelsN/MODEL_IDS.length);p.style.width=(k*100).toFixed(0)+'%';c.textContent=Math.round(k*100)+'%'}
-const ldDeps=it=>it.t==='e'?LD_MODEL[it.x.k]:it.t==='w'&&(it.id==='gat'||it.id==='mini')&&!(WIP.tempestModel&&!window.HP_TEST)?['tempest']:[];
+const ldDeps=it=>it.t==='e'?LD_MODEL[it.x.k]:it.t==='w'&&(it.id==='gat'||it.id==='mini')&&!(WIP.tempestModel&&!window.HP_TEST)?['tempest']:it.t==='w'&&WPM[it.id]&&!(WIP.wpModels&&!window.HP_TEST)?['w_'+it.id]:[];
 function ldPick(onlyLoaded){const pool=[...DEXE.filter(x=>(!x.map||mapRel(x.map))&&LD_MODEL[x.k]&&LD_MODEL[x.k].length).map(x=>({t:'e',x,id:x.k})),
   ...Object.keys(WP).map(id=>({t:'w',id})),...Object.keys(BODY).map(id=>({t:'b',id})),...Object.keys(LEGS).map(id=>({t:'g',id}))].filter(it=>!onlyLoaded||ldDeps(it).every(id=>MD[id]));
   if(!pool.length)return null;const W={e:.4,w:.25,b:.2,g:.15},cats=[...new Set(pool.map(it=>it.t))];let r=Math.random()*cats.reduce((a,c)=>a+W[c],0),cat=cats[0];for(const c of cats){r-=W[c];if(r<=0){cat=c;break}}
@@ -3730,7 +3749,7 @@ function updateArms(dt,tgt){
       if(a.bar){if(pr&&a.rl<=0)a.spin=Math.min(1,a.spin+dt*U.gS/W.spin);else a.spin=Math.max(0,a.spin-dt*1.1);a.bar.rotation.z+=a.spin*dt*(45+a.heat*40);if(a.bar2)a.bar2.rotation.z=-a.bar.rotation.z;
         if(pr&&a.rl<=0&&a.ammo>0&&a.spin>.3)a.heat=Math.min(1,a.heat+dt/(W.heatT*U.gH));else a.heat=Math.max(0,a.heat-dt*U.gK/(a.rl>0?1.2:2.5));
         a.hmat.emissive.setRGB(a.heat*.95,a.heat*a.heat*.25,0);if(a.heat>.5&&!pr&&rnd()<a.heat*.25){a.mz.getWorldPosition(t3);puff(t3,.3,0x777068,.8)}}
-      if(a.rev){a.cylA+=(a.cylT-a.cylA)*Math.min(1,dt*14);a.cyl.rotation.z=a.cylA;let sw=0;
+      if(a.rev){a.cylA+=(a.cylT-a.cylA)*Math.min(1,dt*14);a.cyl.rotation.z=a.cylA;if(a.scyl)a.scyl.rotation.z=a.cylA;let sw=0;
         if(a.rl>0){const T=a.rlT,e=T-a.rl;sw=e<.25?e/.25:a.rl<.3?Math.max(0,a.rl/.3):1;
           if(!a.dumped&&e>.3){a.dumped=true;a.rl2=0;a.rtn=0;dumpShells(a);a.rims.forEach(r=>r.visible=false)}
           if(a.dumped){const f=e/T,tn=[.2,.33,.46].filter(x=>f>=x).length,ld=[.62,.72,.82].filter(x=>f>=x).length;if(tn>(a.rtn||0)){a.cylT-=TAU/3*(tn-(a.rtn||0));a.rtn=tn}if(ld>(a.rl2||0)){a.rl2=ld;a.rims.forEach((r,i)=>{if(i<ld*2){r.visible=true;r.material=MKB}})}}
@@ -3742,8 +3761,8 @@ function updateArms(dt,tgt){
         if(a.bar){a.w.rotation.x=-u*1.4;a.w.rotation.z=u*a.s*.25}else{a.w.rotation.x=-u*.5;a.w.rotation.z=-u*a.s*.7}
         const RS=RLS[a.t];if(RS){const f=e/T;while(RS.seq[a.rq]&&RS.seq[a.rq][0]<=f){const q=RS.seq[a.rq++];play(q[1],q[2]);if(q[1]==='chak'&&a.lev)a.levA=a.levA>0?-.65:.65}if(RS.nomag){a.dropped=a.clicked=true}}
         if(!a.dropped&&e>.35){a.dropped=true;dropMag(a);a.mag.visible=false;if(RS){if(RS.drop)play(RS.drop[0],RS.drop[1])}else play('magRel',{v:.8})}
-        if(a.dropped&&e>T*.62&&!(RS&&RS.nomag)){a.mag.visible=true;const k=Math.min(1,(e-T*.62)/.22);a.mag.position.copy(a.magHome);a.mag.position.y-=.9*(1-k);if(k>=1&&!a.clicked){a.clicked=true;if(RS){if(RS.ins)play(RS.ins[0],RS.ins[1])}else play('magIn',{v:.9});shake=Math.max(shake,.12)}}
-        if(a.rl<=0){a.rl=0;a.ammo=magOf(a);a.w.rotation.set(0,0,0);a.mag.position.copy(a.magHome);a.mag.visible=true;if(a.lev)a.levA=0}
+        if(a.dropped&&e>T*.62&&!(RS&&RS.nomag)){a.mag.visible=!a.sculpt;const k=Math.min(1,(e-T*.62)/.22);a.mag.position.copy(a.magHome);a.mag.position.y-=.9*(1-k);if(k>=1&&!a.clicked){a.clicked=true;if(RS){if(RS.ins)play(RS.ins[0],RS.ins[1])}else play('magIn',{v:.9});shake=Math.max(shake,.12)}}
+        if(a.rl<=0){a.rl=0;a.ammo=magOf(a);a.w.rotation.set(0,0,0);a.mag.position.copy(a.magHome);a.mag.visible=!a.sculpt;if(a.lev)a.levA=0}
       }else{
         const ready=a.bar?a.spin>.3:true;
         if(W.msl){const rise=pr&&!a.prv;a.prv=pr;if(rise&&!(a.sal>0)&&a.ammo>0&&!(a.rl>0)&&lockedN()>0){a.sal=a.ammo;a.salT=0}
@@ -3764,6 +3783,7 @@ function updateArms(dt,tgt){
       if(a.lon){a.heat=Math.min(1,a.heat+dt/(W.heatT*(U.lH||1)));laserTick(a,tgt,dt);if(a.heat>=1){a.oh=true;a.lon=false;play('coolDown',{v:1.1});for(let q=0;q<4;q++){a.mz.getWorldPosition(t3);puff(t3,.6,0x8a8580,1)}}}
       else{a.heat=Math.max(0,a.heat-dt/(W.cool*2.2));}
       if(!a.lon){a.lb.visible=a.lc.visible=a.lg.visible=false}
+      if(a.smat){const h=a.heat;a.smat.emissive.setRGB(.55+h*1.1,.5+h*.35,.45+h*.1)}
       a.lmat.color.setRGB(.42+a.heat*.58,.1+(a.lon?.4:0)+a.heat*.3,.06+a.heat*.2);for(const f2 of a.hs)f2.material=a.oh||a.heat>.75?mat.acc:MK.gm;
     }else if(W.kind==='flame'){flameArm(a,pr,dt,tgt)
     }else if(W.kind==='harpoon'){harpoonArm(a,pr,dt,tgt)
@@ -3786,7 +3806,7 @@ function updateArms(dt,tgt){
           const on=f>.55&&f<.97;for(const q of a.motes){q.m.visible=on;if(!on)continue;const u=((f-.55)/.42*2.2+q.ph)%1,r=.95*(1-u);q.m.position.set(a.coil.position.x+Math.cos(q.an+u*3)*r,a.coil.position.y+Math.sin(q.an+u*3)*r,a.coil.position.z+q.z*(1-u));q.m.material.opacity=.9*Math.sin(Math.PI*u)}}
         if(f>=.95&&!a.clicked){a.clicked=true;a.coil.getWorldPosition(t3);spark(t3,10,12)}
         a.coil.rotation.z+=dt*(f>.7?30*(f-.7)/.3:0);a.w.rotation.x=-.35*Math.sin(Math.PI*Math.min(1,f));
-        if(a.rl<=0){a.rl=0;a.ammo=magOf(a);a.mag.position.copy(a.magHome);a.mag.visible=true;a.w.rotation.x=0;if(a.cmat)a.cmat.color.copy(cyMat.color);if(a.motes)for(const q of a.motes)q.m.visible=false}a.zon=false}
+        if(a.rl<=0){a.rl=0;a.ammo=magOf(a);a.mag.position.copy(a.magHome);a.mag.visible=!a.sculpt;a.w.rotation.x=0;if(a.cmat)a.cmat.color.copy(cyMat.color);if(a.motes)for(const q of a.motes)q.m.visible=false}a.zon=false}
       else{a.zon=pr&&a.ammo>0;if(a.zon&&a.cd<=0){a.cd=W.cd*U.tR/rtM();a.ammo--;zap(a,tgt);if(a.ammo<=0)startReload(a)}}
     }else{
       a.guard+=((pr?1:0)-a.guard)*Math.min(1,dt*14);
