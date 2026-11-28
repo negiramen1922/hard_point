@@ -1453,12 +1453,14 @@ const DEF=[
    for(let k=0;k<26;k++)eN(c,o,k/26+rnd()*.03,{type:'highpass',f:3500+rnd()*3000,v:.05+rnd()*.07,d:.003})}],
  ['coolDown',1,1.6,(c,o)=>{const b=chain(c,o,1.3,1.2,.3,7000),t=.01,bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(2600,t);bp.frequency.exponentialRampToValueAtTime(500,t+1.2);bp.Q.value=3;bp.connect(b);
    eO(c,bp,t,{type:'sawtooth',f:1500,f1:180,fd:1.25,v:.6,a:.02,h:.5,d:.4});eO(c,b,t,{f:3000,f1:360,fd:1.25,v:.12,a:.02,h:.5,d:.4});eN(c,b,t,{type:'highpass',f:3500,v:.18,a:.05,h:.4,d:.4})}],
- ['zakin',3,.6,(c,o)=>{const b=chain(c,o,2.2,.8,.15,8000),t=.004;eN(c,b,t,{f:1800,f1:7000,fd:.06,q:.8,v:.9,a:.004,d:.05});eN(c,b,t,{buf:bB,type:'lowpass',f:900,v:.8,d:.04});eO(c,b,t,{type:'triangle',f:120,f1:60,v:.6,d:.05});
-   const tk=t+.045;eN(c,b,tk,{type:'highpass',f:4000,v:1,d:.004});eO(c,b,tk,{type:'triangle',f:2650*vr(.03),v:.4,d:.14});eO(c,b,tk,{f:3980*vr(.03),v:.18,d:.1});eO(c,b,tk,{f:5300*vr(.03),v:.08,d:.07})}],
+ ['zakin',3,.6,(c,o)=>{const b=chain(c,o,2.4,.7,.12,4500),t=.004;eN(c,b,t,{f:900,f1:3500,fd:.06,q:.8,v:.9,a:.004,d:.05});eN(c,b,t,{buf:bB,type:'lowpass',f:700,v:1,d:.05});eO(c,b,t,{type:'triangle',f:105,f1:52,v:.9,d:.07});
+   const tk=t+.045;eN(c,b,tk,{type:'highpass',f:2500,v:.8,d:.004});eO(c,b,tk,{type:'triangle',f:1500*vr(.03),v:.32,d:.09});eO(c,b,tk,{f:2250*vr(.03),v:.12,d:.06});eN(c,b,tk,{buf:bB,type:'lowpass',f:500,v:.5,d:.03})}],
  ['fireLoop',1,1,(c,o)=>{const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=420;lp.Q.value=1.2;lp.connect(sat(c,o,1.6));const am=c.createGain();am.gain.value=.75;am.connect(lp);const nn=c.createBufferSource();nn.buffer=bB;nn.connect(am);nn.start(0);
    const lf=c.createOscillator();lf.frequency.value=11;const lg=c.createGain();lg.gain.value=.25;lf.connect(lg);lg.connect(am.gain);lf.start(0);const sb=c.createOscillator();sb.frequency.value=48;steady(c,lp,sb,.25);
    const mb=c.createBiquadFilter();mb.type='bandpass';mb.frequency.value=750;mb.Q.value=.8;const n2=c.createBufferSource();n2.buffer=nB;const g2=c.createGain();g2.gain.value=.12;n2.connect(mb);mb.connect(g2);g2.connect(o);n2.start(0);
    for(let k=0;k<14;k++)eN(c,o,k/14+rnd()*.05,{buf:bB,type:'lowpass',f:1200,v:.12+rnd()*.12,a:.003,d:.02})}],
+ ['pashun',2,.7,(c,o)=>{const b=chain(c,o,2.2,.9,.18,5000),t=.004;eN(c,b,t,{type:'highpass',f:2500,v:.8,d:.004});eN(c,b,t,{buf:bB,type:'lowpass',f:900,v:1,d:.045});eO(c,b,t,{type:'triangle',f:120,f1:55,v:1,d:.07});
+   eN(c,b,t+.01,{f:4200,f1:900,fd:.28,q:.7,v:.85,a:.008,h:.03,d:.12});eN(c,b,t+.01,{type:'highpass',f:3000,f1:1500,fd:.25,v:.45,a:.008,h:.02,d:.1});eN(c,b,t+.01,{buf:bB,type:'lowpass',f:500,f1:200,fd:.2,v:.5,a:.01,d:.09})}],
  ['magRel',3,.6,(c,o)=>{const b=chain(c,o,2.4,.5,.1,5000),t=.005;
    for(const t0 of[t,t+.13])for(let k=0;k<7;k++){const tt=t0+k*.006+rnd()*.012,v=1-k*.09;eN(c,b,tt,{type:'highpass',f:1800+rnd()*1500,v:.7*v,d:.004+rnd()*.004});eN(c,b,tt,{f:2200+rnd()*2500,q:.6,v:.55*v,d:.012+rnd()*.012})}
    for(const t0 of[t,t+.13]){eN(c,b,t0,{buf:bB,type:'lowpass',f:500,v:.9,d:.035});eN(c,b,t0+.01,{f:900,q:.5,v:.4,d:.03})}}],
@@ -3381,7 +3383,7 @@ function harpoonArm(a,pr,dt,tgt){const W=a.W;a.cd-=dt;a.mz.getWorldPosition(t3);
     if(pr&&a.cd<=0){const dir=aimDir(t3,tgt,new V(),a);a.hp='out';a.hd=0;a.hdir=dir.clone();a.hpos=t3.clone();a.hset=new Set();a.spike.visible=false;
       a.hm=harpoonMesh();a.hm.position.copy(a.hpos);a.hm.lookAt(a.hpos.clone().add(dir));scene.add(a.hm);
       const g=new THREE.BufferGeometry().setFromPoints([t3.clone(),t3.clone()]);a.cab=new THREE.Line(g,hpLine);scene.add(a.cab);
-      a.w.position.z=-.45;SFX.boom(1.1,t3);play('bshot',{v:.9,rate:.7});shake=Math.max(shake,.35);puff(t3,1,0x8a8580,1);a.lf=now}
+      a.w.position.z=-.45;play('pashun',{v:1.3});shake=Math.max(shake,.35);puff(t3,1,0x8a8580,1);a.lf=now}
     return}
   const prev=a.hpos.clone();
   if(a.hp==='out'){const st=W.vel*dt;a.hpos.addScaledVector(a.hdir,st);a.hd+=st;harpoonHit(a,prev,a.hpos,a.hset);
