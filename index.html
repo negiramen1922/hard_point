@@ -949,7 +949,16 @@ function wpSculpt(a,w,t){if(!WPM[t]||(WIP.wpModels&&!window.HP_TEST)||!MD['w_'+t
   for(const nm in MD['w_'+t].parts){const o=MD['w_'+t].parts[nm].o,ms=new THREE.Mesh(wpGeo(t,nm),M);
     if(nm==='body'){G.add(ms);continue}const pv=new THREE.Group();pv.position.set(o[0],o[1],o[2]);G.add(pv);const inner=new THREE.Group();pv.add(inner);inner.add(ms);
     if(nm==='cyl')a.scyl=inner;if(nm==='eng')a.eng=inner}
+  if(WMZ[t])for(const[x,y,r]of WMZ[t])wpMuzzle(G,x,y,r);
   a.sculpt=G}
+// shotgun muzzles (model coords: barrel centre x,y and radius): a short sleeve over each barrel end hides the model's closed caps / side holes and opens a wide bore
+const WMZ={burst:[[0,.044,.058],[-.0625,-.04,.058],[.0625,-.04,.058]],shot:[[-.015,.044,.049],[-.015,-.044,.049]]};let WMZM=null;
+function wpMuzzle(G,x,y,r){if(!WMZM)WMZM={sl:new THREE.MeshLambertMaterial({color:0x2e2e33}),rim:new THREE.MeshLambertMaterial({color:0x55555c}),in:new THREE.MeshBasicMaterial({color:0x050506,side:THREE.DoubleSide})};
+  const R=r,ri=R*.74,L=.09,F=.014,g=new THREE.Group();g.position.set(x,y,0);G.add(g);
+  const sl=new THREE.Mesh(new THREE.CylinderGeometry(R,R,L,20,1,true),WMZM.sl);sl.rotation.x=Math.PI/2;sl.position.z=F-L/2;g.add(sl);
+  const rim=new THREE.Mesh(new THREE.RingGeometry(ri,R,20),WMZM.rim);rim.position.z=F;g.add(rim);
+  const bore=new THREE.Mesh(new THREE.CylinderGeometry(ri,ri,F,20,1,true),WMZM.in);bore.rotation.x=Math.PI/2;bore.position.z=F/2+.001;g.add(bore);
+  const bt=new THREE.Mesh(new THREE.CircleGeometry(ri,20),WMZM.in);bt.position.z=.002;g.add(bt)}
 function buildMount(i,t){
   const MT=(BODY[cfg.B].mt||[])[i],W=WP[t],arm=MT?MT.k==='arm':i<2,s=MT?(MT.s||1):i%2===0?1:-1,wid=cfg.B==='fort'?1.22:cfg.B==='lite'?.92:1.0;
   const g=new THREE.Group();upper.add(g);
@@ -2998,7 +3007,7 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=14;
+const BUILD=15;
 // ===== 3D models live in models/<id>.json and load in the background (the page itself stays light) =====
 const MODEL_IDS=["w_rkt","w_shot", "w_melt", "w_beam", "w_cannon", "w_burst", "drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
 const MP={},getModel=id=>MP[id]||(MP[id]=fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}).then(()=>{modelsN++;ldProg()}));
