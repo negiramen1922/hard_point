@@ -1447,6 +1447,18 @@ const DEF=[
    eO(c,b,t+.002,{type:'triangle',f:3100*vr(.04),v:.28,d:.07});eO(c,b,t+.002,{f:4650*vr(.04),v:.12,d:.05})}],
  ['chaki',3,.3,(c,o)=>{const b=chain(c,o,2.2,.5,.08,7000),t=.004;for(let k=0;k<4;k++){const tt=t+k*.006+rnd()*.006;eN(c,b,tt,{type:'highpass',f:2000+rnd()*1200,v:.6,d:.004});eN(c,b,tt,{f:2600+rnd()*1800,q:.6,v:.45,d:.012})}eN(c,b,t,{buf:bB,type:'lowpass',f:500,v:.6,d:.025});
    const tk=t+.055;eN(c,b,tk,{type:'highpass',f:4200,v:1,d:.003});eN(c,b,tk,{f:5200,q:2,v:.5,d:.012});eO(c,b,tk,{type:'triangle',f:3600*vr(.04),v:.15,d:.025})}],
+ ['meltLoop',1,1,(c,o)=>{const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;lp.Q.value=3;lp.connect(sat(c,o,2.2));const a=c.createOscillator();a.type='sawtooth';a.frequency.value=82;steady(c,lp,a,.4);const q=c.createOscillator();q.type='sawtooth';q.frequency.value=83;steady(c,lp,q,.3);
+   const h=c.createOscillator();h.type='square';h.frequency.value=164;steady(c,lp,h,.08);const sb=c.createOscillator();sb.frequency.value=41;steady(c,o,sb,.35);
+   const nn=c.createBufferSource();nn.buffer=nB;const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2600;bp.Q.value=1;nn.connect(bp);const g=c.createGain();g.gain.value=.07;bp.connect(g);g.connect(o);nn.start(0);
+   for(let k=0;k<26;k++)eN(c,o,k/26+rnd()*.03,{type:'highpass',f:3500+rnd()*3000,v:.05+rnd()*.07,d:.003})}],
+ ['coolDown',1,1.6,(c,o)=>{const b=chain(c,o,1.3,1.2,.3,7000),t=.01,bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(2600,t);bp.frequency.exponentialRampToValueAtTime(500,t+1.2);bp.Q.value=3;bp.connect(b);
+   eO(c,bp,t,{type:'sawtooth',f:1500,f1:180,fd:1.25,v:.6,a:.02,h:.5,d:.4});eO(c,b,t,{f:3000,f1:360,fd:1.25,v:.12,a:.02,h:.5,d:.4});eN(c,b,t,{type:'highpass',f:3500,v:.18,a:.05,h:.4,d:.4})}],
+ ['zakin',3,.6,(c,o)=>{const b=chain(c,o,2.2,.8,.15,8000),t=.004;eN(c,b,t,{f:1800,f1:7000,fd:.06,q:.8,v:.9,a:.004,d:.05});eN(c,b,t,{buf:bB,type:'lowpass',f:900,v:.8,d:.04});eO(c,b,t,{type:'triangle',f:120,f1:60,v:.6,d:.05});
+   const tk=t+.045;eN(c,b,tk,{type:'highpass',f:4000,v:1,d:.004});eO(c,b,tk,{type:'triangle',f:2650*vr(.03),v:.4,d:.14});eO(c,b,tk,{f:3980*vr(.03),v:.18,d:.1});eO(c,b,tk,{f:5300*vr(.03),v:.08,d:.07})}],
+ ['fireLoop',1,1,(c,o)=>{const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=420;lp.Q.value=1.2;lp.connect(sat(c,o,1.6));const am=c.createGain();am.gain.value=.75;am.connect(lp);const nn=c.createBufferSource();nn.buffer=bB;nn.connect(am);nn.start(0);
+   const lf=c.createOscillator();lf.frequency.value=11;const lg=c.createGain();lg.gain.value=.25;lf.connect(lg);lg.connect(am.gain);lf.start(0);const sb=c.createOscillator();sb.frequency.value=48;steady(c,lp,sb,.25);
+   const mb=c.createBiquadFilter();mb.type='bandpass';mb.frequency.value=750;mb.Q.value=.8;const n2=c.createBufferSource();n2.buffer=nB;const g2=c.createGain();g2.gain.value=.12;n2.connect(mb);mb.connect(g2);g2.connect(o);n2.start(0);
+   for(let k=0;k<14;k++)eN(c,o,k/14+rnd()*.05,{buf:bB,type:'lowpass',f:1200,v:.12+rnd()*.12,a:.003,d:.02})}],
  ['magRel',3,.6,(c,o)=>{const b=chain(c,o,2.4,.5,.1,5000),t=.005;
    for(const t0 of[t,t+.13])for(let k=0;k<7;k++){const tt=t0+k*.006+rnd()*.012,v=1-k*.09;eN(c,b,tt,{type:'highpass',f:1800+rnd()*1500,v:.7*v,d:.004+rnd()*.004});eN(c,b,tt,{f:2200+rnd()*2500,q:.6,v:.55*v,d:.012+rnd()*.012})}
    for(const t0 of[t,t+.13]){eN(c,b,t0,{buf:bB,type:'lowpass',f:500,v:.9,d:.035});eN(c,b,t0+.01,{f:900,q:.5,v:.4,d:.03})}}],
@@ -1582,9 +1594,9 @@ const SFX={
 // looped engines: gatling spin (pitch follows rpm), beam hum, tank engine — updated at ~14Hz, never per frame
 function motor(kind){return{kind,src:null,lt:0,lv:-1}}
 function motorSet(m,v){if(!m||!AC||!isFinite(v)||AC.state!=='running')return;
-  if(!m.src){const nm=m.kind==='gat'?'spinLoop':m.kind==='beam'?'beamLoop':m.kind==='arc'?'arcLoop':'engLoop',L=SBK[nm];if(!L)return;const s=AC.createBufferSource();s.buffer=L[0];s.loop=true;const g=AC.createGain();g.gain.value=0;s.connect(g);g.connect(sfxG);s.start();m.src={s,g}}
+  if(!m.src){const nm=m.kind==='gat'?'spinLoop':m.kind==='beam'?'beamLoop':m.kind==='melt'?'meltLoop':m.kind==='fire'?'fireLoop':m.kind==='arc'?'arcLoop':'engLoop',L=SBK[nm];if(!L)return;const s=AC.createBufferSource();s.buffer=L[0];s.loop=true;const g=AC.createGain();g.gain.value=0;s.connect(g);g.connect(sfxG);s.start();m.src={s,g}}
   if(now-m.lt<.07&&Math.abs(v-m.lv)<.08&&m.fire===m.lf)return;m.lt=now;m.lv=v;m.lf=m.fire;
-  let gv,rv;if(m.kind==='arc'){gv=v>0?.5:0;rv=.95+v*.08}else if(m.kind==='gat'){gv=v<.02?0:Math.min(1,v*1.6)*(m.fire?.07:.26);rv=.5+v*1.25}else if(m.kind==='beam'){if(v>1.5){gv=.6;rv=1}else{gv=v>0?.06+v*.22:0;rv=.5+v*.9}}else{gv=.22+v*.25;rv=.8+v*.6}
+  let gv,rv;if(m.kind==='melt'){gv=v>0?.62:0;rv=.92+Math.max(0,v-1)*.35}else if(m.kind==='fire'){gv=v>0?.8:0;rv=.92}else if(m.kind==='arc'){gv=v>0?.5:0;rv=.95+v*.08}else if(m.kind==='gat'){gv=v<.02?0:Math.min(1,v*1.6)*(m.fire?.07:.26);rv=.5+v*1.25}else if(m.kind==='beam'){if(v>1.5){gv=.6;rv=1}else{gv=v>0?.06+v*.22:0;rv=.5+v*.9}}else{gv=.22+v*.25;rv=.8+v*.6}
   const t=AC.currentTime,G=m.src.g.gain,Rp=m.src.s.playbackRate;for(const pa of[G,Rp]){if(pa.cancelAndHoldAtTime)pa.cancelAndHoldAtTime(t);else pa.cancelScheduledValues(t)}G.setTargetAtTime(muted?0:gv,t,.05);Rp.setTargetAtTime(rv,t,.06)}
 let motors=[];
 function quietMotors(){if(!AC)return;const t=AC.currentTime;for(const m of motors){if(!m||!m.src||m.lv===0)continue;const G=m.src.g.gain;try{if(G.cancelAndHoldAtTime)G.cancelAndHoldAtTime(t);else G.cancelScheduledValues(t);G.setTargetAtTime(0,t,.04)}catch(e){}m.lv=0;m.lt=0}megaLoop(false)}
@@ -2658,7 +2670,7 @@ function sortie(n){
   const hp=BODY[cfg.B].hp+LEGS[cfg.G].hp;Object.assign(P,{runScrap:0,anc:0,ancK:0,ancT:0,hb:'',hp,max:hp,wm:wtMul(),legA:0,y:0,vy:0,dash:0,bar:0,bhp:0,slam:0,jmp:0,slI:0,dep:0,stun:0,ovW:false,amb:0,blk:0});P.pos.set(0,0,0);P.vel.set(0,0,0);
   AB.leg.cd=AB.leg.act=AB.body.cd=AB.body.act=0;AB.leg.ch=null;AB.leg.lock=0;
   resetU();camPitch=.3;score=0;waveT=0;spawnT=1;P.hov=0;RUN.t=0;RUN.s0=n;RUN.sp=[];if(TUT)startTraining();else if(TEST)startTest();else startStage(n);
-  buildButtons();stopMotors();arms.forEach(a=>{if(a.bar)motors.push(a.motor=motor('gat'));else if(a.W.kind==='beam'||a.W.kind==='laser')motors.push(a.motor=motor('beam'));else if(a.W.kind==='saw')motors.push(a.motor=motor('gat'));else if(a.W.kind==='tesla')motors.push(a.motor=motor('arc'))});if(turretG)motors.push(turretG.userData.motor=motor('gat'));if(cfg.G==='tank'||cfg.G==='hover'||cfg.G==='drone')motors.push(P.eng=motor('eng'));else P.eng=null;
+  buildButtons();stopMotors();arms.forEach(a=>{if(a.bar)motors.push(a.motor=motor('gat'));else if(a.W.kind==='laser')motors.push(a.motor=motor('melt'));else if(a.W.kind==='beam')motors.push(a.motor=motor('beam'));else if(a.W.kind==='flame')motors.push(a.motor=motor('fire'));else if(a.W.kind==='saw')motors.push(a.motor=motor('gat'));else if(a.W.kind==='tesla')motors.push(a.motor=motor('arc'))});if(turretG)motors.push(turretG.userData.motor=motor('gat'));if(cfg.G==='tank'||cfg.G==='hover'||cfg.G==='drone')motors.push(P.eng=motor('eng'));else P.eng=null;
   if(state!=='drop')state='play';$('menu').classList.add('hide');$('over').classList.add('hide');$('hud').classList.remove('hide');$('ctl').classList.remove('hide');
 }
 const MAXST=3;
@@ -3362,7 +3374,7 @@ function harpoonMesh(){const g=new THREE.Group();const sh=new THREE.Mesh(new THR
   const hd=new THREE.Mesh(new THREE.ConeGeometry(.26,1.0,10),hpSteel);hd.rotation.x=Math.PI/2;hd.position.z=.85;g.add(hd);const cl=new THREE.Mesh(new THREE.CylinderGeometry(.2,.26,.3,10),MK.gm);cl.rotation.x=Math.PI/2;cl.position.z=.25;g.add(cl);
   for(let k=0;k<4;k++){const b=new THREE.Mesh(new THREE.ConeGeometry(.08,.5,5),hpSteel);const a=k/4*TAU+.4;b.position.set(Math.cos(a)*.2,Math.sin(a)*.2,.35);b.rotation.x=-Math.PI/2;b.rotation.z=a;b.rotateX(.5);g.add(b)}return g}
 function harpoonHit(a,from,to,set){const W=a.W,R=1.1;for(const e of enemies.slice()){if(set.has(e)||e.mat>0||e.hid)continue;if(!segHit(from,to,e.m.position,e.r+R))continue;set.add(e);
-    const dm=W.dmg*hitMul(e)*amBoss('AP',e)*(U.twin&&firingCount>=2?1.35:1)*fpM();e.hp-=dm;e.flash=.15;popNum(e.m.position,dm,'',e.r);spark(e.m.position,5,14);explode(e.m.position.clone().setY(e.m.position.y+.5),.6,true);SFX.clank(true);shake=Math.max(shake,.25);
+    const dm=W.dmg*hitMul(e)*amBoss('AP',e)*(U.twin&&firingCount>=2?1.35:1)*fpM();e.hp-=dm;e.flash=.15;popNum(e.m.position,dm,'',e.r);spark(e.m.position,5,14);explode(e.m.position.clone().setY(e.m.position.y+.5),.6,true);if(now-(a.zk||0)>.06){a.zk=now;play('zakin',{v:1.3})}shake=Math.max(shake,.25);
     if(e.hp<=0)kill(e)}
   for(const pr of props)if(pr.alive&&segBox(from.x,1.2,from.z,to.x,1.2,to.z,pr)<1)hitProp(pr,W.dmg)}
 function harpoonArm(a,pr,dt,tgt){const W=a.W;a.cd-=dt;a.mz.getWorldPosition(t3);
@@ -3561,7 +3573,7 @@ function flameArm(a,pr,dt,tgt){const W=a.W;
   a.fuel-=dt/(W.fuelT*U.mag*(U.wm.flame||1));if(a.fuel<=0){a.fuel=0;a.rf=W.rl*U.rl;play('clankL',{v:.5})}
   a.ft=(a.ft||0)+dt*W.rate;while(a.ft>=1){a.ft--;a.mz.getWorldPosition(tv);aimDir(tv,tgt,t2,a);fireFlame(tv,t2,W)}
   a.mz.getWorldPosition(tv);muzL.intensity=2.2;muzL.color.setHex(0xff7a20);muzL.position.copy(tv);
-  if(now-(a.fs||0)>.12){a.fs=now;play('thrust',{v:.32,rate:1.5+rnd()*.3})}}
+  }
 function useBody(){
   const A=ABIL[cfg.A],st=AB.body;if((state!=='play'&&state!=='demo')||st.cd>0)return;
   if(cfg.A==='missile'){const ts=lockTargets();if(!ts.length){if(state==='play')toast('ロックオンしていません');return}
@@ -3593,7 +3605,7 @@ function updateArms(dt,tgt){
       if(a.tips){const L=a.tips.length,n=a.rl>0?(W.msl?Math.max(0,Math.min(L,Math.floor(((a.rlT-a.rl)/a.rlT-.28)/.62*L+.0001))):0):Math.ceil(a.ammo/magOf(a)*L);a.tips.forEach((tp,q)=>tp.visible=q<n)}
       if(a.brls)a.brls.forEach((b2,q)=>{b2.userData.k=Math.max(0,(b2.userData.k||0)-dt*4);b2.position.z=1.15-.55*b2.userData.k})
       a.fl.visible=false;a.w.position.z+=(0-a.w.position.z)*Math.min(1,dt*14);if(a.fls)for(const f of a.fls)f.visible=false;
-      if(a.pmp>0){a.pmp-=dt;if(a.pmp<=0){a.pmpA=.32;play('pump',{v:.75,rate:1.05});setTimeout(()=>{if(arms.includes(a))ejectShell(a,a.ej,false,true)},90)}}
+      if(a.pmp>0){a.pmp-=dt;if(a.pmp<=0){a.pmpA=.32;setTimeout(()=>{if(arms.includes(a))ejectShell(a,a.ej,false,true)},90)}}
       if(a.fore){a.pmpA=Math.max(0,(a.pmpA||0)-dt);a.fore.position.z=1.25-.32*Math.sin(Math.PI*Math.min(1,1-a.pmpA/.32))*(a.pmpA>0?1:0)}
       if(a.ejT>0){a.ejT-=dt;if(a.ejT<=0){for(const pt of a.ports)ejectShell(a,pt,true,true);puff(t3.copy(a.ports[1]).applyMatrix4(a.w.matrixWorld),.5,0x8a8580,1)}}
       if(a.lev){a.lev.rotation.z+=(a.levA-a.lev.rotation.z)*Math.min(1,dt*30)}
@@ -3635,7 +3647,7 @@ function updateArms(dt,tgt){
     }else if(W.kind==='laser'){
       if(a.oh){a.heat=Math.max(0,a.heat-dt/W.cool);if(a.heat<=0){a.oh=false;play('ready',{v:.5,rate:.9})}}
       a.lon=pr&&!a.oh;
-      if(a.lon){a.heat=Math.min(1,a.heat+dt/(W.heatT*(U.lH||1)));laserTick(a,tgt,dt);if(a.heat>=1){a.oh=true;a.lon=false;play('clankH',{v:.6});play('hiss',{v:.7,rate:.8});for(let q=0;q<4;q++){a.mz.getWorldPosition(t3);puff(t3,.6,0x8a8580,1)}}}
+      if(a.lon){a.heat=Math.min(1,a.heat+dt/(W.heatT*(U.lH||1)));laserTick(a,tgt,dt);if(a.heat>=1){a.oh=true;a.lon=false;play('coolDown',{v:1.1});for(let q=0;q<4;q++){a.mz.getWorldPosition(t3);puff(t3,.6,0x8a8580,1)}}}
       else{a.heat=Math.max(0,a.heat-dt/(W.cool*2.2));}
       if(!a.lon){a.lb.visible=a.lc.visible=a.lg.visible=false}
       a.lmat.color.setRGB(.42+a.heat*.58,.1+(a.lon?.4:0)+a.heat*.3,.06+a.heat*.2);for(const f2 of a.hs)f2.material=a.oh||a.heat>.75?mat.acc:MK.gm;
@@ -3708,7 +3720,7 @@ function update(dt){
     if(cfg.G==='hover'){legsRoot.position.y=Math.sin(now*2.4)*.07;if(rnd()<Math.min(.5,mv/25))puff(tv.set(P.pos.x+(rnd()-.5)*2,.25,P.pos.z+(rnd()-.5)*2),.8,0x7a6a58,.2)}}
   if(cfg.G!=='tank'&&cfg.G!=='hover'&&cfg.G!=='drone'&&!air&&P.hov<.1&&mv>1.5){const si=Math.floor(P.ph/Math.PI);if(si!==P.ls){P.ls=si;SFX.step(Math.min(1,mv/12)*(cfg.G==='rev'?.75:1));shake=Math.max(shake,.04)}}
   if(P.eng)motorSet(P.eng,Math.min(1,mv/14));
-  for(const a of arms){if(!a.motor)continue;a.motor.fire=a.bar&&now-(a.gf||0)<.12;motorSet(a.motor,a.bar?a.spin*(1+a.heat*.6):a.W.kind==='saw'?a.spin*1.5:a.W.kind==='tesla'?(a.zon?1:0):a.W.kind==='laser'?(a.lon?1.1:0):a.fireT>0?2:a.ch)}
+  for(const a of arms){if(!a.motor)continue;a.motor.fire=a.bar&&now-(a.gf||0)<.12;motorSet(a.motor,a.bar?a.spin*(1+a.heat*.6):a.W.kind==='saw'?a.spin*1.5:a.W.kind==='tesla'?(a.zon?1:0):a.W.kind==='laser'?(a.lon?1+a.heat:0):a.W.kind==='flame'?(a.fon?1:0):a.fireT>0?2:a.ch)}
   if(turretG&&turretG.userData.motor)motorSet(turretG.userData.motor,AB.body.act>0?1:0);
   const boostPose=P.dash>0||P.hov>.25||(AB.leg.act>0&&cfg.G!=='tank'&&cfg.G!=='spider'&&cfg.G!=='horse');
   if(cfg.G==='horse'&&legParts.length===4){const gal=AB.leg.act>0,amp=Math.min(1,mv/5)*(gal?1:.75),OFF=gal?[0,.5,3.3,3.9]:[0,Math.PI,Math.PI,0];
