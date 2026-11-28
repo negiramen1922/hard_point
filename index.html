@@ -1414,7 +1414,6 @@ const DEF=[
  ['vent',1,2.4,(c,o)=>{const b=chain(c,o,1.6,1.4,.3,6000),t=.004;eO(c,b,t,{f:70,f1:34,v:.95,d:.25});eN(c,b,t,{buf:bB,type:'lowpass',f:500,v:.85,d:.15});eN(c,b,t+.04,{type:'highpass',f:2200,f1:1400,fd:1.6,v:.65,a:.03,h:1.0,d:.5});eN(c,b,t+.04,{f:5000,q:.5,v:.38,a:.03,h:.9,d:.5});eN(c,b,t+.04,{f:900,f1:500,fd:1.4,q:1,v:.25,a:.05,h:.8,d:.4})}],
  ['puffb',3,.45,(c,o)=>{const b=chain(c,o,1.5,1,.18,3000),t=.004;eO(c,b,t,{f:90*vr(.1),f1:45,v:.75,d:.1});eN(c,b,t,{buf:bB,type:'lowpass',f:600,v:.65,d:.08});eN(c,b,t,{f:1500,v:.22,d:.03});eN(c,b,t+.03,{type:'highpass',f:2500,v:.15,a:.02,d:.12})}],
  ['mlaunch',3,1.4,(c,o)=>{const b=chain(c,o,1.8,1.3,.28,3500),t=.004;eO(c,b,t,{f:72*vr(.06),f1:34,v:.95,d:.16});eN(c,b,t,{buf:bB,type:'lowpass',f:650,v:.85,d:.12});eN(c,b,t+.01,{f:900*vr(.08),f1:2700,fd:.12,q:.8,v:.85,a:.012,d:.1});eN(c,b,t+.05,{f:2300*vr(.08),f1:650,fd:1.0,q:.6,v:.6,a:.04,h:.28,d:.36});eN(c,b,t+.04,{buf:bB,type:'lowpass',f:420,f1:140,fd:.8,v:.5,a:.03,h:.3,d:.3});eN(c,b,t+.03,{type:'highpass',f:5200,v:.22,a:.02,h:.22,d:.2})}],
- ['sgun',3,1.0,(c,o)=>{const b=chain(c,o,2.2,1.2,.22,2400),t=.004;eN(c,b,t,{buf:bB,type:'lowpass',f:1100*vr(.1),f1:140,v:1,d:.2});eN(c,b,t,{f:1700*vr(.1),q:.7,v:.95,d:.035});eN(c,b,t,{type:'highpass',f:3000,v:.75,d:.006});eO(c,b,t,{f:85*vr(.08),f1:32,v:1,d:.24});eN(c,b,t+.03,{type:'lowpass',f:500,v:.35,a:.02,d:.3})}],
  ['chak',3,.25,(c,o)=>{const b=chain(c,o,1.3,.9,.12,6000),t=.004;eN(c,b,t,{f:2600*vr(.08),q:1.5,v:.75,a:.003,d:.025});eN(c,b,t,{type:'highpass',f:4500,v:.5,d:.004});modal(c,b,t,1100*vr(.06),.1,.05,[1,1.7,2.5]);eO(c,b,t,{f:260,f1:160,v:.15,d:.02})}],
  ['shellDrop',3,.35,(c,o)=>{const b=chain(c,o,1.1,.8,.1,8000),t=.004;modal(c,b,t,2600*vr(.12),.09,.05,[1,1.5,2.2]);eN(c,b,t,{type:'highpass',f:5000,v:.25,d:.005});modal(c,b,t+.08+rnd()*.03,2700*vr(.12),.04,.04,[1,1.5,2.2]);eN(c,b,t+.15,{type:'highpass',f:5000,v:.08,d:.004})}],
  ['dash',2,.9,(c,o)=>{const b=chain(c,o,1.6,1.1,.18,5000),t=.004;eN(c,b,t,{f:900,f1:3800,fd:.08,q:.7,v:.9,a:.004,d:.16});eN(c,b,t,{buf:bB,type:'lowpass',f:320,v:.85,d:.2});eO(c,b,t,{f:95*vr(.06),f1:42,v:.65,d:.16});eN(c,b,t+.02,{type:'highpass',f:4200,v:.32,a:.02,d:.28})}],
@@ -1453,14 +1452,21 @@ const DEF=[
    for(let k=0;k<26;k++)eN(c,o,k/26+rnd()*.03,{type:'highpass',f:3500+rnd()*3000,v:.05+rnd()*.07,d:.003})}],
  ['coolDown',1,1.6,(c,o)=>{const b=chain(c,o,1.3,1.2,.3,7000),t=.01,bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(2600,t);bp.frequency.exponentialRampToValueAtTime(500,t+1.2);bp.Q.value=3;bp.connect(b);
    eO(c,bp,t,{type:'sawtooth',f:1500,f1:180,fd:1.25,v:.6,a:.02,h:.5,d:.4});eO(c,b,t,{f:3000,f1:360,fd:1.25,v:.12,a:.02,h:.5,d:.4});eN(c,b,t,{type:'highpass',f:3500,v:.18,a:.05,h:.4,d:.4})}],
- ['zakin',3,.6,(c,o)=>{const b=chain(c,o,2.4,.7,.12,4500),t=.004;eN(c,b,t,{f:900,f1:3500,fd:.06,q:.8,v:.9,a:.004,d:.05});eN(c,b,t,{buf:bB,type:'lowpass',f:700,v:1,d:.05});eO(c,b,t,{type:'triangle',f:105,f1:52,v:.9,d:.07});
-   const tk=t+.045;eN(c,b,tk,{type:'highpass',f:2500,v:.8,d:.004});eO(c,b,tk,{type:'triangle',f:1500*vr(.03),v:.32,d:.09});eO(c,b,tk,{f:2250*vr(.03),v:.12,d:.06});eN(c,b,tk,{buf:bB,type:'lowpass',f:500,v:.5,d:.03})}],
  ['fireLoop',1,1,(c,o)=>{const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=420;lp.Q.value=1.2;lp.connect(sat(c,o,1.6));const am=c.createGain();am.gain.value=.75;am.connect(lp);const nn=c.createBufferSource();nn.buffer=bB;nn.connect(am);nn.start(0);
    const lf=c.createOscillator();lf.frequency.value=11;const lg=c.createGain();lg.gain.value=.25;lf.connect(lg);lg.connect(am.gain);lf.start(0);const sb=c.createOscillator();sb.frequency.value=48;steady(c,lp,sb,.25);
    const mb=c.createBiquadFilter();mb.type='bandpass';mb.frequency.value=750;mb.Q.value=.8;const n2=c.createBufferSource();n2.buffer=nB;const g2=c.createGain();g2.gain.value=.12;n2.connect(mb);mb.connect(g2);g2.connect(o);n2.start(0);
    for(let k=0;k<14;k++)eN(c,o,k/14+rnd()*.05,{buf:bB,type:'lowpass',f:1200,v:.12+rnd()*.12,a:.003,d:.02})}],
  ['pashun',2,.7,(c,o)=>{const b=chain(c,o,2.2,.9,.18,5000),t=.004;eN(c,b,t,{type:'highpass',f:2500,v:.8,d:.004});eN(c,b,t,{buf:bB,type:'lowpass',f:900,v:1,d:.045});eO(c,b,t,{type:'triangle',f:120,f1:55,v:1,d:.07});
    eN(c,b,t+.01,{f:4200,f1:900,fd:.28,q:.7,v:.85,a:.008,h:.03,d:.12});eN(c,b,t+.01,{type:'highpass',f:3000,f1:1500,fd:.25,v:.45,a:.008,h:.02,d:.1});eN(c,b,t+.01,{buf:bB,type:'lowpass',f:500,f1:200,fd:.2,v:.5,a:.01,d:.09})}],
+ ['gemShot',4,.5,(c,o)=>{const b=chain(c,o,2.6,.6,.12,2600,[[.06,.1,1600]]),t=.004;eN(c,b,t,{type:'highpass',f:2600,v:.9,d:.004});eN(c,b,t,{f:1500*vr(.1),q:.9,v:1,d:.03});eN(c,b,t,{buf:bB,type:'lowpass',f:1000,f1:170,v:1,d:.07});eO(c,b,t,{type:'triangle',f:92*vr(.06),f1:44,v:1,d:.08})}],
+ ['shotH',3,.9,(c,o)=>{const b=chain(c,o,2.8,1,.18,2400,[[.08,.12,1200]]),t=.004;eN(c,b,t,{type:'highpass',f:2000,v:1,d:.006});eN(c,b,t,{f:1100*vr(.08),q:.6,v:1,d:.06});eN(c,b,t,{buf:bB,type:'lowpass',f:1600,f1:110,v:1,d:.2});eO(c,b,t,{type:'triangle',f:68*vr(.05),f1:32,v:1,d:.22});
+   eN(c,b,t+.015,{f:3200,f1:1800,fd:.15,q:.5,v:.55,a:.01,d:.12})}],
+ ['shotL',3,.6,(c,o)=>{const b=chain(c,o,2.5,.8,.14,3200,[[.06,.1,1600]]),t=.004;eN(c,b,t,{type:'highpass',f:2600,v:1,d:.005});eN(c,b,t,{f:1500*vr(.08),q:.6,v:1,d:.045});eN(c,b,t,{buf:bB,type:'lowpass',f:2000,f1:160,v:.95,d:.12});eO(c,b,t,{type:'triangle',f:95*vr(.05),f1:45,v:.85,d:.12});
+   eN(c,b,t+.012,{f:3800,f1:2200,fd:.1,q:.5,v:.5,a:.008,d:.08})}],
+ ['arcOut',2,.6,(c,o)=>{const b=chain(c,o,1.8,.7,.15,7000),t=.004;for(let k=0;k<12;k++){const tt=t+Math.pow(rnd(),1.6)*.3;eN(c,b,tt,{type:'highpass',f:2500+rnd()*4000,v:.4+rnd()*.5,d:.003+rnd()*.008})}eN(c,b,t,{f:5200,q:3,v:.5,d:.05});eO(c,b,t,{type:'sawtooth',f:220,f1:90,fd:.25,v:.2,d:.15})}],
+ ['arcCharge',1,1,(c,o)=>{const b=chain(c,o,1.4,.8,.2,8000),t=.01,bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(600,t);bp.frequency.exponentialRampToValueAtTime(3800,t+.75);bp.Q.value=4;bp.connect(b);
+   eO(c,bp,t,{type:'sawtooth',f:260,f1:1900,fd:.78,v:.6,a:.05,h:.65,d:.06});eO(c,b,t,{f:520,f1:3800,fd:.78,v:.12,a:.05,h:.65,d:.06});for(let k=0;k<10;k++)eN(c,b,t+.3+k*.045,{type:'highpass',f:4000,v:.06+k*.02,d:.004})}],
+ ['arcReady',2,.4,(c,o)=>{const b=chain(c,o,1.8,.8,.2,8000),t=.004;for(let k=0;k<6;k++)eN(c,b,t+k*.012+rnd()*.008,{type:'highpass',f:3000+rnd()*3000,v:.7,d:.004});eN(c,b,t,{f:4800,q:2.5,v:.6,d:.06});eO(c,b,t+.04,{type:'triangle',f:2350,v:.18,d:.12})}],
  ['magRel',3,.6,(c,o)=>{const b=chain(c,o,2.4,.5,.1,5000),t=.005;
    for(const t0 of[t,t+.13])for(let k=0;k<7;k++){const tt=t0+k*.006+rnd()*.012,v=1-k*.09;eN(c,b,tt,{type:'highpass',f:1800+rnd()*1500,v:.7*v,d:.004+rnd()*.004});eN(c,b,tt,{f:2200+rnd()*2500,q:.6,v:.55*v,d:.012+rnd()*.012})}
    for(const t0 of[t,t+.13]){eN(c,b,t0,{buf:bB,type:'lowpass',f:500,v:.9,d:.035});eN(c,b,t0+.01,{f:900,q:.5,v:.4,d:.03})}}],
@@ -3211,20 +3217,20 @@ function fireBullet(from,dir,spread,vel,dmg,scale){
   const b=bullets[bi++%bullets.length];b.m.position.copy(from);b.p.set(P.pos.x,P.y+3,P.pos.z);b.v.copy(dir).multiplyScalar(vel);b.life=curLife||1;b.dmg=dmg;b.aoe=0;b.am=null;(b.o||(b.o=new V())).copy(from);b.on=true;b.m.visible=true;
   b.m.lookAt(from.x+dir.x,from.y+dir.y,from.z+dir.z);b.m.scale.setScalar(scale);return b;
 }
-let curLife=0;function shoot(a,tgt){curLife=a.W.rng&&a.W.vel?a.W.rng/a.W.vel:0;try{shoot0(a,tgt)}finally{curLife=0}}
+let curLife=0;function shoot(a,tgt){if(!a.inB)a.lf=now;/* every gun remembers its last shot, so tapping can't beat the fire rate */curLife=a.W.rng&&a.W.vel?a.W.rng/a.W.vel:0;try{shoot0(a,tgt)}finally{curLife=0}}
 function shoot0(a,tgt){
   const W=a.W;if(a.mzp){a.mzi=((a.mzi||0)+1)%a.mzp.length;a.mz.position.copy(a.mzp[a.mzi]);if(a.fl)a.fl.position.copy(a.mz.position)}a.mz.getWorldPosition(tv);
   if(W.msl){const LT=lockTargets();if(!LT.length)return;a.mk=(a.mk||0)+1;const lt0=LT[a.mk%LT.length];for(let q=0;q<U.mS;q++)setTimeout(()=>{const m2=missiles.find(x=>!x.on);if(!m2||state!=='play')return;a.mz.getWorldPosition(m2.m.position);m2.on=true;m2.lk=1;m2.delay=0;m2.dmg=W.dmg;m2.t=0;m2.life=4;const L2=lockTargets();m2.it=null;mslSet(m2,L2.length?mslPick(L2):lt0);m2.v.set(Math.sin(upper.rotation.y)*26+(rnd()-.5)*8,7+rnd()*3,Math.cos(upper.rotation.y)*26+(rnd()-.5)*8);m2.m.visible=true},(q+1)*70);
   const m=missiles.find(x=>!x.on);if(!m)return;aimDir(tv,tgt,t2,a);m.on=true;m.lk=1;m.delay=0;m.dmg=W.dmg;m.t=0;m.life=4;m.it=null;mslSet(m,mslPick(LT)||lt0);m.m.position.copy(tv);m.v.copy(t2).multiplyScalar(26);m.v.y+=6+rnd()*3;m.v.x+=(rnd()-.5)*5;m.v.z+=(rnd()-.5)*5;m.m.visible=true;if(a.rear){const rp=a.rear.clone();a.w.localToWorld(rp);a.w.getWorldDirection(t3);backblast(rp,t3.negate(),false)}play('mfire',{v:.65,rate:1.05+rnd()*.15,lim:200});puff(tv,.5,0x8a8580,.5);a.w.position.z=-.15;return}
   if(W.twin){a.lst=now;a.mz=a.mzs[a.side];a.mz.getWorldPosition(tv);a.brls[a.side].userData.k=1;a.side^=1;const dmT=W.dmg*U.cD*(a.t==='twin'&&U.ae.twin?1.2:1)*(U.twin&&firingCount>=2?1.35:1)*fpM();aimDir(tv,tgt,t2,a);
     const b=fireBullet(tv,t2,W.spread,W.vel,dmT,1.9);b.aoe=W.aoe*U.cA*(U.ae[a.t]||1);b.am=W.am;b.life=curLife||1.4;a.fl.position.copy(a.mz.position);a.fl.visible=true;a.fl.scale.setScalar(1.3+rnd()*.5);
-    muzL.intensity=3.5;muzL.color.setHex(0xffa040);muzL.position.copy(tv);shake=Math.max(shake,.22);play('ar',{v:.9,rate:.72});ejectCase(a,true);puff(tv,.6,0x8a8580,.8);return}
+    muzL.intensity=3.5;muzL.color.setHex(0xffa040);muzL.position.copy(tv);shake=Math.max(shake,.22);play('gemShot',{v:1.4,rate:.95+rnd()*.06,lim:170});ejectCase(a,true);puff(tv,.6,0x8a8580,.8);return}
   if(W.shot){const dmS=W.dmg*(U.twin&&firingCount>=2?1.35:1)*fpM();if(!a.inB)a.lf=now;
     if(a.bores){a.rk=.3;if(W.burst&&!a.inB){a.bq=W.burst-1;a.bt=W.bi}if(a.inB&&a.bq===0)a.ejT=.14;
       for(let k=0;k<3;k++){a.bores[k];t3.copy(a.bores[k]);a.w.localToWorld(t3);aimDir(t3,tgt,t2,a);for(let q=0;q<(W.pel+(U.pl[a.t]||0))/3;q++){fireBullet(t3.clone(),t2.clone(),W.spread*(U.sp[a.t]||1),W.vel,dmS,.9).am='HE'}a.fls[k].visible=true;a.fls[k].scale.setScalar(1.3+rnd()*.5)}
-      a.mz.getWorldPosition(tv);muzL.intensity=4.5;muzL.color.setHex(0xffb050);muzL.position.copy(tv);shake=Math.max(shake,.3);a.w.position.z=-.35;play('sgun',{v:1.5,rate:.8+rnd()*.05,lim:170});play('boom',{v:.55,rate:1.4});puff(tv,1,0x8a8580,.8);return}
+      a.mz.getWorldPosition(tv);muzL.intensity=4.5;muzL.color.setHex(0xffb050);muzL.position.copy(tv);shake=Math.max(shake,.3);a.w.position.z=-.35;play('shotH',{v:1.5,rate:.97+rnd()*.05,lim:170});puff(tv,1,0x8a8580,.8);return}
     aimDir(tv,tgt,t2,a);for(let q=0;q<W.pel+(U.pl[a.t]||0);q++){fireBullet(tv,t2.clone(),W.spread*(U.sp[a.t]||1),W.vel,dmS,.9).am='HE'}
-    a.fl.visible=true;a.fl.scale.setScalar(1.6+rnd()*.6);muzL.intensity=4;muzL.color.setHex(0xffb050);muzL.position.copy(tv);shake=Math.max(shake,.28);a.w.position.z=-.4;play('sgun',{v:1.4,lim:170});play('boom',{v:.45,rate:1.55});if(a.fore)a.pmp=.2;puff(tv,.8,0x8a8580,.8);return}
+    a.fl.visible=true;a.fl.scale.setScalar(1.6+rnd()*.6);muzL.intensity=4;muzL.color.setHex(0xffb050);muzL.position.copy(tv);shake=Math.max(shake,.28);a.w.position.z=-.4;play('shotL',{v:1.4,rate:.98+rnd()*.05,lim:170});if(a.fore)a.pmp=.2;puff(tv,.8,0x8a8580,.8);return}
   if(W.rkt){const m=missiles.find(x=>!x.on);if(!m)return;aimDir(tv,tgt,t2,a);if(a.t==='pod'){t2.x+=(rnd()-.5)*W.spread*2;t2.y+=(rnd()-.5)*W.spread*2;t2.z+=(rnd()-.5)*W.spread*2;t2.normalize()}m.on=true;m.dumb=true;m.cl=a.t==='rkt'&&!!U.vlC;m.lk=0;m.tgt=null;m.delay=0;m.dmg=W.dmg*(U.ae[a.t]?1.2:1)*(U.twin&&firingCount>=2?1.35:1)*fpM();m.aoe=W.aoe*(U.ae[a.t]||1);m.t=0;m.life=W.rng?(W.rng<=43.6?(-36+Math.sqrt(1296+110*W.rng))/55:.764+(W.rng-43.6)/78):3;m.m.position.copy(tv);m.v.copy(t2).multiplyScalar(36);m.m.visible=true;
     SFX.missile();puff(tv,.7,0x8a8580,.6);a.fl.visible=true;a.fl.scale.setScalar(1.2);shake=Math.max(shake,.12);a.w.position.z=-.2;return}
   if(W.cannon){const dmC=W.dmg*U.cD*(U.twin&&firingCount>=2?1.35:1)*fpM(),R=W.aoe*U.cA;aimDir(tv,tgt,t2,a);
@@ -3375,7 +3381,7 @@ function harpoonMesh(){const g=new THREE.Group();const sh=new THREE.Mesh(new THR
   const hd=new THREE.Mesh(new THREE.ConeGeometry(.26,1.0,10),hpSteel);hd.rotation.x=Math.PI/2;hd.position.z=.85;g.add(hd);const cl=new THREE.Mesh(new THREE.CylinderGeometry(.2,.26,.3,10),MK.gm);cl.rotation.x=Math.PI/2;cl.position.z=.25;g.add(cl);
   for(let k=0;k<4;k++){const b=new THREE.Mesh(new THREE.ConeGeometry(.08,.5,5),hpSteel);const a=k/4*TAU+.4;b.position.set(Math.cos(a)*.2,Math.sin(a)*.2,.35);b.rotation.x=-Math.PI/2;b.rotation.z=a;b.rotateX(.5);g.add(b)}return g}
 function harpoonHit(a,from,to,set){const W=a.W,R=1.1;for(const e of enemies.slice()){if(set.has(e)||e.mat>0||e.hid)continue;if(!segHit(from,to,e.m.position,e.r+R))continue;set.add(e);
-    const dm=W.dmg*hitMul(e)*amBoss('AP',e)*(U.twin&&firingCount>=2?1.35:1)*fpM();e.hp-=dm;e.flash=.15;popNum(e.m.position,dm,'',e.r);spark(e.m.position,5,14);explode(e.m.position.clone().setY(e.m.position.y+.5),.6,true);if(now-(a.zk||0)>.06){a.zk=now;play('zakin',{v:1.3})}shake=Math.max(shake,.25);
+    const dm=W.dmg*hitMul(e)*amBoss('AP',e)*(U.twin&&firingCount>=2?1.35:1)*fpM();e.hp-=dm;e.flash=.15;popNum(e.m.position,dm,'',e.r);spark(e.m.position,5,14);explode(e.m.position.clone().setY(e.m.position.y+.5),.6,true);shake=Math.max(shake,.25);
     if(e.hp<=0)kill(e)}
   for(const pr of props)if(pr.alive&&segBox(from.x,1.2,from.z,to.x,1.2,to.z,pr)<1)hitProp(pr,W.dmg)}
 function harpoonArm(a,pr,dt,tgt){const W=a.W;a.cd-=dt;a.mz.getWorldPosition(t3);
@@ -3387,10 +3393,10 @@ function harpoonArm(a,pr,dt,tgt){const W=a.W;a.cd-=dt;a.mz.getWorldPosition(t3);
     return}
   const prev=a.hpos.clone();
   if(a.hp==='out'){const st=W.vel*dt;a.hpos.addScaledVector(a.hdir,st);a.hd+=st;harpoonHit(a,prev,a.hpos,a.hset);
-    let stop=a.hd>=W.range*(U.hpR||1)||a.hpos.y<.2;for(const b of blds)if(!stop&&segBox(prev.x,prev.y,prev.z,a.hpos.x,a.hpos.y,a.hpos.z,b)<1){stop=true;spark(a.hpos,6,12);SFX.clank(true)}
-    if(stop){a.hp='back';a.hset2=new Set();play('clankL',{v:.5,rate:.8})}}
+    let stop=a.hd>=W.range*(U.hpR||1)||a.hpos.y<.2;for(const b of blds)if(!stop&&segBox(prev.x,prev.y,prev.z,a.hpos.x,a.hpos.y,a.hpos.z,b)<1){stop=true;spark(a.hpos,6,12)}
+    if(stop){a.hp='back';a.hset2=new Set()}}
   else{const to=t3.clone().sub(a.hpos),L=to.length(),st=W.rv*dt;if(a.reel)a.reel.rotation.x+=dt*25*a.s;
-    if(L<=st+.3){a.hp=null;a.cd=W.cd;a.spike.visible=true;scene.remove(a.hm);scene.remove(a.cab);a.cab.geometry.dispose();a.hm=a.cab=null;SFX.clank(true);play('chak',{v:.6});a.w.position.z=-.2;return}
+    if(L<=st+.3){a.hp=null;a.cd=W.cd;a.spike.visible=true;scene.remove(a.hm);scene.remove(a.cab);a.cab.geometry.dispose();a.hm=a.cab=null;a.w.position.z=-.2;return}
     to.multiplyScalar(1/L);a.hpos.addScaledVector(to,st);harpoonHit(a,prev,a.hpos,a.hset2);a.hm.lookAt(a.hpos.clone().sub(to))}
   a.hm.position.copy(a.hpos);if(a.hp==='out')a.hm.lookAt(a.hpos.clone().add(a.hdir));
   const ps=a.cab.geometry.attributes.position;ps.setXYZ(0,t3.x,t3.y,t3.z);ps.setXYZ(1,a.hpos.x,a.hpos.y,a.hpos.z);ps.needsUpdate=true;a.cab.geometry.computeBoundingSphere()}
@@ -3419,7 +3425,7 @@ const RLS={
  burst:{drop:['magRel',{v:1.3,rate:.95}],ins:['magIn',{v:1.4,rate:.95}],seq:[]},
  shot:{drop:null,ins:null,seq:[[.45,'chak',{v:.8}],[.62,'chak',{v:.8,rate:1.05}],[.79,'chak',{v:.8}]]},
  rkt:{nomag:1,drop:null,ins:null,seq:[[0,'rlOut',{v:.5,rate:.8}],[.45,'tube',{v:.7}],[.55,'tube',{v:.7,rate:1.05}],[.65,'tube',{v:.7,rate:.95}],[.75,'tube',{v:.7,rate:1.1}],[.9,'cock',{v:.5,rate:1.4}]]},
- tesla:{drop:['magRel',{v:1.1,rate:1.05}],ins:['magIn',{v:1.2,rate:1.05}],seq:[]},
+ tesla:{drop:['arcOut',{v:1.1}],ins:['magIn',{v:1.1,rate:1.1}],seq:[[.68,'arcCharge',{v:1}],[.97,'arcReady',{v:1.1}]]},
  msl:{nomag:1,drop:null,ins:null,seq:[[0,'servo',{v:.5,rate:1.3}],[0.332,'tube',{v:.45,rate:1.25}],[0.383,'tube',{v:.45,rate:1.33}],[0.435,'tube',{v:.45,rate:1.41}],[0.487,'tube',{v:.45,rate:1.25}],[0.538,'tube',{v:.45,rate:1.33}],[0.590,'tube',{v:.45,rate:1.41}],[0.642,'tube',{v:.45,rate:1.25}],[0.693,'tube',{v:.45,rate:1.33}],[0.745,'tube',{v:.45,rate:1.41}],[0.797,'tube',{v:.45,rate:1.25}],[0.848,'tube',{v:.45,rate:1.33}],[0.900,'tube',{v:.45,rate:1.41}],[.95,'ready',{v:.5}]]}
 };
 function startReload(a){if(a.W.regen)return;if(a.W.kind==='tesla'&&!(a.rl>0)&&a.ammo<magOf(a)){a.rlT=a.W.rl*U.rl;a.rl=a.rlT;a.rq=0;a.dropped=a.clicked=false;return}if(a.W.kind==='flame'&&!(a.rf>0)&&a.fuel<.98){a.rf=a.W.rl*U.rl*(1-a.fuel);return}if(a.W.kind!=='gun'||a.rl>0||a.ammo===magOf(a))return;a.rlT=a.W.rl*U.rl*(a.W.cannon?U.cR:1);a.rl=a.rlT;a.rq=0;a.dropped=false;a.clicked=false;a.spin=0}
