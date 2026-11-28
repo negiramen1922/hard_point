@@ -92,6 +92,17 @@ canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:
 #hurt{position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 120px 30px #c0140a;opacity:0;transition:opacity .25s}
 #speed{position:fixed;inset:-20%;pointer-events:none;opacity:0;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,0) 0deg 2.6deg,rgba(235,240,255,.22) 2.6deg 3deg);-webkit-mask:radial-gradient(circle,transparent 28%,#000 62%);mask:radial-gradient(circle,transparent 28%,#000 62%)}
 #flash{position:fixed;inset:0;pointer-events:none;background:#fff3dc;opacity:0}
+#ldW{position:fixed;inset:0;z-index:40;background:radial-gradient(ellipse at 32% 55%,#2c2018 0%,#120d0a 60%,#0a0807 100%);display:flex;align-items:center;transition:opacity .5s}
+#ldW.out{opacity:0;pointer-events:none}#ldW.hide{display:none}
+#ldCv{position:absolute;left:0;top:0;width:58%;height:100%}
+#ldW .ldT{position:absolute;left:56%;right:max(4vw,16px);top:50%;transform:translateY(-55%);color:var(--ink)}
+#ldW small{font:700 11px "Chakra Petch",sans-serif;letter-spacing:.3em;color:var(--acc)}
+#ldW b{display:block;white-space:nowrap;font:700 clamp(28px,5.4vw,52px)/1.05 "Chakra Petch",sans-serif;margin:6px 0 4px;text-shadow:0 0 18px rgba(255,90,31,.35)}
+#ldW i{display:block;font:700 13px "Zen Kaku Gothic New",sans-serif;font-style:normal;color:var(--cy);letter-spacing:.08em}
+#ldW p{font:500 clamp(12px,1.6vw,14px)/1.7 "Zen Kaku Gothic New",sans-serif;color:var(--dim);margin:10px 0 6px;max-width:36em}
+#ldW em{font:700 12px "Zen Kaku Gothic New",sans-serif;font-style:normal;color:var(--ink);opacity:.8}
+#ldW .ldB{position:absolute;left:max(4vw,16px);right:max(4vw,16px);bottom:max(4vh,14px);display:flex;align-items:center;gap:12px;font:700 11px "Chakra Petch",sans-serif;letter-spacing:.25em;color:var(--dim)}
+#ldW .ldBar{flex:1;height:3px;background:rgba(255,255,255,.1)}#ldW .ldBar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
 #fade{position:fixed;inset:0;pointer-events:none;background:#0d0a08;opacity:0;transition:opacity .6s;z-index:4;display:flex;align-items:center;justify-content:center;font:700 clamp(28px,6vw,48px) "Chakra Petch";color:var(--ink)}
 .snd{position:fixed;width:44px;height:44px;border-radius:50%;border:1px solid rgba(239,232,218,.35);background:rgba(20,16,12,.55);color:var(--ink);padding:9px;cursor:pointer;pointer-events:auto;z-index:3}
 .snd svg{width:100%;height:100%;display:block}
@@ -461,6 +472,8 @@ body{word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
   <div id="abil"></div>
   <div id="ring"></div>
 </div>
+<div id="ldW"><canvas id="ldCv"></canvas><div class="ldT"><small id="ldTag">ENEMY FILE</small><b id="ldN">HARD POINT</b><i id="ldJ"></i><p id="ldD"></p><em id="ldA"></em></div>
+  <div class="ldB"><span>LOADING</span><div class="ldBar"><i id="ldP"></i></div><span id="ldC"></span></div></div>
 <div id="home" class="hide">
   <div class="lg"><h1>HARD <span>POINT</span></h1><p>BIOMECH INVASION</p></div>
   <nav class="hnav">
@@ -2717,7 +2730,7 @@ function openNews(){const s=newsSeen();$('newsList').innerHTML=NEWS.length?NEWS.
 $('newsB').addEventListener('click',e=>{e.stopPropagation();openNews()});$('newsBack').addEventListener('click',()=>$('newsW').classList.add('hide'));
 newsLoad();addEventListener('visibilitychange',()=>{if(!document.hidden)newsLoad()});
 function tutWelcome(){let seen=false;try{seen=localStorage.getItem('rg_tut')==='1'}catch(e){}if(!seen)$('tutW').classList.remove('hide')}
-function sortie(n){if(!modelsOK){const f=$('fade');f.textContent='LOADING';f.style.opacity=1;modelsP.then(()=>{f.style.opacity=0;sortie(n)});return}
+function sortie(n){if(!modelsOK){ldOpen(true);modelsP.then(()=>{ldClose();sortie(n)});return}
 
   if(slamG)slamG.visible=false;
   n=n||1;hideAll();
@@ -2963,11 +2976,32 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=8;
+const BUILD=9;
 // ===== 3D models live in models/<id>.json and load in the background (the page itself stays light) =====
-const MODEL_IDS=["drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false;
-const modelsP=Promise.all(MODEL_IDS.map(id=>fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}))).then(()=>{modelsOK=true;
-  for(const k in MESH)if(MESH[k]==null)delete MESH[k];if(typeof state!=='undefined'&&(state==='menu'||state==='demo'))try{buildMech()}catch(e){}});
+const MODEL_IDS=["drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
+const MP={},getModel=id=>MP[id]||(MP[id]=fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}).then(()=>{modelsN++;ldProg()}));
+function loadModels(first){const f=Promise.all((first||[]).map(getModel));modelsP=f.then(()=>Promise.all(MODEL_IDS.filter(id=>!(first||[]).includes(id)).map(getModel))).then(()=>{modelsOK=true;
+  for(const k in MESH)if(MESH[k]==null)delete MESH[k];if(state==='menu'||state==='demo')try{buildMech()}catch(e){}});return f}
+// ===== loading screen: a random enemy file (3D model turning in place + name / kind / description) and a progress bar =====
+const LD_MODEL={drone:['drone'],hound:['hound'],shooter:WIP.bugModel&&!window.HP_TEST?[]:['bug'],flyer:WIP.jellyModel&&!window.HP_TEST?[]:['jelly'],sniper:WIP.snipModel&&!window.HP_TEST?[]:['snip'],mortar:WIP.mortModel&&!window.HP_TEST?[]:['mort'],guard:WIP.shldModel&&!window.HP_TEST?[]:['shld','shldS'],
+  boss_quad:WIP.fenrirModel&&!window.HP_TEST?[]:['fenrir'],boss_spider:['spider'],boss_arma:WIP.armaModel&&!window.HP_TEST?[]:['arma']};
+let LD=null;
+function ldProg(){const p=$('ldP'),c=$('ldC');if(!p)return;const k=Math.min(1,modelsN/MODEL_IDS.length);p.style.width=(k*100).toFixed(0)+'%';c.textContent=Math.round(k*100)+'%'}
+function ldPick(onlyLoaded){const pool=DEXE.filter(x=>(!x.map||mapRel(x.map))&&LD_MODEL[x.k]&&LD_MODEL[x.k].length&&(!onlyLoaded||LD_MODEL[x.k].every(id=>MD[id])));return pool.length?pool[Math.floor(Math.random()*pool.length)]:null}
+function ldShow(x){$('ldTag').textContent=x&&x.k.startsWith('boss_')?'BOSS FILE':'ENEMY FILE';const nm=x?x.n:'HARD POINT',N=$('ldN');N.textContent=nm;N.style.fontSize=nm.length>9?'clamp(22px,'+(46/nm.length).toFixed(2)+'vw,42px)':'';$('ldJ').textContent=x?x.j:'';$('ldD').textContent=x?x.d:'';$('ldA').textContent=x?'攻撃：'+x.a:''}
+function ldModel(x){if(!LD||!x)return;const boss=x.k.startsWith('boss_'),kind=boss?x.k.slice(5):x.k,keep=stage;if(boss)BK_OVR=kind;let q=null;try{q=makeQuad(boss?'boss':kind,new THREE.MeshLambertMaterial({color:0x5a2448}))}catch(e){}stage=keep;BK_OVR=null;if(!q)return;
+  if(q.laser){scene.remove(q.laser);const i=bossFx.indexOf(q.laser);if(i>=0)bossFx.splice(i,1)}
+  if(LD.q)LD.S.remove(LD.q.root);LD.q=q;q.root.position.set(0,q.cy,0);LD.S.add(q.root);q.root.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(q.root),c=bb.getCenter(new V()),sz=bb.getSize(new V()),r=Math.max(sz.x,sz.y,sz.z);
+  LD.tgt=c;LD.dist=r*2.35;LD.C.near=r*.05;LD.C.far=r*20;LD.C.updateProjectionMatrix()}
+function ldOpen(onlyLoaded,x0){const W=$('ldW');W.classList.remove('hide','out');ldProg();const cv=$('ldCv');
+  if(!LD){const Rr=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});Rr.setPixelRatio(Math.min(2,devicePixelRatio||1));const S=new THREE.Scene();S.add(new THREE.HemisphereLight(0xffe8d0,0x302018,1.05));const dl=new THREE.DirectionalLight(0xffffff,.9);dl.position.set(2,3,2.5);S.add(dl);const rl=new THREE.DirectionalLight(0x7fe0ff,.5);rl.position.set(-3,1.5,-2);S.add(rl);
+    LD={R:Rr,S,C:new THREE.PerspectiveCamera(32,1,.1,100),q:null,a:.6,t0:performance.now(),run:true}}
+  LD.run=true;LD.t0=performance.now();const x=x0||ldPick(onlyLoaded);ldShow(x);
+  const deps=x?LD_MODEL[x.k]:[];if(deps.every(id=>MD[id]))ldModel(x);else{const p=Promise.all(deps.map(getModel));p.then(()=>{if(LD&&LD.run)ldModel(x)})}
+  let last=performance.now();(function tick(t){if(!LD||!LD.run)return;requestAnimationFrame(tick);const dt=Math.min(.05,(t-last)/1000);last=t;const w=cv.clientWidth,h=cv.clientHeight;if(cv.width!==Math.round(w*LD.R.getPixelRatio())||cv.height!==Math.round(h*LD.R.getPixelRatio())){LD.R.setSize(w,h,false);LD.C.aspect=w/Math.max(1,h);LD.C.updateProjectionMatrix()}
+    if(LD.q){LD.a+=dt*.45;const c=LD.tgt,D=LD.dist;LD.C.position.set(c.x+Math.sin(LD.a)*D,c.y+D*.32,c.z+Math.cos(LD.a)*D);LD.C.lookAt(c.x,c.y,c.z);const u=LD.q.ru;if(u){u.uT.value=t/1000;u.uA.value=.7;u.uG.value+=dt*3.2}}
+    LD.R.render(LD.S,LD.C)})(last)}
+function ldClose(){if(!LD)return;const W=$('ldW');W.classList.add('out');setTimeout(()=>{if(!W.classList.contains('out'))return;W.classList.add('hide');if(LD){LD.run=false;if(LD.q)LD.S.remove(LD.q.root);LD.q=null}},520)}
 function goHome(){TUT=null;TEST=null;$('dpsH').classList.add('hide');if(!GT)tutHide();hideAll();stopMotors();megaLoop(false);inp.all=false;inp.w.fill(false);mb=mb2=false;joy.x=joy.y=0;try{document.pointerLockElement&&document.exitPointerLock()}catch(e){}startDemo();$('ver').textContent='ver '+(window.HP_TEST?'1.1.':'1.0.')+String(BUILD).padStart(3,'0')}
 function homeCur(){const c=demo?JSON.parse(demo.keep):cfg;$('hScrap').innerHTML=SCRI+SCRAP.toLocaleString()+(ADMIN?' <small>管理者</small>':'');$('hCur').innerHTML=`現在の機体<b>${BODY[c.B].n} ／ ${LEGS[c.G].n}</b>${BODY[c.B].slots.map((x,i)=>WP[c.W[i]].n).join('・')} ／ ${ABIL[c.A].n}`}
 function startDemo(){if(!demo)demo={keep:JSON.stringify(cfg)};Object.assign(demo,{t:0,sw:0,shot:0,ang:rnd()*TAU,ab:3,lg:5,cut:true,look:null});
@@ -4217,6 +4251,8 @@ function loop(t){
   fx(sdt);camUpdate(dt);weatherTick(dt);hlTick();R.render(scene,cam);
 }
 applyCtl();helpKeys();resetU();buildLevel('ruins');renderMenu();buildMech();applyQuality();goHome();requestAnimationFrame(loop);tutWelcome();
+{const x0=ldPick(false);loadModels(x0?LD_MODEL[x0.k]:[]);ldOpen(false,x0);
+  const t0=performance.now();Promise.race([modelsP,new Promise(r=>setTimeout(r,25000))]).then(()=>setTimeout(ldClose,Math.max(0,1600-(performance.now()-t0))))}
 }
 </script>
 <script>
