@@ -935,7 +935,7 @@ function mtBuild(g,MT,s){g.position.set(MT.p[0],MT.p[1],MT.p[2]);
 // ===== weapon sculpts (Meshy models in models/w_<type>.json): the procedural weapon is still built (its parts keep driving muzzles,
 // reload timing and effects) but hidden; the model is fitted over its bounds with the muzzle end at the front. Moving pieces are
 // separate parts: 'cyl' (Behemoth's cylinder cap, turns with the revolver) and 'eng' (Hammerhead's V-engine, shakes) =====
-const WPM={shot:1,melt:1,beam:1,cannon:1,burst:1},WPT={};
+const WPM={shot:1,melt:1,beam:1,cannon:1,burst:1,rkt:1},WPT={};
 function wpMat(t){if(WPT[t])return WPT[t];const d=MD['w_'+t],tl=src=>{const x=new THREE.TextureLoader().load(src);x.flipY=false;return x};
   return WPT[t]=new THREE.MeshLambertMaterial(d.em?{map:tl(d.tex),emissive:0xffffff,emissiveMap:tl(d.em),emissiveIntensity:1}:{map:tl(d.tex)})}
 function wpGeo(t,nm){const q=MD['w_'+t].parts[nm],b=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0)).buffer,g=new THREE.BufferGeometry();
@@ -2998,9 +2998,9 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=13;
+const BUILD=14;
 // ===== 3D models live in models/<id>.json and load in the background (the page itself stays light) =====
-const MODEL_IDS=["w_shot", "w_melt", "w_beam", "w_cannon", "w_burst", "drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
+const MODEL_IDS=["w_rkt","w_shot", "w_melt", "w_beam", "w_cannon", "w_burst", "drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
 const MP={},getModel=id=>MP[id]||(MP[id]=fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}).then(()=>{modelsN++;ldProg()}));
 function loadModels(first){const f=Promise.all((first||[]).map(getModel));modelsP=f.then(()=>Promise.all(MODEL_IDS.filter(id=>!(first||[]).includes(id)).map(getModel))).then(()=>{modelsOK=true;
   for(const k in MESH)if(MESH[k]==null)delete MESH[k];if(state==='menu'||state==='demo')try{buildMech()}catch(e){}});return f}
@@ -3738,7 +3738,7 @@ function updateArms(dt,tgt){
       const rr=(W.tr||200)*Math.PI/180*dt*(W.kind==='beam'&&a.fireT>0?.12:1);a.ap.rotation.y+=Math.max(-rr,Math.min(rr,ty-a.ap.rotation.y));a.ap.rotation.x+=Math.max(-rr,Math.min(rr,-tp-a.ap.rotation.x))}
     if(W.kind==='gun'){
       if(a.brl){a.kick=Math.max(0,(a.kick||0)-dt*2.6);a.brl.position.z=1.2-.75*Math.min(1,a.kick*1.6)*(a.kick>.62?1:a.kick/.62)}
-      if(a.tips){const L=a.tips.length,n=a.rl>0?(W.msl?Math.max(0,Math.min(L,Math.floor(((a.rlT-a.rl)/a.rlT-.28)/.62*L+.0001))):0):Math.ceil(a.ammo/magOf(a)*L);a.tips.forEach((tp,q)=>tp.visible=q<n)}
+      if(a.tips&&!a.sculpt){const L=a.tips.length,n=a.rl>0?(W.msl?Math.max(0,Math.min(L,Math.floor(((a.rlT-a.rl)/a.rlT-.28)/.62*L+.0001))):0):Math.ceil(a.ammo/magOf(a)*L);a.tips.forEach((tp,q)=>tp.visible=q<n)}
       if(a.brls)a.brls.forEach((b2,q)=>{b2.userData.k=Math.max(0,(b2.userData.k||0)-dt*4);b2.position.z=1.15-.55*b2.userData.k})
       a.fl.visible=false;a.w.position.z+=(0-a.w.position.z)*Math.min(1,dt*14);if(a.fls)for(const f of a.fls)f.visible=false;
       if(a.pmp>0){a.pmp-=dt;if(a.pmp<=0){a.pmpA=.32;setTimeout(()=>{if(arms.includes(a))ejectShell(a,a.ej,false,true)},90)}}
