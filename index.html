@@ -1862,7 +1862,7 @@ function bossHrungnir(e,p,d,dt){if(e.kind!=='hrungnir')return false;const ph=e.p
       if(rnd()<.5)puff(t3.set(p.x+(rnd()-.5)*6,.4,p.z+(rnd()-.5)*6),1.4,0x9a7048,.5);
       if(e.ht>=(e.hk>0?.6:1.0)){e.hs='dash';e.ht=0;dropFx(e.wl);e.wl=null;SFX.thrust(true);shake=Math.max(shake,.5);play('screech',sp(p,.6,.4))}}
     else{const spd=ph>=2?44:ph>=1?41:37;t3.set(p.x+e.bdir.x*(spd*dt+e.r*.9),1.5,p.z+e.bdir.z*(spd*dt+e.r*.9));let stop=e.ht>1.35;
-      if(inBld(t3,1)||Math.hypot(t3.x,t3.z)>ARENA-3){stop=true;explode(t3.clone().setY(2),2);shake=Math.max(shake,.9);SFX.bossLand(t3);if(ph>=2)bossBarrage(e,p,14,12)}else{p.x+=e.bdir.x*spd*dt;p.z+=e.bdir.z*spd*dt}
+      if(inBld(t3,1)||Math.hypot(t3.x,t3.z)>ARENA-3){stop=true;explode(t3.clone().setY(2),2);shake=Math.max(shake,.9);SFX.bossLand(t3)}else{p.x+=e.bdir.x*spd*dt;p.z+=e.bdir.z*spd*dt}
       propsAoe(p,e.r+1,9999);if(rnd()<.9)puff(t3.set(p.x-e.bdir.x*4+(rnd()-.5)*4,.4,p.z-e.bdir.z*4+(rnd()-.5)*4),1.8,0x9a7048,.6);
       if(ph>=2){e.trl=(e.trl||0)-dt;if(e.trl<=0){e.trl=.22;addPool(p.x-e.bdir.x*5,p.z-e.bdir.z*5,3,3.2,45,'HRUNGNIRの毒だまり')}}
       const pd=Math.hypot(P.pos.x-p.x,P.pos.z-p.z);if(pd<e.r+2&&P.y<5&&now-(e.rh||0)>.8){e.rh=now;t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(ph>=2?340:300,t2,P.pos.clone().setY(2),'HRUNGNIRの突撃');P.vel.addScaledVector(t2,-26);P.vy=Math.max(P.vy,7);shake=Math.max(shake,1);SFX.bossLand(P.pos)}
@@ -1871,18 +1871,29 @@ function bossHrungnir(e,p,d,dt){if(e.kind!=='hrungnir')return false;const ph=e.p
   e.tyaw=la(e.tyaw,ty,dt*2.4);const ux=(P.pos.x-p.x)/(d||1),uz=(P.pos.z-p.z)/(d||1),want=d>30?1:d<18?-1:0,sd=Math.sin(now*.45+e.ph)>0?1:-1;
   p.x+=(ux*want-uz*sd*.8)*e.spd*1.5*dt;p.z+=(uz*want+ux*sd*.8)*e.spd*1.5*dt;
   if(e.rcd==null)e.rcd=2.5;e.rcd-=dt;
-  if(e.rcd<=0&&d>12&&!(e.tsl>0)){e.hs='aim';e.ht=0;e.hk=ph>=2?3:ph>=1?2:1;e.bdir=new V(ux,0,uz);e.wl=makeLine(7);toast(e.hk>1?'HRUNGNIR 連続突撃！ 赤い線から離れろ':'HRUNGNIR 突撃！ 赤い線から離れろ');play('roar',sp(p,1.1,.4));SFX.bossCrouch(p);return true}
+  if(e.rcd<=0&&d>12&&!(e.tsl>0)&&!e.hsp){e.hs='aim';e.ht=0;e.hk=ph>=2?3:ph>=1?2:1;e.bdir=new V(ux,0,uz);e.wl=makeLine(7);toast(e.hk>1?'HRUNGNIR 連続突撃！ 赤い線から離れろ':'HRUNGNIR 突撃！ 赤い線から離れろ');play('roar',sp(p,1.1,.4));SFX.bossCrouch(p);return true}
+  // TAIL SPIN: hugging it is punished — a ring around it, then the tail sweeps a full circle low over the sand (jump it or back off)
+  if(e.hsp){const S=e.hsp;S.t+=dt;if(S.t<.9){if(e.warn){e.warn.position.set(p.x,.07,p.z);const W=e.warn.userData;W.inner.scale.setScalar(Math.max(.02,1-S.t/.9));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*16))}if(e.tail)e.tail.rotation.x=-.35;return true}
+    if(e.warn){dropWarn(e.warn);e.warn=null;SFX.thrust(true);play('screech',sp(p,.8,.5))}const k=Math.min(1,(S.t-.9)/.6);e.tyaw=S.y0+k*TAU*S.dr;const ta=e.tyaw+Math.PI;
+    if(e.tail)e.tail.rotation.x=.4;if(rnd()<.9)puff(t3.set(p.x+Math.sin(ta)*8,.4,p.z+Math.cos(ta)*8),1.8,0x9a7048,.8);propsAoe(t3.set(p.x+Math.sin(ta)*7,1,p.z+Math.cos(ta)*7),3,9999);
+    if(!S.hit&&d<11.5&&P.y<3.4){const pa=Math.atan2(P.pos.x-p.x,P.pos.z-p.z),df=Math.atan2(Math.sin(pa-ta),Math.cos(pa-ta));if(Math.abs(df)<.5){S.hit=1;t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(ph>=2?250:220,t2,P.pos.clone().setY(2),'HRUNGNIRの尾の回転');P.vel.addScaledVector(t2,-24);P.vy=Math.max(P.vy,7);shake=Math.max(shake,1)}}
+    if(k>=1){e.hsp=null;e.cd=Math.max(e.cd,1)}return true}
+  e.hspc=(e.hspc==null?3:e.hspc)-dt;if(e.hspc<=0&&d<12&&!(e.tsl>0)){e.hspc=ph>=2?5:ph>=1?6.5:8;e.hsp={t:0,y0:e.tyaw,dr:rnd()<.5?1:-1};dropWarn(e.warn);e.warn=makeWarn(p,11);toast('HRUNGNIR 尾の回転！ 跳ぶか離れろ');play('roar',sp(p,1,.4));return true}
+  // VENOM LINE: the stinger sprays a line of venom that bursts along the sand toward (and past) the player, leaving pools
+  e.vlc=(e.vlc==null?6:e.vlc)-dt;if(e.vlc<=0&&d>13&&d<45&&!(e.tsl>0)){e.vlc=(ph>=2?6:ph>=1?7.5:9)+rnd()*1.5;e.tst=.5;const a0=Math.atan2(ux,uz),lines=ph>=2?[-.32,0,.32]:ph>=1?[-.2,.2]:[0],n=Math.ceil((d+10)/4.5);
+    for(const da of lines)for(let k=0;k<n;k++){const r=6+k*4.5;eruptAt(p.x+Math.sin(a0+da)*r,p.z+Math.cos(a0+da)*r,2.8,.75+k*.11,{dmg:120,pool:ph>=1?4.5:3.5,dps:45,by:'HRUNGNIRの毒液'})}
+    toast('HRUNGNIR 毒液の線！ 赤い円から離れろ');play('screech',sp(p,.6,.4))}
   // tail slam: warning ring at the player's spot, stinger stabs down, leaves a venom pool
   if(e.tsl>0){e.tsl-=dt;const W=e.tw&&e.tw.userData;if(W){W.inner.scale.setScalar(Math.max(.02,e.tsl/1.1));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*16))}
     if(e.tsl<=.18&&!e.tdone){e.tdone=1;dropWarn(e.tw);e.tw=null;const c=e.tp;explode(c.clone().setY(1),1.8,true);SFX.bossLand(c);shake=Math.max(shake,.7);addPool(c.x,c.z,5.5,ph>=2?8:6,60,'HRUNGNIRの毒だまり');
       const dd=Math.hypot(P.pos.x-c.x,P.pos.z-c.z);if(dd<5.5&&P.y<4){t2.set(c.x-P.pos.x,0,c.z-P.pos.z).normalize();damage(200*(1-dd/8),t2,P.pos.clone().setY(2),'HRUNGNIRの尾撃',1)}}}
-  e.tcd=(e.tcd==null?5:e.tcd)-dt;if(e.tcd<=0&&!(e.tsl>0)&&d>9&&d<34){e.tcd=(ph>=2?4.2:ph>=1?5.5:7)+rnd()*1.5;e.tsl=1.1;e.tdone=0;const tx=P.pos.x+P.vel.x*.8,tz=P.pos.z+P.vel.z*.8;e.tp=new V(tx,0,tz);e.tw=makeWarn(e.tp,5.5);toast('HRUNGNIR 尾の毒針！ 赤い円から離れろ');play('screech',sp(p,.5,.4))}
+  e.tcd=(e.tcd==null?5:e.tcd)-dt;if(e.tcd<=0&&!(e.tsl>0)&&d>9&&d<34){e.tcd=(ph>=2?5.5:ph>=1?7:8.5)+rnd()*1.5;e.tsl=1.1;e.tdone=0;const tx=P.pos.x+P.vel.x*.8,tz=P.pos.z+P.vel.z*.8;e.tp=new V(tx,0,tz);e.tw=makeWarn(e.tp,5.5);toast('HRUNGNIR 尾の毒針！ 赤い円から離れろ');play('screech',sp(p,.5,.4))}
   // sand spray: scoop sand with the claws, shotgun cone
-  e.ssc=(e.ssc==null?3:e.ssc)-dt;if(e.ssc<=0&&d<24&&d>e.r+3&&!(e.tsl>0)){e.ssc=(ph>=1?3.6:4.8)+rnd();e.sw=.4;const a0=Math.atan2(ux,uz),n=ph>=2?13:9;curVol=++eVol;for(let q=0;q<n;q++){const a=a0+(q/(n-1)-.5)*1.0;eShoot(e,t2.set(Math.sin(a),0,Math.cos(a)),17+rnd()*4,40,'yel',1.5,new V(p.x+ux*4,1.6,p.z+uz*4))}curVol=0;
+  e.ssc=(e.ssc==null?3:e.ssc)-dt;if(e.ssc<=0&&d<24&&d>e.r+3&&!(e.tsl>0)){e.ssc=(ph>=1?4.6:5.8)+rnd();e.sw=.4;const a0=Math.atan2(ux,uz),n=ph>=2?9:7;curVol=++eVol;for(let q=0;q<n;q++){const a=a0+(q/(n-1)-.5)*1.0;eShoot(e,t2.set(Math.sin(a),0,Math.cos(a)),17+rnd()*4,40,'yel',1.5,new V(p.x+ux*4,1.6,p.z+uz*4))}curVol=0;
     for(let k=0;k<8;k++)puff(t3.set(p.x+ux*5+(rnd()-.5)*4,.6,p.z+uz*5+(rnd()-.5)*4),1.6,0x9a7048,1.2);SFX.clank(false)}
   e.scd=(e.scd==null?1:e.scd)-dt;if(d<e.r+5&&e.scd<=0){e.scd=1.7;e.sw=.4;SFX.clank(true);shake=Math.max(shake,.4);for(let k=0;k<5;k++)puff(t3.set(p.x+ux*5+(rnd()-.5)*4,.5,p.z+uz*5+(rnd()-.5)*4),1.4,0x9a7048,.6);
     if(d<e.r+4.5&&P.y<4){t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(170,t2,P.pos.clone().setY(2),'HRUNGNIRの鋏');P.vel.addScaledVector(t2,-16)}}
-  e.cd-=dt;if(e.cd<=0&&d>14&&d<80){e.cd=ph>=2?1.6:2.5;e.tst=.5;setTimeout(()=>{if(!enemies.includes(e)||state!=='play')return;e.muz.getWorldPosition(t3);tv.set(P.pos.x-t3.x,P.y+2.4-t3.y,P.pos.z-t3.z).normalize();const a0=Math.atan2(tv.x,tv.z),n=ph>=2?5:3;curVol=++eVol;
+  e.cd-=dt;if(e.cd<=0&&d>14&&d<80&&!e.hsp){e.cd=ph>=2?2.4:3.2;e.tst=.5;setTimeout(()=>{if(!enemies.includes(e)||state!=='play')return;e.muz.getWorldPosition(t3);tv.set(P.pos.x-t3.x,P.y+2.4-t3.y,P.pos.z-t3.z).normalize();const a0=Math.atan2(tv.x,tv.z),n=ph>=2?5:3;curVol=++eVol;
     for(let q=0;q<n;q++){const a=a0+(q-(n-1)/2)*.12;eShoot(e,t2.set(Math.sin(a),tv.y,Math.cos(a)).normalize(),22,90,'grn',2.6,t3.clone())}curVol=0;SFX.bossShot(e.m.position)},250)}
   return true}
 // ===== NIDHOGG: giant sand worm (desert stage 2). Underground it is invulnerable and hunts the player, bursts up under them
@@ -1899,7 +1910,7 @@ function makeWorm(mt){const cy=8,root=new THREE.Group(),seg=[],N=16,plate=new TH
   return{root,legs:[],cy,s:6,kind:'nidhogg',muz,ex:{seg,head,mound,mouth}}}
 function bez(a,b,c,t,o){const u=1-t;return o.set(u*u*a.x+2*u*t*b.x+t*t*c.x,u*u*a.y+2*u*t*b.y+t*t*c.y,u*u*a.z+2*u*t*b.z+t*t*c.z)}
 function bezT(a,b,c,t,o){return o.set(2*(1-t)*(b.x-a.x)+2*t*(c.x-b.x),2*(1-t)*(b.y-a.y)+2*t*(c.y-b.y),2*(1-t)*(b.z-a.z)+2*t*(c.z-b.z)).normalize()}
-function wormPose(e,ext,lean){const X=e.ex,cy=e.y,H=18*ext;
+function wormPose(e,ext,lean,hg){const X=e.ex,cy=e.y,H=18*ext*(hg==null?1:hg);
   _w0.set(0,-cy-9,0);_w1.set(0,-cy+H*.8,-lean*.25*ext);_w2.set(Math.sin(now*1.3)*1.3*ext,-cy+H,lean*ext);
   const N=X.seg.length,show=ext>.04;for(let k=0;k<N;k++){const t=(k+1)/(N+1),sg=X.seg[k];bez(_w0,_w1,_w2,t,_wa);bezT(_w0,_w1,_w2,t,_wb);sg.g.position.copy(_wa);sg.g.quaternion.setFromUnitVectors(up,_wb);sg.g.visible=show&&_wa.y>-cy-sg.r*.7}
   bezT(_w0,_w1,_w2,1,_wb);X.head.position.copy(_w2);X.head.quaternion.setFromUnitVectors(_wz,_wb);X.head.visible=show&&_w2.y>-cy-1}
@@ -1915,17 +1926,34 @@ function bossNidhogg(e,p,d,dt){if(e.kind!=='nidhogg')return false;const ph=e.phs
     if(e.wt>=T){dropWarn(e.warn);e.warn=null;e.ws='burst';e.wt=0;e.hid=false;X.mound.visible=false;p.x=e.tgt.x;p.z=e.tgt.z;const c=new V(p.x,1,p.z);explode(c,4,true);for(let k=0;k<26;k++)puff(t3.set(c.x+(rnd()-.5)*16,.5+rnd()*3,c.z+(rnd()-.5)*16),2.5+rnd()*2,0x9a7048,2+rnd()*3);
       SFX.bossLand(c);shake=Math.max(shake,1.5);propsAoe(c,10,9999);e.nA++;
       const dd=Math.hypot(P.pos.x-c.x,P.pos.z-c.z);if(dd<9&&P.y<8){t2.set(c.x-P.pos.x,0,c.z-P.pos.z).normalize();damage(400*(1-dd/13),t2,P.pos.clone().setY(2),'NIDHOGGの奇襲',1);P.vel.addScaledVector(t2,-16);P.vy=Math.max(P.vy,15)}
-      if(ph>=1)bossBarrage(e,c,ph>=2?24:16,12)}}
+}}
   else if(e.ws==='burst'){e.ext=Math.min(1,e.wt/.3);lean=2;if(e.wt>=.55){if(e.nA<(ph>=2?3:ph>=1?2:1)){e.ws='dive';e.wt=0;e.quick=1}else{e.ws='emerged';e.wt=0;e.vT=.5}}}
+  else if(e.ws==='emerged'&&!e.wm){const o=ph>=1?['spit','sweep','vortex']:['spit','sweep'];e.wm=o[(e.wmi=(e.wmi==null?-1:e.wmi)+1)%o.length];e.wt=0;e.hid=false;
+    if(e.wm==='sweep'){const ac=ty;e.sdr=rnd()<.5?1:-1;e.sa0=ac-e.sdr*1.25;e.sa1=ac+e.sdr*1.25;e.sL=24;dropFx(e.wl);e.wl=makeFan(p,e.sL,e.sa0,e.sa1);e.shit=0;toast('NIDHOGG 薙ぎ払い！ 跳ぶか範囲から出ろ');play('roar',sp(p,.6,.6))}
+    if(e.wm==='vortex'){if(!e.bm){e.bm=new THREE.Mesh(new THREE.RingGeometry(3,18,40,1),new THREE.MeshBasicMaterial({color:0x6a4a2a,transparent:true,opacity:.5,depthWrite:false,side:THREE.DoubleSide}));e.bm.rotation.x=-Math.PI/2;onTop(e.bm);scene.add(e.bm);bossFx.push(e.bm)}e.bm.visible=true;e.vT=1;toast('NIDHOGG 流砂！ 引き込まれるな');play('roar',sp(p,.5,.7));SFX.boom(1.5,p)}}
+  else if(e.ws==='emerged'&&e.wm==='sweep'){e.hid=false;e.ext=Math.min(1,e.ext+dt*2);let hg=1;
+    if(e.wt<1.2){e.tyaw=la(e.tyaw,e.sa0,dt*5);lean=4;hg=1-.3*(e.wt/1.2);if(e.wl)e.wl.userData.fill.material.opacity=.1+.18*Math.abs(Math.sin(now*14))}
+    else if(e.wt<2.3){if(e.wl){dropFx(e.wl);e.wl=null;SFX.thrust(true)}const k=(e.wt-1.2)/1.1,q=k*k*(3-2*k);e.tyaw=e.sa0+(e.sa1-e.sa0)*q;lean=e.sL;hg=.13;shake=Math.max(shake,.35);
+      const hx=p.x+Math.sin(e.tyaw)*e.sL,hz=p.z+Math.cos(e.tyaw)*e.sL;if(rnd()<.9)puff(t3.set(hx+(rnd()-.5)*3,.5,hz+(rnd()-.5)*3),2.2,0x9a7048,1.2);propsAoe(t3.set(hx,1,hz),4,9999);
+      if(!e.shit&&P.y<3.4){_ta.set(p.x,1,p.z);_tb.set(hx,1,hz);if(segHit(_ta,_tb,_tc.set(P.pos.x,1,P.pos.z),3.4)){e.shit=1;t2.set(Math.cos(e.tyaw),0,-Math.sin(e.tyaw)).multiplyScalar(e.sdr);damage(ph>=2?280:240,t2.clone().negate(),P.pos.clone().setY(2),'NIDHOGGの薙ぎ払い');P.vel.addScaledVector(t2,22);P.vy=Math.max(P.vy,6);shake=Math.max(shake,1)}}}
+    else{lean=e.sL*(1-Math.min(1,(e.wt-2.3)/1.2)*.6);hg=.13+Math.min(1,(e.wt-2.3)/1.2)*.6}
+    e.whg=hg;if(e.wt>3.6){e.ws='dive';e.wt=0;e.quick=0;e.wm=null}}
+  else if(e.ws==='emerged'&&e.wm==='vortex'){e.hid=false;e.ext=Math.min(1,e.ext+dt*2);e.tyaw+=dt*1.2;lean=3;const B=e.bm,dur=ph>=2?5:4.2,f=Math.min(1,e.wt/.6)*Math.min(1,(dur-e.wt)/.4);
+    B.position.set(p.x,.08,p.z);B.rotation.z+=dt*2.5;B.material.opacity=.5*Math.max(0,f);B.scale.setScalar(.6+.4*Math.max(0,f));
+    if(rnd()<dt*40){const a=rnd()*TAU,r=4+rnd()*14;puff(t3.set(p.x+Math.cos(a)*r,.4,p.z+Math.sin(a)*r),1.4,0x9a7048,.4)}
+    if(d<19&&d>e.r+1.5&&P.y<3&&f>0){const pull=(ph>=2?7.5:6.5)*f*(1-d/24);P.pos.x-=(P.pos.x-p.x)/d*pull*dt;P.pos.z-=(P.pos.z-p.z)/d*pull*dt}
+    if(d<e.r+3&&P.y<4){t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(160*dt,t2,P.pos.clone().setY(2),'NIDHOGGの流砂',1)}
+    e.vT-=dt;if(e.vT<=0){e.vT=ph>=2?1:1.3;e.spit=.18;e.muz.getWorldPosition(t3);lobShell(t3.clone(),new V(P.pos.x+P.vel.x*1.2,0,P.pos.z+P.vel.z*1.2),'NIDHOGGの岩石弾',{rock:1,T:1.5,R:5,dmg:170,h:16,sz:1.5});SFX.bossShot(p)}
+    if(e.wt>dur){B.visible=false;e.ws='dive';e.wt=0;e.quick=0;e.wm=null}}
   else if(e.ws==='emerged'){e.hid=false;e.ext=Math.min(1,e.ext+dt*2);e.tyaw=la(e.tyaw,ty,dt*1.6);
-    e.vT-=dt;if(e.vT<=0){e.vT=ph>=2?.36:ph>=1?.44:.52;e.spit=.18;e.muz.getWorldPosition(t3);const n=ph>=2?3:2;
+    e.vT-=dt;if(e.vT<=0){e.vT=ph>=2?.6:ph>=1?.75:.9;e.spit=.18;e.muz.getWorldPosition(t3);const n=2;
       for(let k=0;k<n;k++){let tx,tz;if(k===0){tx=P.pos.x+P.vel.x*1.4;tz=P.pos.z+P.vel.z*1.4}else{const a=rnd()*TAU,rr=5+rnd()*16;tx=P.pos.x+Math.cos(a)*rr;tz=P.pos.z+Math.sin(a)*rr}const R=Math.hypot(tx,tz);if(R>ARENA-4){tx*=(ARENA-4)/R;tz*=(ARENA-4)/R}
         lobShell(t3.clone(),new V(tx,0,tz),'NIDHOGGの岩石弾',{rock:1,T:1.5+rnd()*.4,R:5,dmg:170,h:16,sz:1.2+rnd()*.5})}SFX.bossShot(p);puff(t3,2,0x9a7048,2)}
-    if(e.spit>0)e.spit-=dt;if(e.wt>(ph>=1?5:4.2)){e.ws='dive';e.wt=0;e.quick=0}}
+    if(e.spit>0)e.spit-=dt;if(e.wt>(ph>=1?4.2:3.6)){e.ws='dive';e.wt=0;e.quick=0;e.wm=null}}
   else if(e.ws==='dive'){lean=3;e.ext=Math.max(0,1-e.wt/(e.quick?.35:.8));if(rnd()<.6)puff(t3.set(p.x+(rnd()-.5)*6,.4,p.z+(rnd()-.5)*6),2,0x9a7048,1.5);
     if(e.ext<=0){e.ws='under';e.wt=0;if(!e.quick)e.nA=0;e.hid=true;for(let k=0;k<12;k++)puff(t3.set(p.x+(rnd()-.5)*8,.5,p.z+(rnd()-.5)*8),2.2,0x9a7048,2);SFX.boom(1.6,p)}}
   if(!e.hid)X.mound.visible=false;
-  wormPose(e,e.ext*(e.spit>0?.95:1),lean);X.mouth.material.color.setRGB(1,.42+(e.spit>0?.35:0),.16);
+  if(e.spit>0&&!(e.ws==='emerged'&&e.wm==='spit'))e.spit-=dt;wormPose(e,e.ext*(e.spit>0?.95:1),lean,e.wm==='sweep'?e.whg:1);X.mouth.material.color.setRGB(1,.42+(e.spit>0?.35:0),.16);
   return true}
 // ===== breakable shields / claws: shatter into flying shards with a crack =====
 const SHARDS=[],shardG=new THREE.BoxGeometry(1,1,1);
@@ -1939,11 +1967,20 @@ function shardTick(dt){for(let i=SHARDS.length-1;i>=0;i--){const q=SHARDS[i];q.t
 function breakShield(e){if(!e.ex||!e.ex.shd||!e.ex.shd.visible)return;e.shp=0;shatter(e.ex.shd,0x2a2230,10,false);e.flash=.2}
 // lingering venom pools (HRUNGNIR); ticked with the shells
 const HZ=[];
-function addPool(x,z,R,life,dps,by){const m=new THREE.Mesh(new THREE.CircleGeometry(R,24),new THREE.MeshBasicMaterial({color:0x3fbf1a,transparent:true,opacity:.62,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,.06,z);onTop(m);scene.add(m);HZ.push({m,x,z,R,t:0,life,dps,by})}
-function updateHaz(dt){shardTick(dt);slashTick(dt);for(let i=HZ.length-1;i>=0;i--){const h=HZ[i];h.t+=dt;const f=Math.min(1,h.t/.25)*Math.min(1,(h.life-h.t)/.6);h.m.material.opacity=.62*f*(1+Math.sin(now*6+i)*.12);if(rnd()<dt*6)puff(t3.set(h.x+(rnd()-.5)*h.R*1.4,.3,h.z+(rnd()-.5)*h.R*1.4),.9,0x3a6a20,.8);
+function addPool(x,z,R,life,dps,by,col){const m=new THREE.Mesh(new THREE.CircleGeometry(R,24),new THREE.MeshBasicMaterial({color:col||0x3fbf1a,transparent:true,opacity:.62,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,.06,z);onTop(m);scene.add(m);HZ.push({m,x,z,R,t:0,life,dps,by,lava:!!col})}
+// ERUPT: a queue of warned ground spots that go off one after another (HRUNGNIR venom line, SURTR lava fissure)
+const ERUPT=[];
+function eruptAt(x,z,R,delay,o){const p=new V(x,0,z),k=Math.hypot(x,z);if(k>ARENA-3){p.x*=(ARENA-3)/k;p.z*=(ARENA-3)/k}ERUPT.push({p,R,t:delay,T:delay,w:makeWarn(p,R),o})}
+function eruptTick(dt){for(let i=ERUPT.length-1;i>=0;i--){const q=ERUPT[i];q.t-=dt;const W=q.w.userData;W.inner.scale.setScalar(Math.max(.02,q.t/q.T));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*(10+(1-q.t/q.T)*12)));
+  if(q.t>0)continue;dropWarn(q.w);ERUPT.splice(i,1);const c=q.p,o=q.o,lava=o.lava;
+  if(lava){explode(t3.set(c.x,1,c.z).clone(),1.6,true);for(let k=0;k<3;k++)spark(t3.set(c.x,.5,c.z),3,14);for(let k=0;k<5;k++)puff(t3.set(c.x+(rnd()-.5)*3,.5+k*.8,c.z+(rnd()-.5)*3),1.8,0x2a2220,3)}
+  else{explode(t3.set(c.x,.8,c.z).clone(),1.1,true,true);for(let k=0;k<5;k++)puff(t3.set(c.x+(rnd()-.5)*3,.4,c.z+(rnd()-.5)*3),1.4,0x3a6a20,1.2)}
+  SFX.boom(.8,c);propsAoe(c,q.R,400);if(o.pool)addPool(c.x,c.z,q.R*.9,o.pool,o.dps||50,o.by,lava?0xff6a1a:0);
+  const dd=Math.hypot(P.pos.x-c.x,P.pos.z-c.z);if(dd<q.R+.4&&P.y<4){t2.set(c.x-P.pos.x,0,c.z-P.pos.z).normalize();damage(o.dmg,t2,P.pos.clone().setY(2),o.by,1);P.vy=Math.max(P.vy,5)}}}
+function updateHaz(dt){shardTick(dt);slashTick(dt);eruptTick(dt);for(let i=HZ.length-1;i>=0;i--){const h=HZ[i];h.t+=dt;const f=Math.min(1,h.t/.25)*Math.min(1,(h.life-h.t)/.6);h.m.material.opacity=.62*f*(1+Math.sin(now*6+i)*.12);if(rnd()<dt*6)puff(t3.set(h.x+(rnd()-.5)*h.R*1.4,.3,h.z+(rnd()-.5)*h.R*1.4),.9,h.lava?0x2a2220:0x3a6a20,.8);
   if(h.t>.3&&Math.hypot(P.pos.x-h.x,P.pos.z-h.z)<h.R&&P.y<2){t2.set(0,0,0);damage(h.dps*dt,t2,P.pos.clone().setY(1),h.by,1)}
   if(h.t>=h.life){scene.remove(h.m);h.m.geometry.dispose();h.m.material.dispose();HZ.splice(i,1)}}}
-function clearHaz(){for(const q of SLASH)scene.remove(q.m);SLASH.length=0;for(const q of SHARDS)scene.remove(q.m);SHARDS.length=0;for(const h of HZ){scene.remove(h.m);h.m.geometry.dispose();h.m.material.dispose()}HZ.length=0}
+function clearHaz(){for(const q of ERUPT)dropWarn(q.w);ERUPT.length=0;for(const q of SLASH)scene.remove(q.m);SLASH.length=0;for(const q of SHARDS)scene.remove(q.m);SHARDS.length=0;for(const h of HZ){scene.remove(h.m);h.m.geometry.dispose();h.m.material.dispose()}HZ.length=0}
 // ===== FROST HARBOR: AEGIR (giant crab boss) and RÁN (big manta) =====
 const iceM=new THREE.MeshLambertMaterial({color:0xd4eaf4});
 function crabLeg(g,sd,z,hy,mt,ph,legs){const hip=new THREE.Group();hip.position.set(sd*1.85,hy,z);g.add(hip);
@@ -2226,7 +2263,7 @@ function turtlePhase(e,tg){const X=e.ex;X.crater.getWorldPosition(t3);
 // shell spin charge (PHASE 2+): tuck head / legs / tail in, telegraph a line, spin like a top and ram, bounce off rocks and the arena edge
 function turtleTuck(e,X,k){X.head.position.z=7.1-2.6*k;X.head.scale.setScalar(1-.75*k);X.tail.scale.setScalar(1-.8*k);for(const L of e.legs){L.hip.scale.set(1,1-.7*k,1);L.hip.visible=k<.95}e.bodyG.position.y=e.y-1.3*k}
 function turtleSpin(e,p,d,dt,ph,X){
-  if(!e.ts){if(ph<1||e.es)return false;if(e.rcd==null)e.rcd=3;e.rcd-=dt;if(e.rcd>0||d<16)return false;
+  if(!e.ts){if(ph<1||e.es||e.fb)return false;if(e.rcd==null)e.rcd=3;e.rcd-=dt;if(e.rcd>0||d<16)return false;
     e.ts='tuck';e.tt=0;e.spin=e.spin||0;e.bdir=new V(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.wl=makeLine(12);toast('SURTR 甲羅回転突撃！ 赤い線から離れろ');play('roar',sp(p,.7,.5));SFX.bossCrouch(p)}
   e.tt+=dt;const fin=ph>=2;
   if(e.ts==='tuck'){const k=Math.min(1,e.tt/.8);turtleTuck(e,X,k);e.spin+=dt*k*k*14;tv.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.bdir.lerp(tv,Math.min(1,dt*3)).normalize();
@@ -2234,7 +2271,7 @@ function turtleSpin(e,p,d,dt,ph,X){
     if(e.tt>=1.2){e.ts='spin';e.tt=0;dropFx(e.wl);e.wl=null;SFX.thrust(true);shake=Math.max(shake,.6)}}
   else if(e.ts==='spin'){const spd=fin?38:31;e.spin+=dt*16;tv.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize();const cr=e.bdir.x*tv.z-e.bdir.z*tv.x,tr=Math.max(-.6*dt,Math.min(.6*dt,Math.asin(cl(-cr,-1,1)))),c=Math.cos(tr),sn=Math.sin(tr);e.bdir.set(e.bdir.x*c+e.bdir.z*sn,0,-e.bdir.x*sn+e.bdir.z*c).normalize();
     t3.set(p.x+e.bdir.x*(spd*dt+e.r*.8),1.5,p.z+e.bdir.z*(spd*dt+e.r*.8));const rr=Math.hypot(t3.x,t3.z);
-    if(inBld(t3,1)||rr>ARENA-3){e.bdir.negate();e.bdir.x+=(rnd()-.5)*.9;e.bdir.normalize();explode(t3.clone().setY(2),2.2);shake=Math.max(shake,1);SFX.bossLand(t3);if(fin)bossBarrage(e,p,16,13)}
+    if(inBld(t3,1)||rr>ARENA-3){e.bdir.negate();e.bdir.x+=(rnd()-.5)*.9;e.bdir.normalize();explode(t3.clone().setY(2),2.2);shake=Math.max(shake,1);SFX.bossLand(t3)}
     else{p.x+=e.bdir.x*spd*dt;p.z+=e.bdir.z*spd*dt}
     propsAoe(p,e.r+1,9999);if(rnd()<.9)puff(tv.set(p.x-e.bdir.x*5+(rnd()-.5)*5,.4,p.z-e.bdir.z*5+(rnd()-.5)*5),2+rnd(),0x6a5038,.6);if(rnd()<.7)spark(tv.set(p.x+(rnd()-.5)*8,.5,p.z+(rnd()-.5)*8),2,10);
     X.crater.getWorldPosition(t3);if(rnd()<.4)spark(t3,2,16);
@@ -2243,8 +2280,26 @@ function turtleSpin(e,p,d,dt,ph,X){
   else{const k=Math.max(0,1-e.tt/.8);turtleTuck(e,X,k);e.spin+=dt*k*14;
     if(e.tt>=.8){turtleTuck(e,X,0);e.ts=null;e.tyaw+=e.spin;e.spin=0;e.rcd=(fin?6:9.5)+rnd()*2.5;e.cd=1.4;e.scd=Math.max(e.scd||0,2);e.ecd=Math.max(e.ecd||0,1.5)}}
   return true}
+// SURTR FLAME BREATH: a red fan in front of it, then it sweeps a gout of fire across the fan (get out to the side or behind it)
+function turtleBreath(e,p,d,dt,ph,X){
+  if(!e.fb){e.fbc=(e.fbc==null?6:e.fbc)-dt;if(e.fbc>0||d>20||e.es||e.ts)return false;const ac=e.tyaw;e.fb={t:0,a0:ac-.55,a1:ac+.55,dr:rnd()<.5?1:-1};dropFx(e.wl);e.wl=makeFan(p,22,ac-.55,ac+.55);toast('SURTR 火炎放射！ 赤い扇から出ろ');play('roar',sp(p,.8,.6));SFX.bossCrouch(p)}
+  const F=e.fb;F.t+=dt;X.head.position.z=7.1+(F.t<.9?-.6*F.t/.9:.4);
+  if(F.t<1.0){if(e.wl){e.wl.position.set(p.x,.09,p.z);e.wl.userData.fill.material.opacity=.1+.2*Math.abs(Math.sin(now*14))}return true}
+  if(e.wl){dropFx(e.wl);e.wl=null;play('boomBig',sp(p,.6,.5))}
+  const dur=ph>=2?2:1.6,k=Math.min(1,(F.t-1)/dur),A=F.dr>0?F.a0+(F.a1-F.a0)*k:F.a1-(F.a1-F.a0)*k;e.tyaw=A;e.muz.getWorldPosition(t3);
+  for(let q=0;q<4;q++){const a=A+(rnd()-.5)*.5;flameP(t3,tv.set(Math.sin(a),-.05,Math.cos(a)),8,false)}if(rnd()<.5)spark(t3,2,12);
+  const pa=Math.atan2(P.pos.x-p.x,P.pos.z-p.z),df=Math.abs(Math.atan2(Math.sin(pa-A),Math.cos(pa-A)));if(d<24&&df<.32&&P.y<8){t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage((ph>=2?280:240)*dt,t2,P.pos.clone().setY(2),'SURTRの火炎放射',1)}
+  for(let q=0;q<2;q++){const r=6+rnd()*16;propsAoe(tv.set(p.x+Math.sin(A)*r,1,p.z+Math.cos(A)*r),2.5,500*dt)}
+  if(k>=1){e.fb=null;X.head.position.z=7.1;e.fbc=(ph>=2?6:ph>=1?7.5:9)+rnd()*2;e.cd=Math.max(e.cd,1.2)}return true}
+// SURTR LAVA FISSURE: it stamps and the ground cracks open toward the player — a line of lava bursts that leaves burning pools
+function turtleFissure(e,p,d,ph){e.fsc=(e.fsc==null?4:e.fsc);if(e.fsc>0||e.es||d<14||d>60)return;e.fsc=(ph>=2?6.5:ph>=1?8:10)+rnd()*2;
+  const a0=Math.atan2(P.pos.x-p.x,P.pos.z-p.z),lines=ph>=2?[-.38,0,.38]:ph>=1?[-.22,.22]:[0],n=Math.ceil((d+12)/5);
+  for(const da of lines)for(let k=0;k<n;k++){const r=8+k*5;eruptAt(p.x+Math.sin(a0+da)*r,p.z+Math.cos(a0+da)*r,3.2,.8+k*.12,{lava:1,dmg:190,pool:3.5,dps:60,by:'SURTRの地割れ'})}
+  SFX.bossLand(p);shake=Math.max(shake,.9);explode(p.clone().setY(1),2.4);for(let k=0;k<12;k++)puff(tv.set(p.x+(rnd()-.5)*12,.5,p.z+(rnd()-.5)*12),2,0x6a5038,.9);toast('SURTR 地割れ！ 溶岩の列から離れろ')}
 function bossTurtle(e,p,d,dt){if(e.kind!=='turtle')return false;const ph=e.phs||0,X=e.ex;
   if(turtleSpin(e,p,d,dt,ph,X))return true;
+  if(turtleBreath(e,p,d,dt,ph,X))return true;
+  e.fsc=(e.fsc==null?4:e.fsc)-dt;turtleFissure(e,p,d,ph);
   const ty=Math.atan2(P.pos.x-p.x,P.pos.z-p.z);if(e.tyaw==null)e.tyaw=ty;e.tyaw=la(e.tyaw,ty,dt*(.45+ph*.15));
   if(d>24&&!e.es)p.addScaledVector(t2.set(Math.sin(e.tyaw),0,Math.cos(e.tyaw)),e.spd*.55*dt);
   X.crater.getWorldPosition(t3);const heat=e.es==='erupt'?1:e.es==='rumble'?.75:.3+.12*Math.sin(now*3);X.vlight.intensity=2+heat*7;X.lava.color.setRGB(1,.3+heat*.25,.08+heat*.08);
@@ -2253,18 +2308,18 @@ function bossTurtle(e,p,d,dt){if(e.kind!=='turtle')return false;const ph=e.phs||
   if(!e.es){e.ecd-=dt;if(e.ecd<=0){e.es='rumble';e.et=0;toast('SURTR 噴火の予兆！ 赤い円から離れろ');play('roar',sp(p,.75,.5));SFX.bossCrouch(p)}}
   else{e.et+=dt;
     if(e.es==='rumble'){shake=Math.max(shake,.22);e.bodyG.position.y=e.y+Math.sin(now*45)*.06;X.vol.scale.setScalar(1+Math.sin(now*30)*.02);if(e.et>1.2){e.es='erupt';e.et=0;e.vn=0;e.vT=0;e.bodyG.position.y=e.y;X.vol.scale.setScalar(1)}}
-    else{e.vT-=dt;const nV=ph>=2?11:ph>=1?8:6;
+    else{e.vT-=dt;const nV=ph>=2?8:ph>=1?6:5;
       if(e.vT<=0&&e.vn<nV){e.vn++;e.vT=ph>=2?.3:.42;SFX.boom(1.5,t3);shake=Math.max(shake,.45);explode(t3.clone().setY(t3.y+.8),1.4,true);for(let k=0;k<4;k++)spark(t3,3,14);
-        const nb=ph>=2?4:3;for(let k=0;k<nb;k++){let tx,tz;if(k===0){tx=P.pos.x+P.vel.x*1.7;tz=P.pos.z+P.vel.z*1.7}else{const a=rnd()*TAU,rr=6+rnd()*(ph>=1?26:20);tx=P.pos.x+Math.cos(a)*rr;tz=P.pos.z+Math.sin(a)*rr}
+        const nb=ph>=2?3:2;for(let k=0;k<nb;k++){let tx,tz;if(k===0){tx=P.pos.x+P.vel.x*1.7;tz=P.pos.z+P.vel.z*1.7}else{const a=rnd()*TAU,rr=6+rnd()*(ph>=1?26:20);tx=P.pos.x+Math.cos(a)*rr;tz=P.pos.z+Math.sin(a)*rr}
           const R=Math.hypot(tx,tz);if(R>ARENA-4){tx*=(ARENA-4)/R;tz*=(ARENA-4)/R}lobShell(t3.clone(),new V(tx,0,tz),'SURTRの溶岩弾',{lava:1,T:1.9+rnd()*.5,R:6,dmg:230,h:34})}}
       if(e.vn>=nV&&e.vT<=-.6){e.es=null;e.ecd=(ph>=2?3.2:ph>=1?4.6:6)+rnd()*1.5}}}
   if(e.scd==null)e.scd=3;e.scd-=dt;
   if(d<e.r+13&&e.scd<=0&&e.es!=='erupt'){e.scd=ph>=1?3.6:5;SFX.bossLand(p);shake=Math.max(shake,.9);explode(p.clone().setY(1),3);const g=rings[rgi++%rings.length];g.m.position.set(p.x,.08,p.z);g.t=0;g.s=3.2;g.m.visible=true;
-    bossBarrage(e,p,ph>=2?22:15,13);for(let k=0;k<14;k++)puff(tv.set(p.x+(rnd()-.5)*14,.5,p.z+(rnd()-.5)*14),2.2,0x6a5038,.9);
+    if(ph>=2)bossBarrage(e,p,12,12);for(let k=0;k<14;k++)puff(tv.set(p.x+(rnd()-.5)*14,.5,p.z+(rnd()-.5)*14),2.2,0x6a5038,.9);
     if(d<e.r+6&&P.y<4){t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(220,t2,P.pos.clone().setY(2),'SURTRの甲羅叩きつけ');P.vel.addScaledVector(t2,-22)}}
-  e.cd-=dt;if(e.cd<=0&&e.es!=='erupt'&&d<75){e.cd=2.7-ph*.45;e.muz.getWorldPosition(t3);tv.set(P.pos.x-t3.x,P.y+2.4-t3.y,P.pos.z-t3.z).normalize();const a0=Math.atan2(tv.x,tv.z);curVol=++eVol;
+  e.cd-=dt;if(e.cd<=0&&e.es!=='erupt'&&d<75){e.cd=3.4-ph*.4;e.muz.getWorldPosition(t3);tv.set(P.pos.x-t3.x,P.y+2.4-t3.y,P.pos.z-t3.z).normalize();const a0=Math.atan2(tv.x,tv.z);curVol=++eVol;
     for(let q=-2;q<=2;q++)eShoot(e,t2.set(Math.sin(a0+q*.11),tv.y,Math.cos(a0+q*.11)).normalize(),20,85,'org',2.6,t3.clone());curVol=0;SFX.bossShot(p)}
-  if(ph>=2){e.mcd=(e.mcd==null?2:e.mcd)-dt;if(e.mcd<=0){e.mcd=1.1;X.crater.getWorldPosition(t3);const a=rnd()*TAU,rr=rnd()*(ARENA-10);lobShell(t3.clone(),new V(Math.cos(a)*rr,0,Math.sin(a)*rr),'SURTRの溶岩弾',{lava:1,T:2.4,R:6,dmg:230,h:40})}}
+  if(ph>=2){e.mcd=(e.mcd==null?2:e.mcd)-dt;if(e.mcd<=0){e.mcd=1.9;X.crater.getWorldPosition(t3);const a=rnd()*TAU,rr=rnd()*(ARENA-10);lobShell(t3.clone(),new V(Math.cos(a)*rr,0,Math.sin(a)*rr),'SURTRの溶岩弾',{lava:1,T:2.4,R:6,dmg:230,h:40})}}
   return true}
 const bossFx=[];
 function mkAdd(c,o){return new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide})}
