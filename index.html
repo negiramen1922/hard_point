@@ -1821,7 +1821,7 @@ function makeBugSculpt(){const q=makeSculpt('bug',3.4,'bug',0);if(!q)return null
 // FENRIR sculpt (AlienBossBeast, made in Meshy): faces +Z; two shoulder cannons fire alternately
 // Huginn (AlienJellyfish), Ullr (AlienSniperBug) and JORMUNGANDR (AlienArmadilloBoss) sculpts, all made in Meshy, facing +Z
 function makeJellySculpt(){const q=makeSculpt('jelly',3.2,'jelly',0);if(!q)return null;q.cy=7+rnd()*2.5;q.s=.8;q.rot=[];return q}
-function makeSnipSculpt(){const q=makeSculpt('snip',5,'snip',0);if(!q)return null;const s=q.sc,M=MD.snip.muz;q.s=.7;
+function makeSnipSculpt(){const q=makeSculpt('snip',5.5,'snip',0);if(!q)return null;const s=q.sc,M=MD.snip.muz;q.s=.7;q.mdl.scale.y=1.4;q.cy*=1.4;
   const muz=new THREE.Object3D();muz.position.set(M[0]*s,M[1]*s,M[2]*s);q.mdl.add(muz);q.muz=muz;
   q.laser=new THREE.Mesh(beamGeo,new THREE.MeshBasicMaterial({color:0xff2010,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}));q.laser.visible=false;scene.add(q.laser);bossFx.push(q.laser);return q}
 function makeArmaSculpt(){const q=makeSculpt('arma',12,'arma',0);if(!q)return null;const s=q.sc,M=MD.arma.muz,A=1.35;q.s=2.6*A;
@@ -1833,12 +1833,12 @@ function makeArmaSculpt(){const q=makeSculpt('arma',12,'arma',0);if(!q)return nu
 // Muspel (AlienMortarBug) and Svalinn (AlienShieldBug) sculpts, made in Meshy, facing +Z; both walk with the bug rig
 function makeMortSculpt(){const q=makeSculpt('mort',4,'bug',0);if(!q)return null;const s=q.sc,M=MD.mort.muz;q.s=.8;
   const muz=new THREE.Object3D();muz.position.set(M[0]*s,M[1]*s,M[2]*s);q.mdl.add(muz);q.muz=muz;return q}
-function makeShieldSculpt(){const q=makeSculpt('shld',4,'bug',0);if(!q)return null;const g=meshData('shldS');if(!g)return q;
+function makeShieldSculpt(){const q=makeSculpt('shld',8,'bug',0);if(!q)return null;const g=meshData('shldS');if(!g)return q;
   // the front shield is its own mesh (same scale and material as the body) so breakShield() can shatter and hide it
   const sh=new THREE.Mesh(g,q.mat3);sh.scale.setScalar(q.sc);q.mdl.add(sh);
   // the shield-less body (its own Meshy model, same walk rig and uniforms) replaces the whole bug once the shield breaks
   let nb=null;const gN=meshData('shldN');if(gN){const m2=sculptMat(gN,'bug',q.ru);q.mat3.userData.tw=m2;nb=new THREE.Mesh(gN,m2);const bS=meshData('shld').userData.bmin,bN=gN.userData.bmin,k=1.05;nb.scale.setScalar(q.sc*k);nb.position.y=bS[1]*q.sc-bN[1]*q.sc*k;nb.visible=false;q.mdl.add(nb)}
-  q.ex={shd:sh,shc:0x8a5a3a,nb,body:q.mdl.children[0]};q.s=.8;return q}
+  q.ex={shd:sh,shc:0x8a5a3a,nb,body:q.mdl.children[0]};q.s=1.6;return q}
 function makeFenrirSculpt(){const q=makeSculpt('fenrir',10,'quad',0);if(!q)return null;const s=q.sc,M=MD.fenrir.muz;q.s=4.2;
   const mz=M.map(m=>{const o=new THREE.Object3D();o.position.set(m[0]*s,m[1]*s,(m[2]+.04)*s);q.mdl.add(o);return o});q.ex={mz};q.muz=mz[0];return q}
 function makeSpiderSculpt(){const q=makeSculpt('spider',17,'spider',0);if(!q)return null;const s=q.sc;q.s=2.6;
@@ -1882,7 +1882,7 @@ function makeQuad(type,mt){
   if(type==='boss'){const bk=bossKind();if(bk==='spider')return makeSpiderSculpt()||makeSpider(mt);if(bk==='quad'&&!(WIP.fenrirModel&&!window.HP_TEST)){const q=makeFenrirSculpt();if(q)return q}if(bk==='arma')return (!(WIP.armaModel&&!window.HP_TEST)&&makeArmaSculpt())||makeArma(mt);if(bk==='turtle')return makeTurtle(mt);if(bk==='hrungnir')return makeScorp(mt,2.6,true);if(bk==='nidhogg')return makeWorm(mt);if(bk==='crab')return makeCrab(mt);if(bk==='whale')return makeWhale(mt);if(bk==='naglfar')return makeNaglfar(mt)}
   if(type==='kolga')return makeClione(mt);if(type==='drifa')return makeSnowbug(mt);if(type==='mjoll')return makePenguin(mt);if(type==='tentacle')return makeTentacle(mt);if(type==='gmsl')return makeBigMissile(mt);if(type==='manta')return makeManta(mt);if(type==='skoll')return makeScorp(mt,.9,false);if(type==='logi')return makeLizard(mt,1);if(type==='dvalin')return makeMole(mt,1);
   if(type==='flyer')return makeFlyer(mt);
-  const s={drone:.55,shooter:1,boss:2.6,mortar:1.3,sniper:.9,guard:1.1}[type],lh=1.6*s*(type==='sniper'?1.35:1),cy=lh+.3*s;
+  const s={drone:.55,shooter:1,boss:2.6,mortar:1.3,sniper:.9,guard:2.2}[type],lh=1.6*s*(type==='sniper'?1.35:1),cy=lh+.3*s;
   const root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy;root.add(g);
   const body=new THREE.Group();body.position.y=cy;g.add(body);
   ell(body,mt,1.05*s,.5*s,1.35*s,0,0,0);
@@ -1912,7 +1912,7 @@ function spawn(type,pos){
   if(pos){x=pos.x;z=pos.z}
   m.position.set(x,q.cy,z);scene.add(m);
   const sc=1+wave*.09,hp={drone:50,shooter:160,hound:85,flyer:70,mortar:240,sniper:110,guard:280,skoll:110,logi:150,dvalin:200,manta:900,tentacle:1500,gmsl:650,kolga:240,drifa:45,mjoll:130,boss:(13000+stage*5000)*({spider:1.25,arma:1.5,turtle:1.7,hrungnir:.95,nidhogg:1.1,crab:1,whale:1.15,naglfar:1.6}[q.kind]||.85)}[type]*(type==='boss'?1:sc);
-  enemies.push({type,m,mt:q.mt||mt,hp,mdl:q.mdl,mat3:q.mat3,max:hp,y:q.cy,legs:q.legs,wp:rnd()*6,r:{drone:1.2,shooter:1.6,hound:2.7,flyer:1.5,mortar:2,sniper:1.3,guard:1.9,skoll:1.7,logi:1.7,dvalin:2,manta:3.4,tentacle:3.4,gmsl:4.4,kolga:1.8,drifa:1,mjoll:1.3,boss:q.kind==='naglfar'?16:q.kind==='whale'?10:q.kind==='crab'?5.6:q.kind==='nidhogg'?7:q.kind==='hrungnir'?5.4:q.kind==='spider'?5:q.kind==='arma'?5.9:q.kind==='turtle'?6.6:3.8}[type],spd:{drone:10+Math.min(6,wave*.35),shooter:6,hound:15+Math.min(5,wave*.3),flyer:9,mortar:3.5,sniper:4.5,guard:5.5,skoll:13+Math.min(5,wave*.3),logi:6,dvalin:15,manta:9,tentacle:0,gmsl:0,kolga:3.5,drifa:9,mjoll:20,boss:3.2}[type],kind:q.kind,ru:q.ru,tur:q.tur,ball:q.ball,bodyG:q.body,muz:q.muz,glow:q.glow,laser:q.laser,rot:q.rot,tail:q.tail,ex:q.ex,cd:1.5+rnd()*2,flash:0,ph:rnd()*6,k:0,mat:.7});m.scale.setScalar(.05);
+  enemies.push({type,m,mt:q.mt||mt,hp,mdl:q.mdl,mat3:q.mat3,max:hp,y:q.cy,legs:q.legs,wp:rnd()*6,r:{drone:1.2,shooter:1.6,hound:2.7,flyer:1.5,mortar:2,sniper:1.3,guard:3.6,skoll:1.7,logi:1.7,dvalin:2,manta:3.4,tentacle:3.4,gmsl:4.4,kolga:1.8,drifa:1,mjoll:1.3,boss:q.kind==='naglfar'?16:q.kind==='whale'?10:q.kind==='crab'?5.6:q.kind==='nidhogg'?7:q.kind==='hrungnir'?5.4:q.kind==='spider'?5:q.kind==='arma'?5.9:q.kind==='turtle'?6.6:3.8}[type],spd:{drone:10+Math.min(6,wave*.35),shooter:6,hound:15+Math.min(5,wave*.3),flyer:9,mortar:3.5,sniper:4.5,guard:9,skoll:13+Math.min(5,wave*.3),logi:6,dvalin:15,manta:9,tentacle:0,gmsl:0,kolga:3.5,drifa:9,mjoll:20,boss:3.2}[type],kind:q.kind,ru:q.ru,tur:q.tur,ball:q.ball,bodyG:q.body,muz:q.muz,glow:q.glow,laser:q.laser,rot:q.rot,tail:q.tail,ex:q.ex,cd:1.5+rnd()*2,flash:0,ph:rnd()*6,k:0,mat:.7});m.scale.setScalar(.05);
   if(type==='guard')enemies[enemies.length-1].shp=260*sc;
 }
 const portals=[];const ptCore=new THREE.MeshBasicMaterial({color:0x05000c});
@@ -2000,6 +2000,12 @@ function updatePortals(dt){
 }
 const warns=[];
 function onTop(g){g.traverse(o=>{if(o.material){o.material.depthTest=false;o.renderOrder=3}});return g}
+// Ullr: after the aim telegraph it fires an instant beam along the locked line (blocked by buildings)
+function snipeBeam(e,o,dir){const L=160;e.laser.visible=true;e.laser.position.copy(o);e.laser.quaternion.setFromUnitVectors(up,dir);e.laser.scale.set(.4,L,.4);e.bmT=.22;
+  const px=P.pos.x-o.x,py=P.y+2.2-o.y,pz=P.pos.z-o.z,t=px*dir.x+py*dir.y+pz*dir.z;if(t<0||t>L)return;
+  const dx=px-dir.x*t,dy=py-dir.y*t,dz=pz-dir.z*t;if(Math.hypot(dx,dy,dz)>1.9)return;
+  for(const b of blds)if(segBox(o.x,o.y,o.z,P.pos.x,P.y+2.2,P.pos.z,b)<1)return;
+  damage(140,t2.copy(dir).negate(),P.pos.clone().setY(P.y+2),'Ullrの狙撃ビーム')}
 function makeWarn(p,R){const g=new THREE.Group();g.position.set(p.x,.07,p.z);const mk=o=>new THREE.MeshBasicMaterial({color:0xff2010,transparent:true,opacity:o,depthWrite:false,side:THREE.DoubleSide});
   const fill=new THREE.Mesh(new THREE.CircleGeometry(R,48),mk(.22)),ring=new THREE.Mesh(new THREE.RingGeometry(R-.7,R,64),mk(.9)),inner=new THREE.Mesh(new THREE.RingGeometry(R-.5,R,64),mk(.9));
   for(const m of[fill,ring,inner]){m.rotation.x=-Math.PI/2;g.add(m)}
@@ -2171,11 +2177,12 @@ function bossNidhogg(e,p,d,dt){if(e.kind!=='nidhogg')return false;const ph=e.phs
   e.wt+=dt;let lean=6;
   if(e.ws==='under'){e.hid=true;e.ext=0;const v=ph>=2?27:ph>=1?24:21;if(d>2)p.addScaledVector(t2.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize(),v*dt);e.tyaw=ty;
     X.mound.visible=true;X.mound.position.y=-p.y;X.mound.scale.y=.85+Math.sin(now*9)*.15;if(rnd()<dt*30)puff(t3.set(p.x+(rnd()-.5)*7,.4,p.z+(rnd()-.5)*7),1.6+rnd(),0x9a7048,1);shake=Math.max(shake,.12*Math.max(0,1-d/40));
-    if(e.wt>(ph>=2?1.4:ph>=1?1.8:2.2)){e.ws='warn';e.wt=0;const tx=P.pos.x+P.vel.x*.6,tz=P.pos.z+P.vel.z*.6,R=Math.hypot(tx,tz),k=R>ARENA-8?(ARENA-8)/R:1;e.tgt=new V(tx*k,0,tz*k);e.warn=makeWarn(e.tgt,9);
+    // surfaces where the mound is, once the mound has crept within ~10 m of the player (or after a long chase)
+    if(d<10||e.wt>9){e.ws='warn';e.wt=0;e.warn=makeWarn(p,9);
       toast('NIDHOGG 足元から来るぞ！ 赤い円から離れろ');bossVoice(e,p,.55,.6);SFX.bossCrouch(p)}}
-  else if(e.ws==='warn'){e.hid=true;p.x+=(e.tgt.x-p.x)*Math.min(1,dt*7);p.z+=(e.tgt.z-p.z)*Math.min(1,dt*7);X.mound.visible=true;X.mound.position.y=-p.y;shake=Math.max(shake,.3);
-    const T=ph>=2?.85:1.05,W=e.warn.userData;W.inner.scale.setScalar(Math.max(.02,1-e.wt/T));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*(10+e.wt*14)));if(rnd()<.7)puff(t3.set(e.tgt.x+(rnd()-.5)*12,.4,e.tgt.z+(rnd()-.5)*12),1.4,0x9a7048,1.4);
-    if(e.wt>=T){dropWarn(e.warn);e.warn=null;e.ws='burst';e.wt=0;e.hid=false;X.mound.visible=false;p.x=e.tgt.x;p.z=e.tgt.z;const c=new V(p.x,1,p.z);explode(c,4,true);for(let k=0;k<26;k++)puff(t3.set(c.x+(rnd()-.5)*16,.5+rnd()*3,c.z+(rnd()-.5)*16),2.5+rnd()*2,0x9a7048,2+rnd()*3);
+  else if(e.ws==='warn'){e.hid=true;if(d>2)p.addScaledVector(t2.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize(),(ph>=2?5:4)*dt);e.warn.position.set(p.x,.07,p.z);X.mound.visible=true;X.mound.position.y=-p.y;X.mound.scale.y=1+Math.sin(now*14)*.25;shake=Math.max(shake,.3);
+    const T=ph>=2?.85:1.05,W=e.warn.userData;W.inner.scale.setScalar(Math.max(.02,1-e.wt/T));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*(10+e.wt*14)));if(rnd()<.7)puff(t3.set(p.x+(rnd()-.5)*12,.4,p.z+(rnd()-.5)*12),1.4,0x9a7048,1.4);
+    if(e.wt>=T){dropWarn(e.warn);e.warn=null;e.ws='burst';e.wt=0;e.hid=false;X.mound.visible=false;const c=new V(p.x,1,p.z);explode(c,4,true);for(let k=0;k<26;k++)puff(t3.set(c.x+(rnd()-.5)*16,.5+rnd()*3,c.z+(rnd()-.5)*16),2.5+rnd()*2,0x9a7048,2+rnd()*3);
       SFX.bossLand(c);shake=Math.max(shake,1.5);propsAoe(c,10,9999);e.nA++;
       const dd=Math.hypot(P.pos.x-c.x,P.pos.z-c.z);if(dd<9&&P.y<8){t2.set(c.x-P.pos.x,0,c.z-P.pos.z).normalize();damage(400*(1-dd/13),t2,P.pos.clone().setY(2),'NIDHOGGの奇襲',1);P.vel.addScaledVector(t2,-16);P.vy=Math.max(P.vy,15)}
 }}
@@ -2584,7 +2591,7 @@ function rigStep(e,p,dt){const u=e.ru,K=RIG_K[e.kind]||RIG_K.drone;
   let ty;if(e.bs)ty=Math.atan2(e.bdir.x,e.bdir.z);else if(e.kind==='hound'&&e.pj>0)ty=Math.atan2(e.pv.x,e.pv.z);else if(e.kind==='drone'&&e.md&&e.md.lengthSq()>.01)ty=Math.atan2(e.md.x,e.md.z);else ty=Math.atan2(P.pos.x-p.x,P.pos.z-p.z);
   if(e.yaw==null)e.yaw=ty;const df=((ty-e.yaw)%TAU+TAU*1.5)%TAU-Math.PI,tr=(e.bs?2.4:K.tr)*dt,dy=Math.max(-tr,Math.min(tr,df));e.yaw+=dy;e.m.rotation.set(0,e.yaw,0);
   let dist=e.lx==null?0:Math.hypot(p.x-e.lx,p.z-e.lz);e.lx=p.x;e.lz=p.z;if(e.js==='air'||e.pj>0)dist=0;dist+=Math.abs(dy)*K.R;
-  const sp=dist/Math.max(dt,1e-4);u.uA.value+=(Math.min(1,sp/K.ref)-u.uA.value)*Math.min(1,dt*5);u.uG.value+=Math.min(dist*K.k,K.cap*dt);u.uT.value=now;
+  const sp=dist/Math.max(dt,1e-4);u.uA.value+=(Math.min(1,sp/K.ref)-u.uA.value)*Math.min(1,dt*5);u.uG.value+=Math.min(dist*K.k*(e.type==='guard'?.5:1),K.cap*dt);u.uT.value=now;
   if(e.kind==='quad'||e.kind==='arma'){if(e.js){const sy=e.m.scale.y;if(e.js==='air'){u.uU.value+=(1-u.uU.value)*Math.min(1,dt*6);u.uC.value*=.8}else{u.uC.value=Math.max(0,(1-sy)/.38);u.uU.value*=.85;p.y=e.y}e.m.scale.set(1,1,1)}else{u.uC.value*=Math.max(0,1-dt*5);u.uU.value*=Math.max(0,1-dt*5)}u.uR.value=Math.max(0,u.uR.value-dt*3);u.uK.value=Math.max(0,u.uK.value-dt*1.5)}
   if(e.kind==='spider'){
     if(e.js){const sy=e.m.scale.y;if(e.js==='air'){u.uU.value+=(1-u.uU.value)*Math.min(1,dt*6);u.uC.value*=.8}else{u.uC.value=Math.max(0,(1-sy)/.38);u.uU.value*=.85;p.y=e.y}e.m.scale.set(1,1,1)}
@@ -3023,7 +3030,7 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=16;
+const BUILD=17;
 // ===== 3D models live in models/<id>.json and load in the background (the page itself stays light) =====
 const MODEL_IDS=["w_tesla","w_vlegs","w_vang","w_msl","w_rkt","w_shot", "w_melt", "w_beam", "w_cannon", "w_burst", "drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "shldN", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
 const MP={},getModel=id=>MP[id]||(MP[id]=fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}).then(()=>{modelsN++;ldProg()}));
@@ -3980,10 +3987,13 @@ function update(dt){
       if(e.cd<=0&&d<75){e.cd=3.8+rnd()*1.5;const to=new V(P.pos.x+P.vel.x*1.1,0,P.pos.z+P.vel.z*1.1);let from=p;if(e.muz){e.muz.getWorldPosition(t3);from=t3.clone();puff(from,1.2,0x5a6a3a,2);spark(from,4,8);if(e.ru)e.ru.uR.value=1}lobShell(from,to);play('bshot',sp(p,.9,.2))}}
     else if(e.type==='sniper'){if(e.ru)e.ru.uR.value=Math.max(0,e.ru.uR.value-dt*3);const want=d>62?1:d<42?-1:0;if(!e.aim)p.addScaledVector(want>0?md:tv,want*e.spd*dt);e.cd-=dt;
       if(!e.aim&&e.cd<=0&&d<85){let ok2=true;for(const b of blds)if(segBox(p.x,p.y+1,p.z,P.pos.x,P.y+2.6,P.pos.z,b)<1){ok2=false;break}if(ok2){e.aim=1.7;play('ui',{v:.5*att(p),rate:2})}else e.cd=.8}
-      if(e.aim){e.aim-=dt;e.muz.getWorldPosition(t3);const tgp=_pv.set(P.pos.x,P.y+2.6,P.pos.z),dir=t2.copy(tgp).sub(t3),len=dir.length();dir.normalize();
+      if(e.aim){e.aim-=dt;e.muz.getWorldPosition(t3);const tgp=_pv.set(P.pos.x,P.y+2.6,P.pos.z);if(e.aim>.55||!e.ld)e.ld=(e.ld||new V()).copy(tgp).sub(t3).normalize();/* tracks, then locks its line for the last .55 s */const dir=t2.copy(e.ld),len=tgp.distanceTo(t3)+30;
         e.laser.visible=(e.aim>.5||Math.sin(now*60)>0);e.laser.position.copy(t3);e.laser.quaternion.setFromUnitVectors(up,dir);const w=e.aim<.5?.09:.04;e.laser.scale.set(w,len,w);e.laser.material.opacity=e.aim<.5?1:.6;
-        if(e.ru)e.ru.uK.value=e.aim>0?1:0;if(e.aim<=0){e.aim=0;e.laser.visible=false;e.cd=4+rnd()*2;if(e.ru){e.ru.uR.value=1;e.ru.uK.value=0}eShoot(e,dir,75,150,'yel',2,t3.clone());play('ar',sp(p,1,.3))}}}
-    else if(e.type==='guard'){const want=d>18?1:d<11?-1:0;p.addScaledVector(want>0?md:tv,want*e.spd*dt);e.cd-=dt;
+        if(e.ru)e.ru.uK.value=e.aim>0?1:0;if(e.aim<=0){e.aim=0;e.laser.visible=false;e.cd=4+rnd()*2;if(e.ru){e.ru.uR.value=1;e.ru.uK.value=0}snipeBeam(e,t3,dir);play('ar',sp(p,1,.3));SFX.boom(.5,p)}}
+      if(e.bmT>0){e.bmT-=dt;const f=Math.max(0,e.bmT/.22);e.laser.visible=true;e.laser.scale.x=e.laser.scale.z=.08+.32*f;e.laser.material.opacity=f}}
+    else if(e.type==='guard'){ // pushes in behind its shield and rams the player at close range
+      const want=d>5.5?1:d<4?-.4:0;p.addScaledVector(want>0?md:tv,want*e.spd*dt);e.cd-=dt;e.bc=(e.bc||0)-dt;
+      if(d<7.2&&P.y<4&&e.bc<=0){e.bc=1.6;t2.copy(tv).negate();damage(60,t2,p,'Svalinnの盾突進');P.vel.addScaledVector(tv,14);SFX.clank(true);shake=Math.max(shake,.45);play('clankL',sp(p,.8))}
       if(e.cd<=0&&d<45){e.cd=2.6+rnd();for(let k=0;k<3;k++)setTimeout(()=>{if(!enemies.includes(e)||state!=='play')return;tv.set(P.pos.x-e.m.position.x,0,P.pos.z-e.m.position.z).normalize();eShoot(e,tv,20,45,'grn',1.5);SFX.enemyShot(e.m.position)},k*140)}}
     else if(e.type==='kolga'){const X=e.ex;for(const [i,w] of X.wings.entries())w.rotation.z=(i?-1:1)*Math.sin(now*5+e.ph)*.45;X.body.position.y=Math.sin(now*3+e.ph)*.08;
       e.cd-=dt;const want=d>40?1:d<24?-1:0;if(!(e.op>0))p.addScaledVector(want>0?md:tv,want*e.spd*dt);
