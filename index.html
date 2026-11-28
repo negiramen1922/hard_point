@@ -2976,7 +2976,7 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=9;
+const BUILD=10;
 // ===== 3D models live in models/<id>.json and load in the background (the page itself stays light) =====
 const MODEL_IDS=["drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
 const MP={},getModel=id=>MP[id]||(MP[id]=fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}).then(()=>{modelsN++;ldProg()}));
@@ -2987,9 +2987,25 @@ const LD_MODEL={drone:['drone'],hound:['hound'],shooter:WIP.bugModel&&!window.HP
   boss_quad:WIP.fenrirModel&&!window.HP_TEST?[]:['fenrir'],boss_spider:['spider'],boss_arma:WIP.armaModel&&!window.HP_TEST?[]:['arma']};
 let LD=null;
 function ldProg(){const p=$('ldP'),c=$('ldC');if(!p)return;const k=Math.min(1,modelsN/MODEL_IDS.length);p.style.width=(k*100).toFixed(0)+'%';c.textContent=Math.round(k*100)+'%'}
-function ldPick(onlyLoaded){const pool=DEXE.filter(x=>(!x.map||mapRel(x.map))&&LD_MODEL[x.k]&&LD_MODEL[x.k].length&&(!onlyLoaded||LD_MODEL[x.k].every(id=>MD[id])));return pool.length?pool[Math.floor(Math.random()*pool.length)]:null}
-function ldShow(x){$('ldTag').textContent=x&&x.k.startsWith('boss_')?'BOSS FILE':'ENEMY FILE';const nm=x?x.n:'HARD POINT',N=$('ldN');N.textContent=nm;N.style.fontSize=nm.length>9?'clamp(22px,'+(46/nm.length).toFixed(2)+'vw,42px)':'';$('ldJ').textContent=x?x.j:'';$('ldD').textContent=x?x.d:'';$('ldA').textContent=x?'攻撃：'+x.a:''}
-function ldModel(x){if(!LD||!x)return;const boss=x.k.startsWith('boss_'),kind=boss?x.k.slice(5):x.k,keep=stage;if(boss)BK_OVR=kind;let q=null;try{q=makeQuad(boss?'boss':kind,new THREE.MeshLambertMaterial({color:0x5a2448}))}catch(e){}stage=keep;BK_OVR=null;if(!q)return;
+const ldDeps=it=>it.t==='e'?LD_MODEL[it.x.k]:it.t==='w'&&(it.id==='gat'||it.id==='mini')&&!(WIP.tempestModel&&!window.HP_TEST)?['tempest']:[];
+function ldPick(onlyLoaded){const pool=[...DEXE.filter(x=>(!x.map||mapRel(x.map))&&LD_MODEL[x.k]&&LD_MODEL[x.k].length).map(x=>({t:'e',x,id:x.k})),
+  ...Object.keys(WP).map(id=>({t:'w',id})),...Object.keys(BODY).map(id=>({t:'b',id})),...Object.keys(LEGS).map(id=>({t:'g',id}))].filter(it=>!onlyLoaded||ldDeps(it).every(id=>MD[id]));
+  if(!pool.length)return null;const W={e:.4,w:.25,b:.2,g:.15},cats=[...new Set(pool.map(it=>it.t))];let r=Math.random()*cats.reduce((a,c)=>a+W[c],0),cat=cats[0];for(const c of cats){r-=W[c];if(r<=0){cat=c;break}}
+  const sub=pool.filter(it=>it.t===cat);return sub[Math.floor(Math.random()*sub.length)]}
+function ldCfg(it){if(it.t==='w'){const W=WP[it.id];return W.c==='重'?{B:'std',G:'bip',W:[it.id,'mini']}:{B:'lite',G:'bip',W:[it.id,it.id]}}
+  if(it.t==='b')return{B:it.id,G:'bip',W:BODY[it.id].slots.map(c=>c==='重'?'gat':'mini')};return{B:'std',G:it.id,W:['gat','mini']}}
+function ldShow(it){let tag='ENEMY FILE',x=null;
+  if(it&&it.t!=='e'){const P=it.t==='w'?WP[it.id]:it.t==='b'?BODY[it.id]:LEGS[it.id];
+    tag=it.t==='w'?'WEAPON FILE':it.t==='b'?'FRAME FILE':'DRIVE FILE';
+    const j=it.t==='w'?(P.c==='重'?'重武器':'軽武器')+'　'+P.ty:it.t==='b'?'ボディ　'+P.ty:'ドライブ　'+P.ty;
+    const a=it.t==='w'?spec('W',it.id):it.t==='b'?`HP ${P.hp}　重量 ${P.wt}　スロット ${P.slots.join('・')}`:`HP ${P.hp}　速度 ${P.spd}　${P.ab.n}`;
+    x={n:P.n,j,d:P.d||'',a,k:'',raw:1}}
+  else if(it)x=it.x;
+  $('ldTag').textContent=tag==='ENEMY FILE'&&x&&x.k.startsWith('boss_')?'BOSS FILE':tag;const nm=x?x.n:'HARD POINT',N=$('ldN');N.textContent=nm;N.style.fontSize=nm.length>9?'clamp(22px,'+(46/nm.length).toFixed(2)+'vw,42px)':'';$('ldJ').textContent=x?x.j:'';$('ldD').textContent=x?x.d:'';$('ldA').textContent=x?(x.raw?x.a:'攻撃：'+x.a):''}
+function ldModel(it){if(!LD||!it)return;if(it.t!=='e'){let g=null;try{const c=ldCfg(it);g=mechFor({B:c.B,G:c.G,A:BODY[c.B].ab,P:cfg.P,W:c.W})}catch(e){}if(!g)return;
+    if(LD.q)LD.S.remove(LD.q.root);LD.q={root:g,ru:null};LD.S.add(g);g.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(g),c=bb.getCenter(new V()),sz=bb.getSize(new V()),r=Math.max(sz.x,sz.y,sz.z);
+    LD.tgt=c;LD.dist=r*2.1;LD.C.near=r*.05;LD.C.far=r*20;LD.C.updateProjectionMatrix();return}
+  const x=it.x,boss=x.k.startsWith('boss_'),kind=boss?x.k.slice(5):x.k,keep=stage;if(boss)BK_OVR=kind;let q=null;try{q=makeQuad(boss?'boss':kind,new THREE.MeshLambertMaterial({color:0x5a2448}))}catch(e){}stage=keep;BK_OVR=null;if(!q)return;
   if(q.laser){scene.remove(q.laser);const i=bossFx.indexOf(q.laser);if(i>=0)bossFx.splice(i,1)}
   if(LD.q)LD.S.remove(LD.q.root);LD.q=q;q.root.position.set(0,q.cy,0);LD.S.add(q.root);q.root.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(q.root),c=bb.getCenter(new V()),sz=bb.getSize(new V()),r=Math.max(sz.x,sz.y,sz.z);
   LD.tgt=c;LD.dist=r*2.35;LD.C.near=r*.05;LD.C.far=r*20;LD.C.updateProjectionMatrix()}
@@ -2997,7 +3013,7 @@ function ldOpen(onlyLoaded,x0){const W=$('ldW');W.classList.remove('hide','out')
   if(!LD){const Rr=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});Rr.setPixelRatio(Math.min(2,devicePixelRatio||1));const S=new THREE.Scene();S.add(new THREE.HemisphereLight(0xffe8d0,0x302018,1.05));const dl=new THREE.DirectionalLight(0xffffff,.9);dl.position.set(2,3,2.5);S.add(dl);const rl=new THREE.DirectionalLight(0x7fe0ff,.5);rl.position.set(-3,1.5,-2);S.add(rl);
     LD={R:Rr,S,C:new THREE.PerspectiveCamera(32,1,.1,100),q:null,a:.6,t0:performance.now(),run:true}}
   LD.run=true;LD.t0=performance.now();const x=x0||ldPick(onlyLoaded);ldShow(x);
-  const deps=x?LD_MODEL[x.k]:[];if(deps.every(id=>MD[id]))ldModel(x);else{const p=Promise.all(deps.map(getModel));p.then(()=>{if(LD&&LD.run)ldModel(x)})}
+  const deps=x?ldDeps(x):[];if(deps.every(id=>MD[id]))ldModel(x);else{const p=Promise.all(deps.map(getModel));p.then(()=>{if(LD&&LD.run)ldModel(x)})}
   let last=performance.now();(function tick(t){if(!LD||!LD.run)return;requestAnimationFrame(tick);const dt=Math.min(.05,(t-last)/1000);last=t;const w=cv.clientWidth,h=cv.clientHeight;if(cv.width!==Math.round(w*LD.R.getPixelRatio())||cv.height!==Math.round(h*LD.R.getPixelRatio())){LD.R.setSize(w,h,false);LD.C.aspect=w/Math.max(1,h);LD.C.updateProjectionMatrix()}
     if(LD.q){LD.a+=dt*.45;const c=LD.tgt,D=LD.dist;LD.C.position.set(c.x+Math.sin(LD.a)*D,c.y+D*.32,c.z+Math.cos(LD.a)*D);LD.C.lookAt(c.x,c.y,c.z);const u=LD.q.ru;if(u){u.uT.value=t/1000;u.uA.value=.7;u.uG.value+=dt*3.2}}
     LD.R.render(LD.S,LD.C)})(last)}
@@ -4251,7 +4267,7 @@ function loop(t){
   fx(sdt);camUpdate(dt);weatherTick(dt);hlTick();R.render(scene,cam);
 }
 applyCtl();helpKeys();resetU();buildLevel('ruins');renderMenu();buildMech();applyQuality();goHome();requestAnimationFrame(loop);tutWelcome();
-{const x0=ldPick(false);loadModels(x0?LD_MODEL[x0.k]:[]);ldOpen(false,x0);
+{const x0=ldPick(false);loadModels(x0?ldDeps(x0):[]);ldOpen(false,x0);
   const t0=performance.now();Promise.race([modelsP,new Promise(r=>setTimeout(r,25000))]).then(()=>setTimeout(ldClose,Math.max(0,1600-(performance.now()-t0))))}
 }
 </script>
