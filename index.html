@@ -634,7 +634,7 @@ const SCRI='<svg class="si" viewBox="0 0 24 24"><path d="M12 2.5l8.2 4.75v9.5L12
 const PAINT={bone:{n:'Bone',c:[0xcfc6b4,0x3b3e46,0xff5a1f]},desert:{n:'Desert',c:[0xc4a06a,0x5a4a32,0x3a7a3e]},arctic:{n:'Arctic',c:[0xe6ecef,0x66727c,0x2aa8e0]},woodland:{n:'Woodland',c:[0x5f6b40,0x34392a,0xe0b232]},crimson:{n:'Crimson',c:[0x8e2020,0x2a2226,0xf0c040]},navy:{n:'Navy',c:[0x34465e,0x1e242e,0xff8a2a]},shadow:{n:'Shadow',c:[0x2e3035,0x17181b,0x7fe0ff]},gilded:{n:'Gilded',c:[0xc9a43a,0x3a2e1c,0x8a1a1a]}};
 function applyPaint(){const P=PAINT[cfg.P]||PAINT.bone;MK.paint.color.setHex(P.c[0]);MK.gm.color.setHex(P.c[1]);MK.acc.color.setHex(P.c[2]);try{localStorage.setItem('rg_paint',cfg.P)}catch(e){}}
 // not released yet: only on the test site (remove from this list to release)
-const WIP={B:['rapt'],W:['harpoon'],tempestModel:true,bugModel:true,fenrirModel:true,jellyModel:true,snipModel:true,armaModel:true,mortModel:true,shldModel:true,wpModels:true};if(!window.HP_TEST){for(const k of WIP.B)delete BODY[k];for(const k of WIP.W)delete WP[k]}
+const WIP={B:['rapt'],W:['harpoon'],tempestModel:true,vangModel:true,bugModel:true,fenrirModel:true,jellyModel:true,snipModel:true,armaModel:true,mortModel:true,shldModel:true,wpModels:true};if(!window.HP_TEST){for(const k of WIP.B)delete BODY[k];for(const k of WIP.W)delete WP[k]}
 const COST={B:{},G:{},W:{},P:{}};for(const [k,T] of [['B',BODY],['G',LEGS],['W',WP],['P',PAINT]])for(const id in T)COST[k][id]=UNLOCK_COST;
 const isUnl=(k,id)=>ADMIN||DEF_UNL[k].includes(id)||UNL.includes(k+':'+id);
 try{cfg.P=localStorage.getItem('rg_paint')||'bone'}catch(e){cfg.P='bone'}
@@ -935,7 +935,7 @@ function mtBuild(g,MT,s){g.position.set(MT.p[0],MT.p[1],MT.p[2]);
 // ===== weapon sculpts (Meshy models in models/w_<type>.json): the procedural weapon is still built (its parts keep driving muzzles,
 // reload timing and effects) but hidden; the model is fitted over its bounds with the muzzle end at the front. Moving pieces are
 // separate parts: 'cyl' (Behemoth's cylinder cap, turns with the revolver) and 'eng' (Hammerhead's V-engine, shakes) =====
-const WPM={shot:1,melt:1,beam:1,cannon:1,burst:1,rkt:1},WPT={};
+const WSC={msl:.85},WPM={shot:1,melt:1,beam:1,cannon:1,burst:1,rkt:1,msl:1,tesla:1},WPT={};
 function wpMat(t){if(WPT[t])return WPT[t];const d=MD['w_'+t],tl=src=>{const x=new THREE.TextureLoader().load(src);x.flipY=false;return x};
   return WPT[t]=new THREE.MeshLambertMaterial(d.em?{map:tl(d.tex),emissive:0xffffff,emissiveMap:tl(d.em),emissiveIntensity:1}:{map:tl(d.tex)})}
 function wpGeo(t,nm){const q=MD['w_'+t].parts[nm],b=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0)).buffer,g=new THREE.BufferGeometry();
@@ -944,8 +944,8 @@ function wpSculpt(a,w,t){if(!WPM[t]||(WIP.wpModels&&!window.HP_TEST)||!MD['w_'+t
   w.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(w.matrixWorld).invert(),bb=new THREE.Box3(),tb=new THREE.Box3(),m4=new THREE.Matrix4();
   w.traverse(o=>{if(o.isMesh&&o.visible&&o!==a.orb){o.geometry.computeBoundingBox();tb.copy(o.geometry.boundingBox).applyMatrix4(m4.multiplyMatrices(inv,o.matrixWorld));bb.union(tb)}});if(bb.isEmpty())return;
   for(const c of w.children)if(c!==a.mz&&c!==a.orb)c.visible=false;
-  const G=new THREE.Group();G.scale.setScalar(bb.max.z-bb.min.z);G.position.set((bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,bb.max.z);w.add(G);
-  let M=wpMat(t);if(t==='melt'){M=M.clone();a.smat=M}
+  const G=new THREE.Group();G.scale.setScalar((bb.max.z-bb.min.z)*(WSC[t]||1));G.position.set((bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,bb.max.z);w.add(G);
+  let M=wpMat(t);if(t==='melt'||t==='tesla'){M=M.clone();a.smat=M}
   for(const nm in MD['w_'+t].parts){const o=MD['w_'+t].parts[nm].o,ms=new THREE.Mesh(wpGeo(t,nm),M);
     if(nm==='body'){G.add(ms);continue}const pv=new THREE.Group();pv.position.set(o[0],o[1],o[2]);G.add(pv);const inner=new THREE.Group();pv.add(inner);inner.add(ms);
     if(nm==='cyl')a.scyl=inner;if(nm==='eng')a.eng=inner}
@@ -1126,6 +1126,19 @@ function buildMount(i,t){
   if(t==='tesla'){a.magHome=a.mag.position.clone()}
   return a;
 }
+// Vanguard upper body (made in Meshy): replaces the procedural chest, pelvis, shoulder pads and missile pod; weapons and missile launch points move onto the model
+const VG={s:2.05,x:-.1,y:1.5,z:0,arm:[1.07,.88,0],pod:[-1.18,2.63,-.2]};
+function vangSculpt(n){if((WIP.vangModel&&!window.HP_TEST)||!MD.w_vang)return;
+  for(let i=0;i<n;i++)upper.children[i].visible=false;
+  const G=new THREE.Group();G.scale.setScalar(VG.s);G.position.set(VG.x,VG.y,VG.z);upper.add(G);G.add(new THREE.Mesh(wpGeo('vang','body'),wpMat('vang')));
+  for(const a of arms){if(a.g.parent!==upper)continue;for(const c of a.g.children)if(c!==a.ap)c.visible=false;a.g.position.set(a.s*VG.arm[0],VG.arm[1],VG.arm[2])}
+  if(cfg.A==='missile'){const bx=podL.length?podL[0].parent:null;for(const c of abMod.children)if(c!==bx)c.visible=false;
+    if(bx){bx.traverse(o=>{if(o.isMesh)o.visible=false});bx.position.set(VG.pod[0],VG.pod[1],VG.pod[2]);for(const o of podL){o.userData.head.scale.setScalar(1e-4)}}}
+  upper.userData.vang=G}
+// Strider legs (Vanguard legs model, made in Meshy): thigh rides the hip pivot, shin+foot ride the knee, so the walk cycle still bends them
+function vangLeg(leg,knee,s){if((WIP.vangModel&&!window.HP_TEST)||!MD.w_vlegs)return;const fl=new Set();for(const f of flames)f.traverse(o=>fl.add(o));
+  leg.traverse(o=>{if(o.isMesh&&!fl.has(o))o.visible=false});const S=1.87,M=wpMat('vlegs'),sd=s>0?'R':'L';
+  for(const [nm,par] of[['t'+sd,leg],['k'+sd,knee]]){const m=new THREE.Mesh(wpGeo('vlegs',nm),M);m.scale.setScalar(S);par.add(m)}}
 function buildModule(){
   abMod=new THREE.Group();upper.add(abMod);turretG=turretBar=turretMz=null;podL=[];
   if(cfg.A==='orbital'){cbox(.8,.55,.55,MK.gm,0,1.2,-.74,abMod);cyl(.07,.7,MK.dk,0,1.7,-.8,abMod);const dm=new THREE.MeshLambertMaterial({color:0xcfc6b4,side:THREE.DoubleSide}),dish=new THREE.Mesh(new THREE.SphereGeometry(.6,16,6,0,TAU,0,1.05),dm);dish.scale.y=.45;dish.position.set(0,1.95,-.86);dish.rotation.x=-.45;abMod.add(dish);box(.12,.12,.12,cyMat,0,2.05,-.9,abMod);box(.5,.08,.08,cyMat,0,1.32,-1.03,abMod)}
@@ -1310,7 +1323,7 @@ function buildLegs(k,P_,G_,D_){
       for(const z of[-.25,.45])cyl(.13,.06,D_,0,-1.74,z,knee);
       flameAt(knee,0,-1.75,-.25,0,0,1);flameAt(knee,0,-1.75,.45,0,0,.8);flameAt(knee,s*.42,-.7,-.08,0,s*1.15,.75);flameAt(knee,s*.42,-.4,-.08,0,s*1.15,.6);
       for(const [y,ln,dz,ht] of[[-.12,1.3,-.2,.4],[-.18,1.0,.05,.3]]){const wp=new THREE.Group();wp.position.set(s*(.4+(ht<.35?.05:0)),y,dz);knee.add(wp);cbox(.05,ht,ln,P_,0,0,-ln/2+.15,wp,.02);box(.06,.06,ln*.85,MK.acc,0,ht/2-.03,-ln/2+.15,wp);box(.06,ht*.6,.08,MK.dk,0,0,-ln+.22,wp);wp.userData={s,k:ht<.35?.75:1};wp.rotation.x=-1.45;wingL.push(wp)}
-      leg.userData={knee,kb:0,ka:.7};
+      leg.userData={knee,kb:0,ka:.7};vangLeg(leg,knee,s);
     }else{ // Grasshopper: big reverse-joint legs, long hopping stride
       const t=cbox(.5,1.25,.6,P_,0,-.55,.3,leg);t.rotation.x=-.45;cbox(.08,.85,.42,G_,s*.27,-.55,.3,leg).rotation.x=-.45;box(.05,.4,.05,MK.acc,s*.27,-.45,.62,leg);
       knee=new THREE.Group();knee.position.set(0,-1.1,.58);leg.add(knee);
@@ -1337,9 +1350,9 @@ function buildMech(){
   // pelvis + skirt armour (not on tracked chassis)
   if(cfg.G!=='tank'){cbox(1.02,.42,.72,G_,0,0,0,upper);for(const s of[-1,1]){const sk=cbox(.4,.5,.12,P_,s*.28,-.22,.4,upper);sk.rotation.x=.22;const ss=cbox(.12,.5,.5,P_,s*.55,-.2,0,upper);ss.rotation.z=s*.2}
   cyl(.3,.5,D_,0,.42,0,upper);}
-  buildTorso(cfg.B,cw,P_,G_,D_);
+  buildTorso(cfg.B,cw,P_,G_,D_);const torsoN=upper.children.length;
   arms=BODY[cfg.B].slots.map((c,i)=>buildMount(i,cfg.W[i]));
-  buildModule();
+  buildModule();if(cfg.B==='std')vangSculpt(torsoN);
   bubble=new THREE.Group();bubble.add(new THREE.Mesh(new THREE.IcosahedronGeometry(3.7,1),bubMat));bubble.add(new THREE.Mesh(new THREE.IcosahedronGeometry(3.72,1),bubWire));
   bubble.position.y=3;bubble.visible=false;mech.add(bubble);
 }
@@ -1759,12 +1772,12 @@ bug:`float w=rig.x,c=uG+rig.y*6.2832,ab=rig.z,cn=rig.w,b=1.-w,sw=max(0.,sin(c));
 drone:`float w=rig.x,c=uG+rig.y*6.2832,sac=rig.z,b=1.-w;vec2 r=position.xz,tg=vec2(-r.y,r.x)/max(.2,length(r));
  transformed.xz+=tg*cos(c)*.11*uA*w;transformed.y+=max(0.,sin(c))*.1*uA*w+sin(uT*9.+rig.y*20.)*.012*w*(1.-uA);
  transformed+=objectNormal*sac*(.012+.06*uK)*(.5+.5*sin(uT*(5.+11.*uK)));transformed.y+=b*abs(sin(uG))*.025*uA;`};
-function sculptMat(g,kind){if(g&&g.userData.map){const m=new THREE.MeshLambertMaterial({map:g.userData.map,emissive:0xffffff,emissiveMap:g.userData.em,emissiveIntensity:1.4});
-  if(kind&&RIG_GLSL[kind]&&g.attributes.rig){const u={};for(const k of['uG','uA','uT','uC','uU','uK','uR','uP','uM'])u[k]={value:0};m.userData.ru=u;
+function sculptMat(g,kind,u0){if(g&&g.userData.map){const m=new THREE.MeshLambertMaterial({map:g.userData.map,emissive:0xffffff,emissiveMap:g.userData.em,emissiveIntensity:1.4});
+  if(kind&&RIG_GLSL[kind]&&g.attributes.rig){const u=u0||{};if(!u0)for(const k of['uG','uA','uT','uC','uU','uK','uR','uP','uM'])u[k]={value:0};m.userData.ru=u;
     m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,u);sh.vertexShader='attribute vec4 rig;uniform float uG,uA,uT,uC,uU,uK,uR,uP,uM;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n'+RIG_GLSL[kind])};
     m.customProgramCacheKey=()=>'rig_'+kind}
   return m}return new THREE.MeshBasicMaterial({vertexColors:true})}
-function matProxy(m){return{emissive:{setHex:v=>m.color.setRGB(v?2.4:1,v?2.4:1,v?2.4:1),setRGB:(r,g,b)=>m.color.setRGB(1+r*2,1+g*2,1+b*2)},dispose:()=>m.dispose()}}
+function matProxy(m){const C=(r,g,b)=>{m.color.setRGB(r,g,b);if(m.userData.tw)m.userData.tw.color.setRGB(r,g,b)};return{emissive:{setHex:v=>C(v?2.4:1,v?2.4:1,v?2.4:1),setRGB:(r,g,b)=>C(1+r*2,1+g*2,1+b*2)},dispose:()=>{m.dispose();if(m.userData.tw)m.userData.tw.dispose()}}}
 function makeSculpt(id,L,kind,rotY){const geo=meshData(id);if(!geo)return null;const bm=geo.userData.bmin,bx=geo.userData.bmax,sc=L/Math.max(bx[0]-bm[0],bx[2]-bm[2]),cy=-bm[1]*sc;
   const root=new THREE.Group(),sm=sculptMat(geo,kind),mesh=new THREE.Mesh(geo,sm);mesh.scale.setScalar(sc);mesh.rotation.y=rotY||0;const wrap=new THREE.Group();wrap.add(mesh);root.add(wrap);
   return{root,legs:[],cy,s:.6,kind,mt:matProxy(sm),mdl:wrap,mat3:sm,sc,ru:sm.userData.ru}}
@@ -1822,7 +1835,10 @@ function makeMortSculpt(){const q=makeSculpt('mort',4,'bug',0);if(!q)return null
   const muz=new THREE.Object3D();muz.position.set(M[0]*s,M[1]*s,M[2]*s);q.mdl.add(muz);q.muz=muz;return q}
 function makeShieldSculpt(){const q=makeSculpt('shld',4,'bug',0);if(!q)return null;const g=meshData('shldS');if(!g)return q;
   // the front shield is its own mesh (same scale and material as the body) so breakShield() can shatter and hide it
-  const sh=new THREE.Mesh(g,q.mat3);sh.scale.setScalar(q.sc);q.mdl.add(sh);const hd=new THREE.Mesh(new THREE.SphereGeometry(1,18,14),new THREE.MeshPhongMaterial({color:0x141016,specular:0x2e2632,shininess:18}));hd.scale.set(.4*q.sc,.32*q.sc,.38*q.sc);hd.position.set(0,.08*q.sc,.52*q.sc);q.mdl.add(hd);q.ex={shd:sh,shc:0x8a5a3a};q.s=.8;return q}
+  const sh=new THREE.Mesh(g,q.mat3);sh.scale.setScalar(q.sc);q.mdl.add(sh);
+  // the shield-less body (its own Meshy model, same walk rig and uniforms) replaces the whole bug once the shield breaks
+  let nb=null;const gN=meshData('shldN');if(gN){const m2=sculptMat(gN,'bug',q.ru);q.mat3.userData.tw=m2;nb=new THREE.Mesh(gN,m2);const bS=meshData('shld').userData.bmin,bN=gN.userData.bmin,k=1.05;nb.scale.setScalar(q.sc*k);nb.position.y=bS[1]*q.sc-bN[1]*q.sc*k;nb.visible=false;q.mdl.add(nb)}
+  q.ex={shd:sh,shc:0x8a5a3a,nb,body:q.mdl.children[0]};q.s=.8;return q}
 function makeFenrirSculpt(){const q=makeSculpt('fenrir',10,'quad',0);if(!q)return null;const s=q.sc,M=MD.fenrir.muz;q.s=4.2;
   const mz=M.map(m=>{const o=new THREE.Object3D();o.position.set(m[0]*s,m[1]*s,(m[2]+.04)*s);q.mdl.add(o);return o});q.ex={mz};q.muz=mz[0];return q}
 function makeSpiderSculpt(){const q=makeSculpt('spider',17,'spider',0);if(!q)return null;const s=q.sc;q.s=2.6;
@@ -2195,7 +2211,7 @@ function shardTick(dt){for(let i=SHARDS.length-1;i>=0;i--){const q=SHARDS[i];q.t
 // Svalinn: while its shield is up, every hit taken with the player in front (bullets, blasts, beams, lasers...) goes to the shield, never the body
 const _gv=new THREE.Vector3(),_gp=new THREE.Vector3();function gShd(e){if(e.type!=='guard'||!(e.shp>0))return false;e.m.getWorldDirection(_gv);const dx=P.pos.x-e.m.position.x,dz=P.pos.z-e.m.position.z,l=Math.hypot(dx,dz)||1,g=Math.hypot(_gv.x,_gv.z)||1;return(_gv.x*dx+_gv.z*dz)/(g*l)>.45}
 function gAbsorb(e){if(e.lhp==null){e.lhp=e.hp;return}const d=e.lhp-e.hp;if(d>0&&gShd(e)){e.hp=e.lhp;e.shp-=d;if(now-(e.bk||0)>.12){e.bk=now;e.ex.shd.getWorldPosition(_gp);spark(_gp,3,7);play('clankL',sp(e.m.position,.5))}if(e.shp<=0)breakShield(e)}e.lhp=e.hp}
-function breakShield(e){if(!e.ex||!e.ex.shd||!e.ex.shd.visible)return;e.shp=0;shatter(e.ex.shd,e.ex.shc||0x2a2230,10,false);e.flash=.2}
+function breakShield(e){if(!e.ex||!e.ex.shd||!e.ex.shd.visible)return;e.shp=0;shatter(e.ex.shd,e.ex.shc||0x2a2230,10,false);if(e.ex.nb){e.ex.nb.visible=true;e.ex.body.visible=false;e.ex.shd.visible=false}e.flash=.2}
 // lingering venom pools (HRUNGNIR); ticked with the shells
 const HZ=[];
 function addPool(x,z,R,life,dps,by,col){const m=new THREE.Mesh(new THREE.CircleGeometry(R,24),new THREE.MeshBasicMaterial({color:col||0x3fbf1a,transparent:true,opacity:.62,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,.06,z);onTop(m);scene.add(m);HZ.push({m,x,z,R,t:0,life,dps,by,lava:!!col})}
@@ -3007,14 +3023,14 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=15;
+const BUILD=16;
 // ===== 3D models live in models/<id>.json and load in the background (the page itself stays light) =====
-const MODEL_IDS=["w_rkt","w_shot", "w_melt", "w_beam", "w_cannon", "w_burst", "drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
+const MODEL_IDS=["w_tesla","w_vlegs","w_vang","w_msl","w_rkt","w_shot", "w_melt", "w_beam", "w_cannon", "w_burst", "drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "shldN", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
 const MP={},getModel=id=>MP[id]||(MP[id]=fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}).then(()=>{modelsN++;ldProg()}));
 function loadModels(first){const f=Promise.all((first||[]).map(getModel));modelsP=f.then(()=>Promise.all(MODEL_IDS.filter(id=>!(first||[]).includes(id)).map(getModel))).then(()=>{modelsOK=true;
   for(const k in MESH)if(MESH[k]==null)delete MESH[k];if(state==='menu'||state==='demo')try{buildMech()}catch(e){}});return f}
 // ===== loading screen: a random enemy file (3D model turning in place + name / kind / description) and a progress bar =====
-const LD_MODEL={drone:['drone'],hound:['hound'],shooter:WIP.bugModel&&!window.HP_TEST?[]:['bug'],flyer:WIP.jellyModel&&!window.HP_TEST?[]:['jelly'],sniper:WIP.snipModel&&!window.HP_TEST?[]:['snip'],mortar:WIP.mortModel&&!window.HP_TEST?[]:['mort'],guard:WIP.shldModel&&!window.HP_TEST?[]:['shld','shldS'],
+const LD_MODEL={drone:['drone'],hound:['hound'],shooter:WIP.bugModel&&!window.HP_TEST?[]:['bug'],flyer:WIP.jellyModel&&!window.HP_TEST?[]:['jelly'],sniper:WIP.snipModel&&!window.HP_TEST?[]:['snip'],mortar:WIP.mortModel&&!window.HP_TEST?[]:['mort'],guard:WIP.shldModel&&!window.HP_TEST?[]:['shld','shldS','shldN'],
   boss_quad:WIP.fenrirModel&&!window.HP_TEST?[]:['fenrir'],boss_spider:['spider'],boss_arma:WIP.armaModel&&!window.HP_TEST?[]:['arma']};
 let LD=null;
 function ldProg(){const p=$('ldP'),c=$('ldC');if(!p)return;const k=Math.min(1,modelsN/MODEL_IDS.length);p.style.width=(k*100).toFixed(0)+'%';c.textContent=Math.round(k*100)+'%'}
@@ -3813,12 +3829,12 @@ function updateArms(dt,tgt){
       if(a.rl>0){const T=a.rlT,e=T-a.rl;a.rl-=dt;const RS=RLS.tesla,f=e/T;while(RS.seq[a.rq]&&RS.seq[a.rq][0]<=f){const q=RS.seq[a.rq++];play(q[1],q[2])}
         // reload = the coil (the "magazine") loses its light, then light gathers back into it and it glows blue again
         if(!a.dropped&&e>.3){a.dropped=true;play(RS.drop[0],RS.drop[1]);a.coil.getWorldPosition(t3);spark(t3,6,10)}
-        if(a.cmat){const C=a.cmat.color,dk=.08;let g;if(f<.14)g=1-f/.14;else if(f<.55)g=0;else if(f<.95){const u=(f-.55)/.4;g=u*u*.75*(.85+.15*Math.sin(now*40))}else g=1+1.4*Math.max(0,1-(f-.95)/.05);
+        if(a.cmat){const C=a.cmat.color,dk=.08;let g;if(f<.14)g=1-f/.14;else if(f<.55)g=0;else if(f<.95){const u=(f-.55)/.4;g=u*u*.75*(.85+.15*Math.sin(now*40))}else g=1+1.4*Math.max(0,1-(f-.95)/.05);if(a.smat)a.smat.emissiveIntensity=Math.max(.05,g);
           C.setRGB(.5*(dk+(1-dk)*g),.88*(dk+(1-dk)*g),1*(dk+(1-dk)*g));
           const on=f>.55&&f<.97;for(const q of a.motes){q.m.visible=on;if(!on)continue;const u=((f-.55)/.42*2.2+q.ph)%1,r=.95*(1-u);q.m.position.set(a.coil.position.x+Math.cos(q.an+u*3)*r,a.coil.position.y+Math.sin(q.an+u*3)*r,a.coil.position.z+q.z*(1-u));q.m.material.opacity=.9*Math.sin(Math.PI*u)}}
         if(f>=.95&&!a.clicked){a.clicked=true;a.coil.getWorldPosition(t3);spark(t3,10,12)}
         a.coil.rotation.z+=dt*(f>.7?30*(f-.7)/.3:0);a.w.rotation.x=-.35*Math.sin(Math.PI*Math.min(1,f));
-        if(a.rl<=0){a.rl=0;a.ammo=magOf(a);a.mag.position.copy(a.magHome);a.mag.visible=!a.sculpt;a.w.rotation.x=0;if(a.cmat)a.cmat.color.copy(cyMat.color);if(a.motes)for(const q of a.motes)q.m.visible=false}a.zon=false}
+        if(a.rl<=0){a.rl=0;a.ammo=magOf(a);a.mag.position.copy(a.magHome);a.mag.visible=!a.sculpt;a.w.rotation.x=0;if(a.cmat)a.cmat.color.copy(cyMat.color);if(a.smat&&a.t==='tesla')a.smat.emissiveIntensity=1;if(a.motes)for(const q of a.motes)q.m.visible=false}a.zon=false}
       else{a.zon=pr&&a.ammo>0;if(a.zon&&a.cd<=0){a.cd=W.cd*U.tR/rtM();a.ammo--;zap(a,tgt);if(a.ammo<=0)startReload(a)}}
     }else{
       a.guard+=((pr?1:0)-a.guard)*Math.min(1,dt*14);
