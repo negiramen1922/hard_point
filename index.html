@@ -1467,8 +1467,7 @@ const DEF=[
  ['mini',4,.7,(c,o)=>{const b=chain(c,o,1.8,.9,.16,3000,[[.07,.16,2000]]),t=.005;
    eN(c,b,t,{type:'highpass',f:3500,v:.8,d:.003});eN(c,b,t,{f:3200*vr(.1),q:.9,v:.8,d:.018});eN(c,b,t,{type:'lowpass',f:1600*vr(.1),f1:300,v:.8,d:.05});eO(c,b,t,{f:160*vr(.08),f1:60,v:.8,d:.06})}],
  ['ar',3,1.6,(c,o)=>{const b=chain(c,o,2.6,1.8,.3,2200,[[.11,.3,1500],[.23,.15,1000],[.38,.07,800]]),t=.005;
-   eN(c,b,t,{type:'highpass',f:2200,v:1,d:.005});eN(c,b,t,{f:1900*vr(.08),q:.7,v:1,d:.04});eN(c,b,t,{type:'lowpass',f:800*vr(.1),f1:150,v:1,d:.2});eO(c,b,t,{f:95*vr(.06),f1:34,v:1,d:.18});
-   modal(c,b,t+.075,1800*vr(.04),.07,.05,[1,1.5,2.2]);modal(c,b,t+.115,1300*vr(.04),.08,.06,[1,1.45,2.1])}],
+   eN(c,b,t,{type:'highpass',f:2200,v:1,d:.005});eN(c,b,t,{f:1900*vr(.08),q:.7,v:1,d:.04});eN(c,b,t,{type:'lowpass',f:800*vr(.1),f1:150,v:1,d:.2});eO(c,b,t,{f:95*vr(.06),f1:34,v:1,d:.18});}],
  ['zap',3,.45,(c,o)=>{const b=chain(c,o,1.8,.9,.16,3000,[[.07,.16,2000]]);for(let k=0;k<9;k++){const t=.003+k*.013+rnd()*.012;eN(c,b,t,{type:'highpass',f:2400+rnd()*2600,v:.5+rnd()*.5,d:.007+rnd()*.012})}eO(c,b,.003,{type:'sawtooth',f:170*vr(.1),f1:110,v:.22,d:.13});eN(c,b,.003,{f:5200,q:3,v:.55,d:.07});eN(c,b,.004,{type:'lowpass',f:900,f1:200,v:.5,d:.08})}],
  ['boom',3,2.8,(c,o)=>{const b=chain(c,o,1.6,2.2,.38,1800,[[.22,.22,700],[.45,.1,500]]),t=.005;
    eN(c,b,t,{type:'highpass',f:1200,v:.8,d:.02});eN(c,b,t,{type:'lowpass',f:3500,f1:250,fd:.5,v:1,d:.35});eN(c,b,t,{buf:bB,type:'lowpass',f:500,f1:60,fd:1.8,v:1,a:.008,d:1.6});
