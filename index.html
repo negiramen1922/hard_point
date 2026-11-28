@@ -1879,10 +1879,6 @@ function bossHrungnir(e,p,d,dt){if(e.kind!=='hrungnir')return false;const ph=e.p
     if(!S.hit&&d<11.5&&P.y<3.4){const pa=Math.atan2(P.pos.x-p.x,P.pos.z-p.z),df=Math.atan2(Math.sin(pa-ta),Math.cos(pa-ta));if(Math.abs(df)<.5){S.hit=1;t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(ph>=2?250:220,t2,P.pos.clone().setY(2),'HRUNGNIRの尾の回転');P.vel.addScaledVector(t2,-24);P.vy=Math.max(P.vy,7);shake=Math.max(shake,1)}}
     if(k>=1){e.hsp=null;e.cd=Math.max(e.cd,1)}return true}
   e.hspc=(e.hspc==null?3:e.hspc)-dt;if(e.hspc<=0&&d<12&&!(e.tsl>0)){e.hspc=ph>=2?5:ph>=1?6.5:8;e.hsp={t:0,y0:e.tyaw,dr:rnd()<.5?1:-1};dropWarn(e.warn);e.warn=makeWarn(p,11);toast('HRUNGNIR 尾の回転！ 跳ぶか離れろ');play('roar',sp(p,1,.4));return true}
-  // VENOM LINE: the stinger sprays a line of venom that bursts along the sand toward (and past) the player, leaving pools
-  e.vlc=(e.vlc==null?6:e.vlc)-dt;if(e.vlc<=0&&d>13&&d<45&&!(e.tsl>0)){e.vlc=(ph>=2?6:ph>=1?7.5:9)+rnd()*1.5;e.tst=.5;const a0=Math.atan2(ux,uz),lines=ph>=2?[-.32,0,.32]:ph>=1?[-.2,.2]:[0],n=Math.ceil((d+10)/4.5);
-    for(const da of lines)for(let k=0;k<n;k++){const r=6+k*4.5;eruptAt(p.x+Math.sin(a0+da)*r,p.z+Math.cos(a0+da)*r,2.8,.75+k*.11,{dmg:120,pool:ph>=1?4.5:3.5,dps:45,by:'HRUNGNIRの毒液'})}
-    toast('HRUNGNIR 毒液の線！ 赤い円から離れろ');play('screech',sp(p,.6,.4))}
   // tail slam: warning ring at the player's spot, stinger stabs down, leaves a venom pool
   if(e.tsl>0){e.tsl-=dt;const W=e.tw&&e.tw.userData;if(W){W.inner.scale.setScalar(Math.max(.02,e.tsl/1.1));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*16))}
     if(e.tsl<=.18&&!e.tdone){e.tdone=1;dropWarn(e.tw);e.tw=null;const c=e.tp;explode(c.clone().setY(1),1.8,true);SFX.bossLand(c);shake=Math.max(shake,.7);addPool(c.x,c.z,5.5,ph>=2?8:6,60,'HRUNGNIRの毒だまり');
@@ -1893,7 +1889,7 @@ function bossHrungnir(e,p,d,dt){if(e.kind!=='hrungnir')return false;const ph=e.p
     for(let k=0;k<8;k++)puff(t3.set(p.x+ux*5+(rnd()-.5)*4,.6,p.z+uz*5+(rnd()-.5)*4),1.6,0x9a7048,1.2);SFX.clank(false)}
   e.scd=(e.scd==null?1:e.scd)-dt;if(d<e.r+5&&e.scd<=0){e.scd=1.7;e.sw=.4;SFX.clank(true);shake=Math.max(shake,.4);for(let k=0;k<5;k++)puff(t3.set(p.x+ux*5+(rnd()-.5)*4,.5,p.z+uz*5+(rnd()-.5)*4),1.4,0x9a7048,.6);
     if(d<e.r+4.5&&P.y<4){t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(170,t2,P.pos.clone().setY(2),'HRUNGNIRの鋏');P.vel.addScaledVector(t2,-16)}}
-  e.cd-=dt;if(e.cd<=0&&d>14&&d<80&&!e.hsp){e.cd=ph>=2?2.4:3.2;e.tst=.5;setTimeout(()=>{if(!enemies.includes(e)||state!=='play')return;e.muz.getWorldPosition(t3);tv.set(P.pos.x-t3.x,P.y+2.4-t3.y,P.pos.z-t3.z).normalize();const a0=Math.atan2(tv.x,tv.z),n=ph>=2?5:3;curVol=++eVol;
+  e.cd-=dt;if(e.cd<=0&&d>14&&d<80&&!e.hsp){e.cd=ph>=2?2.4:3.2;e.tst=.5;setTimeout(()=>{if(!enemies.includes(e)||state!=='play')return;e.muz.getWorldPosition(t3);tv.set(P.pos.x-t3.x,P.y+2.4-t3.y,P.pos.z-t3.z).normalize();const a0=Math.atan2(tv.x,tv.z),n=ph>=2?7:ph>=1?5:3;curVol=++eVol;
     for(let q=0;q<n;q++){const a=a0+(q-(n-1)/2)*.12;eShoot(e,t2.set(Math.sin(a),tv.y,Math.cos(a)).normalize(),22,90,'grn',2.6,t3.clone())}curVol=0;SFX.bossShot(e.m.position)},250)}
   return true}
 // ===== NIDHOGG: giant sand worm (desert stage 2). Underground it is invulnerable and hunts the player, bursts up under them
@@ -1919,7 +1915,7 @@ function bossNidhogg(e,p,d,dt){if(e.kind!=='nidhogg')return false;const ph=e.phs
   e.wt+=dt;let lean=6;
   if(e.ws==='under'){e.hid=true;e.ext=0;const v=ph>=2?27:ph>=1?24:21;if(d>2)p.addScaledVector(t2.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize(),v*dt);e.tyaw=ty;
     X.mound.visible=true;X.mound.position.y=-p.y;X.mound.scale.y=.85+Math.sin(now*9)*.15;if(rnd()<dt*30)puff(t3.set(p.x+(rnd()-.5)*7,.4,p.z+(rnd()-.5)*7),1.6+rnd(),0x9a7048,1);shake=Math.max(shake,.12*Math.max(0,1-d/40));
-    if((d<7&&e.wt>1.1)||e.wt>4.2){e.ws='warn';e.wt=0;const tx=P.pos.x+P.vel.x*.6,tz=P.pos.z+P.vel.z*.6,R=Math.hypot(tx,tz),k=R>ARENA-8?(ARENA-8)/R:1;e.tgt=new V(tx*k,0,tz*k);e.warn=makeWarn(e.tgt,9);
+    if(e.wt>(ph>=2?1.4:ph>=1?1.8:2.2)){e.ws='warn';e.wt=0;const tx=P.pos.x+P.vel.x*.6,tz=P.pos.z+P.vel.z*.6,R=Math.hypot(tx,tz),k=R>ARENA-8?(ARENA-8)/R:1;e.tgt=new V(tx*k,0,tz*k);e.warn=makeWarn(e.tgt,9);
       toast('NIDHOGG 足元から来るぞ！ 赤い円から離れろ');play('roar',sp(p,.55,.6));SFX.bossCrouch(p)}}
   else if(e.ws==='warn'){e.hid=true;p.x+=(e.tgt.x-p.x)*Math.min(1,dt*7);p.z+=(e.tgt.z-p.z)*Math.min(1,dt*7);X.mound.visible=true;X.mound.position.y=-p.y;shake=Math.max(shake,.3);
     const T=ph>=2?.85:1.05,W=e.warn.userData;W.inner.scale.setScalar(Math.max(.02,1-e.wt/T));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*(10+e.wt*14)));if(rnd()<.7)puff(t3.set(e.tgt.x+(rnd()-.5)*12,.4,e.tgt.z+(rnd()-.5)*12),1.4,0x9a7048,1.4);
@@ -1928,16 +1924,8 @@ function bossNidhogg(e,p,d,dt){if(e.kind!=='nidhogg')return false;const ph=e.phs
       const dd=Math.hypot(P.pos.x-c.x,P.pos.z-c.z);if(dd<9&&P.y<8){t2.set(c.x-P.pos.x,0,c.z-P.pos.z).normalize();damage(400*(1-dd/13),t2,P.pos.clone().setY(2),'NIDHOGGの奇襲',1);P.vel.addScaledVector(t2,-16);P.vy=Math.max(P.vy,15)}
 }}
   else if(e.ws==='burst'){e.ext=Math.min(1,e.wt/.3);lean=2;if(e.wt>=.55){if(e.nA<(ph>=2?3:ph>=1?2:1)){e.ws='dive';e.wt=0;e.quick=1}else{e.ws='emerged';e.wt=0;e.vT=.5}}}
-  else if(e.ws==='emerged'&&!e.wm){const o=ph>=1?['spit','sweep','vortex']:['spit','sweep'];e.wm=o[(e.wmi=(e.wmi==null?-1:e.wmi)+1)%o.length];e.wt=0;e.hid=false;
-    if(e.wm==='sweep'){const ac=ty;e.sdr=rnd()<.5?1:-1;e.sa0=ac-e.sdr*1.25;e.sa1=ac+e.sdr*1.25;e.sL=24;dropFx(e.wl);e.wl=makeFan(p,e.sL,e.sa0,e.sa1);e.shit=0;toast('NIDHOGG 薙ぎ払い！ 跳ぶか範囲から出ろ');play('roar',sp(p,.6,.6))}
+  else if(e.ws==='emerged'&&!e.wm){const o=ph>=1?['spit','vortex']:['spit'];e.wm=o[(e.wmi=(e.wmi==null?-1:e.wmi)+1)%o.length];e.wt=0;e.hid=false;
     if(e.wm==='vortex'){if(!e.bm){e.bm=new THREE.Mesh(new THREE.RingGeometry(3,18,40,1),new THREE.MeshBasicMaterial({color:0x6a4a2a,transparent:true,opacity:.5,depthWrite:false,side:THREE.DoubleSide}));e.bm.rotation.x=-Math.PI/2;onTop(e.bm);scene.add(e.bm);bossFx.push(e.bm)}e.bm.visible=true;e.vT=1;toast('NIDHOGG 流砂！ 引き込まれるな');play('roar',sp(p,.5,.7));SFX.boom(1.5,p)}}
-  else if(e.ws==='emerged'&&e.wm==='sweep'){e.hid=false;e.ext=Math.min(1,e.ext+dt*2);let hg=1;
-    if(e.wt<1.2){e.tyaw=la(e.tyaw,e.sa0,dt*5);lean=4;hg=1-.3*(e.wt/1.2);if(e.wl)e.wl.userData.fill.material.opacity=.1+.18*Math.abs(Math.sin(now*14))}
-    else if(e.wt<2.3){if(e.wl){dropFx(e.wl);e.wl=null;SFX.thrust(true)}const k=(e.wt-1.2)/1.1,q=k*k*(3-2*k);e.tyaw=e.sa0+(e.sa1-e.sa0)*q;lean=e.sL;hg=.13;shake=Math.max(shake,.35);
-      const hx=p.x+Math.sin(e.tyaw)*e.sL,hz=p.z+Math.cos(e.tyaw)*e.sL;if(rnd()<.9)puff(t3.set(hx+(rnd()-.5)*3,.5,hz+(rnd()-.5)*3),2.2,0x9a7048,1.2);propsAoe(t3.set(hx,1,hz),4,9999);
-      if(!e.shit&&P.y<3.4){_ta.set(p.x,1,p.z);_tb.set(hx,1,hz);if(segHit(_ta,_tb,_tc.set(P.pos.x,1,P.pos.z),3.4)){e.shit=1;t2.set(Math.cos(e.tyaw),0,-Math.sin(e.tyaw)).multiplyScalar(e.sdr);damage(ph>=2?280:240,t2.clone().negate(),P.pos.clone().setY(2),'NIDHOGGの薙ぎ払い');P.vel.addScaledVector(t2,22);P.vy=Math.max(P.vy,6);shake=Math.max(shake,1)}}}
-    else{lean=e.sL*(1-Math.min(1,(e.wt-2.3)/1.2)*.6);hg=.13+Math.min(1,(e.wt-2.3)/1.2)*.6}
-    e.whg=hg;if(e.wt>3.6){e.ws='dive';e.wt=0;e.quick=0;e.wm=null}}
   else if(e.ws==='emerged'&&e.wm==='vortex'){e.hid=false;e.ext=Math.min(1,e.ext+dt*2);e.tyaw+=dt*1.2;lean=3;const B=e.bm,dur=ph>=2?5:4.2,f=Math.min(1,e.wt/.6)*Math.min(1,(dur-e.wt)/.4);
     B.position.set(p.x,.08,p.z);B.rotation.z+=dt*2.5;B.material.opacity=.5*Math.max(0,f);B.scale.setScalar(.6+.4*Math.max(0,f));
     if(rnd()<dt*40){const a=rnd()*TAU,r=4+rnd()*14;puff(t3.set(p.x+Math.cos(a)*r,.4,p.z+Math.sin(a)*r),1.4,0x9a7048,.4)}
@@ -1953,7 +1941,7 @@ function bossNidhogg(e,p,d,dt){if(e.kind!=='nidhogg')return false;const ph=e.phs
   else if(e.ws==='dive'){lean=3;e.ext=Math.max(0,1-e.wt/(e.quick?.35:.8));if(rnd()<.6)puff(t3.set(p.x+(rnd()-.5)*6,.4,p.z+(rnd()-.5)*6),2,0x9a7048,1.5);
     if(e.ext<=0){e.ws='under';e.wt=0;if(!e.quick)e.nA=0;e.hid=true;for(let k=0;k<12;k++)puff(t3.set(p.x+(rnd()-.5)*8,.5,p.z+(rnd()-.5)*8),2.2,0x9a7048,2);SFX.boom(1.6,p)}}
   if(!e.hid)X.mound.visible=false;
-  if(e.spit>0&&!(e.ws==='emerged'&&e.wm==='spit'))e.spit-=dt;wormPose(e,e.ext*(e.spit>0?.95:1),lean,e.wm==='sweep'?e.whg:1);X.mouth.material.color.setRGB(1,.42+(e.spit>0?.35:0),.16);
+  if(e.spit>0&&!(e.ws==='emerged'&&e.wm==='spit'))e.spit-=dt;wormPose(e,e.ext*(e.spit>0?.95:1),lean);X.mouth.material.color.setRGB(1,.42+(e.spit>0?.35:0),.16);
   return true}
 // ===== breakable shields / claws: shatter into flying shards with a crack =====
 const SHARDS=[],shardG=new THREE.BoxGeometry(1,1,1);
@@ -2263,7 +2251,7 @@ function turtlePhase(e,tg){const X=e.ex;X.crater.getWorldPosition(t3);
 // shell spin charge (PHASE 2+): tuck head / legs / tail in, telegraph a line, spin like a top and ram, bounce off rocks and the arena edge
 function turtleTuck(e,X,k){X.head.position.z=7.1-2.6*k;X.head.scale.setScalar(1-.75*k);X.tail.scale.setScalar(1-.8*k);for(const L of e.legs){L.hip.scale.set(1,1-.7*k,1);L.hip.visible=k<.95}e.bodyG.position.y=e.y-1.3*k}
 function turtleSpin(e,p,d,dt,ph,X){
-  if(!e.ts){if(ph<1||e.es||e.fb)return false;if(e.rcd==null)e.rcd=3;e.rcd-=dt;if(e.rcd>0||d<16)return false;
+  if(!e.ts){if(ph<1||e.es)return false;if(e.rcd==null)e.rcd=3;e.rcd-=dt;if(e.rcd>0||d<16)return false;
     e.ts='tuck';e.tt=0;e.spin=e.spin||0;e.bdir=new V(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.wl=makeLine(12);toast('SURTR 甲羅回転突撃！ 赤い線から離れろ');play('roar',sp(p,.7,.5));SFX.bossCrouch(p)}
   e.tt+=dt;const fin=ph>=2;
   if(e.ts==='tuck'){const k=Math.min(1,e.tt/.8);turtleTuck(e,X,k);e.spin+=dt*k*k*14;tv.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.bdir.lerp(tv,Math.min(1,dt*3)).normalize();
@@ -2280,17 +2268,6 @@ function turtleSpin(e,p,d,dt,ph,X){
   else{const k=Math.max(0,1-e.tt/.8);turtleTuck(e,X,k);e.spin+=dt*k*14;
     if(e.tt>=.8){turtleTuck(e,X,0);e.ts=null;e.tyaw+=e.spin;e.spin=0;e.rcd=(fin?6:9.5)+rnd()*2.5;e.cd=1.4;e.scd=Math.max(e.scd||0,2);e.ecd=Math.max(e.ecd||0,1.5)}}
   return true}
-// SURTR FLAME BREATH: a red fan in front of it, then it sweeps a gout of fire across the fan (get out to the side or behind it)
-function turtleBreath(e,p,d,dt,ph,X){
-  if(!e.fb){e.fbc=(e.fbc==null?6:e.fbc)-dt;if(e.fbc>0||d>20||e.es||e.ts)return false;const ac=e.tyaw;e.fb={t:0,a0:ac-.55,a1:ac+.55,dr:rnd()<.5?1:-1};dropFx(e.wl);e.wl=makeFan(p,22,ac-.55,ac+.55);toast('SURTR 火炎放射！ 赤い扇から出ろ');play('roar',sp(p,.8,.6));SFX.bossCrouch(p)}
-  const F=e.fb;F.t+=dt;X.head.position.z=7.1+(F.t<.9?-.6*F.t/.9:.4);
-  if(F.t<1.0){if(e.wl){e.wl.position.set(p.x,.09,p.z);e.wl.userData.fill.material.opacity=.1+.2*Math.abs(Math.sin(now*14))}return true}
-  if(e.wl){dropFx(e.wl);e.wl=null;play('boomBig',sp(p,.6,.5))}
-  const dur=ph>=2?2:1.6,k=Math.min(1,(F.t-1)/dur),A=F.dr>0?F.a0+(F.a1-F.a0)*k:F.a1-(F.a1-F.a0)*k;e.tyaw=A;e.muz.getWorldPosition(t3);
-  for(let q=0;q<4;q++){const a=A+(rnd()-.5)*.5;flameP(t3,tv.set(Math.sin(a),-.05,Math.cos(a)),8,false)}if(rnd()<.5)spark(t3,2,12);
-  const pa=Math.atan2(P.pos.x-p.x,P.pos.z-p.z),df=Math.abs(Math.atan2(Math.sin(pa-A),Math.cos(pa-A)));if(d<24&&df<.32&&P.y<8){t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage((ph>=2?280:240)*dt,t2,P.pos.clone().setY(2),'SURTRの火炎放射',1)}
-  for(let q=0;q<2;q++){const r=6+rnd()*16;propsAoe(tv.set(p.x+Math.sin(A)*r,1,p.z+Math.cos(A)*r),2.5,500*dt)}
-  if(k>=1){e.fb=null;X.head.position.z=7.1;e.fbc=(ph>=2?6:ph>=1?7.5:9)+rnd()*2;e.cd=Math.max(e.cd,1.2)}return true}
 // SURTR LAVA FISSURE: it stamps and the ground cracks open toward the player — a line of lava bursts that leaves burning pools
 function turtleFissure(e,p,d,ph){e.fsc=(e.fsc==null?4:e.fsc);if(e.fsc>0||e.es||d<14||d>60)return;e.fsc=(ph>=2?6.5:ph>=1?8:10)+rnd()*2;
   const a0=Math.atan2(P.pos.x-p.x,P.pos.z-p.z),lines=ph>=2?[-.38,0,.38]:ph>=1?[-.22,.22]:[0],n=Math.ceil((d+12)/5);
@@ -2298,7 +2275,6 @@ function turtleFissure(e,p,d,ph){e.fsc=(e.fsc==null?4:e.fsc);if(e.fsc>0||e.es||d
   SFX.bossLand(p);shake=Math.max(shake,.9);explode(p.clone().setY(1),2.4);for(let k=0;k<12;k++)puff(tv.set(p.x+(rnd()-.5)*12,.5,p.z+(rnd()-.5)*12),2,0x6a5038,.9);toast('SURTR 地割れ！ 溶岩の列から離れろ')}
 function bossTurtle(e,p,d,dt){if(e.kind!=='turtle')return false;const ph=e.phs||0,X=e.ex;
   if(turtleSpin(e,p,d,dt,ph,X))return true;
-  if(turtleBreath(e,p,d,dt,ph,X))return true;
   e.fsc=(e.fsc==null?4:e.fsc)-dt;turtleFissure(e,p,d,ph);
   const ty=Math.atan2(P.pos.x-p.x,P.pos.z-p.z);if(e.tyaw==null)e.tyaw=ty;e.tyaw=la(e.tyaw,ty,dt*(.45+ph*.15));
   if(d>24&&!e.es)p.addScaledVector(t2.set(Math.sin(e.tyaw),0,Math.cos(e.tyaw)),e.spd*.55*dt);
