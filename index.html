@@ -1445,9 +1445,8 @@ const DEF=[
  ['ignite',1,.6,(c,o)=>{const b=chain(c,o,1.3,1,.15,4000),t=.005;eN(c,b,t,{f:800,f1:2500,q:.8,v:.6,a:.01,d:.15});eO(c,b,t,{f:90,f1:60,v:.3,d:.2})}],
  ['gat',5,.5,(c,o)=>{const b=chain(c,o,2.8,.5,.1,2200),t=.004;
    eN(c,b,t,{type:'highpass',f:3000,v:.8,d:.003});eN(c,b,t,{f:1300*vr(.12),q:1.1,v:1,d:.022});eN(c,b,t,{f:650*vr(.1),q:1.4,v:.8,d:.03});eN(c,b,t,{buf:bB,type:'lowpass',f:900,f1:160,v:1,d:.045});eO(c,b,t,{type:'triangle',f:105*vr(.08),f1:48,v:1,d:.05})}],
- ['magRel',3,.6,(c,o)=>{const b=chain(c,o,2.4,.5,.1,5000),t=.005;
-   for(const t0 of[t,t+.13])for(let k=0;k<7;k++){const tt=t0+k*.006+rnd()*.012,v=1-k*.09;eN(c,b,tt,{type:'highpass',f:1800+rnd()*1500,v:.7*v,d:.004+rnd()*.004});eN(c,b,tt,{f:2200+rnd()*2500,q:.6,v:.55*v,d:.012+rnd()*.012})}
-   for(const t0 of[t,t+.13]){eN(c,b,t0,{buf:bB,type:'lowpass',f:500,v:.9,d:.035});eN(c,b,t0+.01,{f:900,q:.5,v:.4,d:.03})}}],
+ ['magRel',3,1,(c,o)=>{const b=chain(c,o,1.6,.7,.15,9000),t=.005;eN(c,b,t,{buf:bB,type:'lowpass',f:600,v:.8,d:.04});eN(c,b,t,{f:1200,q:.6,v:.5,d:.025});
+   eN(c,b,t+.015,{type:'highpass',f:2400*vr(.08),f1:4200,fd:.6,v:.75,a:.015,h:.12,d:.32});eN(c,b,t+.015,{f:5200*vr(.08),f1:3000,fd:.7,q:.7,v:.5,a:.015,h:.1,d:.3});eN(c,b,t+.015,{f:1600,f1:900,fd:.5,q:.8,v:.22,a:.02,h:.05,d:.2})}],
  ['magHit',3,1.2,(c,o)=>{const b=chain(c,o,2.4,1.2,.2,2500,[[.09,.12,900]]),t=.005;eN(c,b,t,{type:'highpass',f:2200,v:.9,d:.005});eN(c,b,t,{f:800,q:1,v:.6,d:.03});
    eO(c,b,t,{type:'triangle',f:92*vr(.05),f1:44,v:1,d:.22});eO(c,b,t,{f:56,f1:34,v:.9,d:.3});modal(c,b,t,175*vr(.05),.55,.55,[1,1.48,2.09,2.72]);eN(c,b,t,{buf:bB,type:'lowpass',f:700,f1:110,v:.9,d:.12})}],
  ['mini',4,.7,(c,o)=>{const b=chain(c,o,1.8,.9,.16,3000,[[.07,.16,2000]]),t=.005;
