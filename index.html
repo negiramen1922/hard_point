@@ -1813,7 +1813,7 @@ function makeMortSculpt(){const q=makeSculpt('mort',4,'bug',0);if(!q)return null
   const muz=new THREE.Object3D();muz.position.set(M[0]*s,M[1]*s,M[2]*s);q.mdl.add(muz);q.muz=muz;return q}
 function makeShieldSculpt(){const q=makeSculpt('shld',4,'bug',0);if(!q)return null;const g=meshData('shldS');if(!g)return q;
   // the front shield is its own mesh (same scale and material as the body) so breakShield() can shatter and hide it
-  const sh=new THREE.Mesh(g,q.mat3);sh.scale.setScalar(q.sc);q.mdl.add(sh);q.ex={shd:sh,shc:0x8a5a3a};q.s=.8;return q}
+  const sh=new THREE.Mesh(g,q.mat3);sh.scale.setScalar(q.sc);q.mdl.add(sh);const hd=new THREE.Mesh(new THREE.SphereGeometry(1,18,14),new THREE.MeshPhongMaterial({color:0x141016,specular:0x2e2632,shininess:18}));hd.scale.set(.4*q.sc,.32*q.sc,.38*q.sc);hd.position.set(0,.08*q.sc,.52*q.sc);q.mdl.add(hd);q.ex={shd:sh,shc:0x8a5a3a};q.s=.8;return q}
 function makeFenrirSculpt(){const q=makeSculpt('fenrir',10,'quad',0);if(!q)return null;const s=q.sc,M=MD.fenrir.muz;q.s=4.2;
   const mz=M.map(m=>{const o=new THREE.Object3D();o.position.set(m[0]*s,m[1]*s,(m[2]+.04)*s);q.mdl.add(o);return o});q.ex={mz};q.muz=mz[0];return q}
 function makeSpiderSculpt(){const q=makeSculpt('spider',17,'spider',0);if(!q)return null;const s=q.sc;q.s=2.6;
@@ -2183,6 +2183,9 @@ function shatter(obj,col,n,big){obj.updateMatrixWorld(true);const bb=new THREE.B
   explode(c,big?2.2:1,true);for(let k=0;k<(big?8:4);k++)spark(c,3,14);play('clankH',sp(c,big?.4:.9,.5));play('chak',sp(c,big?.5:1.1,.3));shake=Math.max(shake,big?.9:.3);obj.visible=false;return c}
 function shardTick(dt){for(let i=SHARDS.length-1;i>=0;i--){const q=SHARDS[i];q.t+=dt;q.v.y-=26*dt;q.m.position.addScaledVector(q.v,dt);q.m.rotation.x+=q.w.x*dt;q.m.rotation.y+=q.w.y*dt;
   if(q.m.position.y<.15){q.m.position.y=.15;q.v.multiplyScalar(.4);q.v.y=Math.abs(q.v.y)*.3}if(q.t>1.6){scene.remove(q.m);SHARDS.splice(i,1)}}}
+// Svalinn: while its shield is up, every hit taken with the player in front (bullets, blasts, beams, lasers...) goes to the shield, never the body
+const _gv=new THREE.Vector3(),_gp=new THREE.Vector3();function gShd(e){if(e.type!=='guard'||!(e.shp>0))return false;e.m.getWorldDirection(_gv);const dx=P.pos.x-e.m.position.x,dz=P.pos.z-e.m.position.z,l=Math.hypot(dx,dz)||1,g=Math.hypot(_gv.x,_gv.z)||1;return(_gv.x*dx+_gv.z*dz)/(g*l)>.45}
+function gAbsorb(e){if(e.lhp==null){e.lhp=e.hp;return}const d=e.lhp-e.hp;if(d>0&&gShd(e)){e.hp=e.lhp;e.shp-=d;if(now-(e.bk||0)>.12){e.bk=now;e.ex.shd.getWorldPosition(_gp);spark(_gp,3,7);play('clankL',sp(e.m.position,.5))}if(e.shp<=0)breakShield(e)}e.lhp=e.hp}
 function breakShield(e){if(!e.ex||!e.ex.shd||!e.ex.shd.visible)return;e.shp=0;shatter(e.ex.shd,e.ex.shc||0x2a2230,10,false);e.flash=.2}
 // lingering venom pools (HRUNGNIR); ticked with the shells
 const HZ=[];
@@ -2599,7 +2602,7 @@ function lobShell(from,to,by,o){o=o||{};if(P.clk){to=to.clone();to.x+=(rnd()-.5)
 function updateShells(dt){for(let i=shells.length-1;i>=0;i--){const q=shells[i];q.t+=dt;const u=Math.min(1,q.t/q.T);q.m.position.set(q.from.x+(q.to.x-q.from.x)*u,q.from.y*(1-u)+4*q.h*u*(1-u),q.from.z+(q.to.z-q.from.z)*u);
   if(q.rock){q.m.rotation.x+=dt*6;q.m.rotation.y+=dt*4}if(rnd()<(q.lava?.9:.5))puff(q.m.position,q.lava||q.rock?1:.5,q.lava?0x2a2220:q.rock?0x9a7048:0x5a4a3a,.2);const W=q.warn.userData;W.inner.scale.setScalar(Math.max(.02,1-u));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*(8+u*14)));
   if(u>=1){scene.remove(q.m);dropWarn(q.warn);shells.splice(i,1);const c=new V(q.to.x,.8,q.to.z);explode(c,q.lava?3:q.rock?2.6:2.2,false,!q.lava&&!q.rock&&!q.ice);if(q.ice)for(let k=0;k<6;k++)puff(t3.set(c.x+(rnd()-.5)*5,.5,c.z+(rnd()-.5)*5),1.4,0xe8f2f8,1.5);if(q.rock)for(let k=0;k<6;k++)puff(t3.set(c.x+(rnd()-.5)*6,.5,c.z+(rnd()-.5)*6),1.8,0x9a7048,1.5);if(q.lava)for(let k=0;k<5;k++)spark(c,3,12);propsAoe(c,q.R,300);const dd=Math.hypot(P.pos.x-c.x,P.pos.z-c.z);if(dd<q.R+.5&&P.y<4){t2.set(c.x-P.pos.x,0,c.z-P.pos.z).normalize();damage(q.dmg*(1-dd/(q.R+2)),t2,P.pos.clone().setY(2),q.by||'Muspelの迫撃弾',1)}}}}
-function kill(e){const i=enemies.indexOf(e);if(i<0)return;if(e.type!=='boss'&&e.wl){dropFx(e.wl);e.wl=null}if(e.type==='tentacle'){if(e.par&&enemies.includes(e.par)&&!e.par.wipe&&e.wipe!==1){e.par.hp-=e.par.max*.04;e.par.flash=.2;toast('触手を撃破！ NAGLFARに大ダメージ');if(e.par.hp<=0)setTimeout(()=>kill(e.par),0)}}if(e.warn&&e.type!=='boss'){dropWarn(e.warn);e.warn=null}if(e.tw){dropWarn(e.tw);e.tw=null}
+function kill(e){const i=enemies.indexOf(e);if(i<0)return;if(e.type==='guard'&&e.hp<=0&&e.shp>0){gAbsorb(e);if(e.hp>0)return}if(e.type!=='boss'&&e.wl){dropFx(e.wl);e.wl=null}if(e.type==='tentacle'){if(e.par&&enemies.includes(e.par)&&!e.par.wipe&&e.wipe!==1){e.par.hp-=e.par.max*.04;e.par.flash=.2;toast('触手を撃破！ NAGLFARに大ダメージ');if(e.par.hp<=0)setTimeout(()=>kill(e.par),0)}}if(e.warn&&e.type!=='boss'){dropWarn(e.warn);e.warn=null}if(e.tw){dropWarn(e.tw);e.tw=null}
   if(e.type==='boss'&&e.js==='air'){e.hp=Math.max(e.hp,1);return}
   if(state==='play'&&!TUT&&!TEST){dexAdd(e);dropScrap(e)}
   {const dd=(e.dacc||0)+((e.php!=null?e.php:e.max)-e.hp);if(dd>.5&&state==='play'&&(e===lockT||dd>=120||e.type==='boss'))popNum(e.m.position,dd,'big',e.r);e.dacc=0}
@@ -2995,7 +2998,7 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=12;
+const BUILD=13;
 // ===== 3D models live in models/<id>.json and load in the background (the page itself stays light) =====
 const MODEL_IDS=["w_shot", "w_melt", "w_beam", "w_cannon", "w_burst", "drone", "tempest", "bug", "fenrir", "jelly", "snip", "arma", "mort", "shld", "shldS", "hound", "spider"];let modelsOK=false,modelsP=null,modelsN=0;
 const MP={},getModel=id=>MP[id]||(MP[id]=fetch('models/'+id+'.json?v='+BUILD).then(r=>r.ok?r.json():null).then(d=>{if(d)MD[id]=d}).catch(()=>{}).then(()=>{modelsN++;ldProg()}));
@@ -3921,11 +3924,11 @@ function update(dt){
   for(const b of bullets){if(!b.on)continue;b.p.copy(b.m.position);b.m.position.addScaledVector(b.v,dt);b.life-=dt;
     {const ph=propSeg(b.p.x,b.p.y,b.p.z,b.m.position.x,b.m.position.y,b.m.position.z);if(ph){b.m.position.lerpVectors(b.p,b.m.position,ph.t);hitProp(ph.pr,b.dmg);spark(b.m.position,2,6);if(b.aoe)blast(b.m.position.clone(),b.aoe,b.dmg*.6,null);b.on=false;b.m.visible=false;continue}}
     if(b.life<=0||b.m.position.y<0||inBld(b.m.position)){if(b.aoe)blast(b.m.position.clone(),b.aoe,b.dmg*.6,null);else if(b.life>0)spark(b.m.position,1,5);b.on=false;b.m.visible=false;continue}
-    for(const e of enemies){if(segHit(b.p,b.m.position,e.m.position,e.r)){let gm=1;if(e.type==='guard'&&e.shp>0){e.m.getWorldDirection(_pv);_pv.y=0;_pv.normalize();const bl=Math.hypot(b.v.x,b.v.z)||1;if(-(b.v.x*_pv.x+b.v.z*_pv.z)/bl>.45){gm=b.am==='AP'?.45:.12;e.shp-=b.dmg*amMul(b,e)*(b.am==='AP'?1.3:1);if(e.shp<=0)breakShield(e);spark(b.m.position,3,7);if(now-(e.bk||0)>.12){e.bk=now;play('clankL',sp(e.m.position,.5))}}}e.hp-=b.dmg*hitMul(e)*gm*amMul(b,e);if(b.am==='HE'&&!b.aoe)aoe(b.m.position,1.8,b.dmg*.3,e);if(b.aoe)blast(b.m.position.clone(),b.aoe,b.dmg*.6,e);if(U.expl){aoe(b.m.position,3,b.dmg*.35,e);if(rnd()<.25){const bm=booms[oi++%booms.length];bm.m.position.copy(b.m.position);bm.t=0;bm.s=.45;bm.m.visible=true}}e.flash=.05;spark(b.m.position,2,9);b.on=false;b.m.visible=false;if(e.hp<=0)kill(e);break}}
+    for(const e of enemies){if(segHit(b.p,b.m.position,e.m.position,e.r)){let gm=1;if(e.type==='guard'&&e.shp>0){e.m.getWorldDirection(_pv);_pv.y=0;_pv.normalize();const bl=Math.hypot(b.v.x,b.v.z)||1;if(-(b.v.x*_pv.x+b.v.z*_pv.z)/bl>.45){gm=0;e.shp-=b.dmg*amMul(b,e)*(b.am==='AP'?1.3:1);if(e.shp<=0)breakShield(e);spark(b.m.position,3,7);if(now-(e.bk||0)>.12){e.bk=now;play('clankL',sp(e.m.position,.5))}}}e.hp-=b.dmg*hitMul(e)*gm*amMul(b,e);if(b.am==='HE'&&!b.aoe)aoe(b.m.position,1.8,b.dmg*.3,e);if(b.aoe)blast(b.m.position.clone(),b.aoe,b.dmg*.6,e);if(U.expl){aoe(b.m.position,3,b.dmg*.35,e);if(rnd()<.25){const bm=booms[oi++%booms.length];bm.m.position.copy(b.m.position);bm.t=0;bm.s=.45;bm.m.visible=true}}e.flash=.05;spark(b.m.position,2,9);b.on=false;b.m.visible=false;if(e.hp<=0)kill(e);break}}
   }
   // enemies
   for(let i=enemies.length-1;i>=0;i--){
-    const e=enemies[i],p=e.m.position;
+    const e=enemies[i],p=e.m.position;if(e.type==='guard')gAbsorb(e);
     e.age=(e.age||0)+dt;if(e.type==='drone'&&e.mat3){const nr=e.m.position.distanceTo(P.pos)<15;e.mat3.emissiveIntensity=1.3+Math.sin(now*(nr?16:5)+e.ph)*(nr?1:.5);if(e.ru){e.ru.uK.value+=((nr?1:0)-e.ru.uK.value)*Math.min(1,dt*4);e.mdl.rotation.z=Math.sin(now*7+e.ph)*.03}else{e.mdl.position.y=Math.abs(Math.sin(now*9+e.ph))*.08;e.mdl.rotation.z=Math.sin(now*9+e.ph)*.05}}if(e.m.userData.sac){const k=1+Math.sin(now*(e.m.position.distanceTo(P.pos)<15?16:5)+e.ph)*.12;e.m.userData.sac.scale.set(.75*.55*k,.6*.55*k,.8*.55*k)}if(e.mat>0){e.mat-=dt;const k=1-Math.max(0,e.mat)/.7;e.m.scale.setScalar(.05+.95*k*k);e.mt.emissive.setRGB(.5*(1-k),.2*(1-k),.9*(1-k));e.m.lookAt(P.pos.x,p.y,P.pos.z);if(e.mat<=0){e.m.scale.setScalar(1);e.mt.emissive.setHex(0);if(e.type==='boss')bossVoice(e,null,1.2)}continue}
     if(e.dummy){e.flash-=dt;e.mt.emissive.setHex(e.flash>0?0x999999:0);e.m.lookAt(P.pos.x,p.y,P.pos.z);continue}
     tv.set(P.pos.x-p.x,0,P.pos.z-p.z);const d=tv.length();tv.normalize();
