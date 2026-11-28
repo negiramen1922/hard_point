@@ -624,6 +624,8 @@ const UNLOCK_COST=300;// 全パーツ共通の解禁コスト
 const SCRI='<svg class="si" viewBox="0 0 24 24"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z" fill="#ffcf8a" stroke="#7a4a18" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 2.5l8.2 4.75L12 12 3.8 7.25z" fill="#ffe7bf" opacity=".55"/><circle cx="12" cy="12" r="3.6" fill="#1a1410" stroke="#7a4a18" stroke-width="1.2"/></svg>';
 const PAINT={bone:{n:'Bone',c:[0xcfc6b4,0x3b3e46,0xff5a1f]},desert:{n:'Desert',c:[0xc4a06a,0x5a4a32,0x3a7a3e]},arctic:{n:'Arctic',c:[0xe6ecef,0x66727c,0x2aa8e0]},woodland:{n:'Woodland',c:[0x5f6b40,0x34392a,0xe0b232]},crimson:{n:'Crimson',c:[0x8e2020,0x2a2226,0xf0c040]},navy:{n:'Navy',c:[0x34465e,0x1e242e,0xff8a2a]},shadow:{n:'Shadow',c:[0x2e3035,0x17181b,0x7fe0ff]},gilded:{n:'Gilded',c:[0xc9a43a,0x3a2e1c,0x8a1a1a]}};
 function applyPaint(){const P=PAINT[cfg.P]||PAINT.bone;MK.paint.color.setHex(P.c[0]);MK.gm.color.setHex(P.c[1]);MK.acc.color.setHex(P.c[2]);try{localStorage.setItem('rg_paint',cfg.P)}catch(e){}}
+// not released yet: only on the test site (remove from this list to release)
+const WIP={B:['rapt'],W:['harpoon'],tempestModel:true};if(!window.HP_TEST){for(const k of WIP.B)delete BODY[k];for(const k of WIP.W)delete WP[k]}
 const COST={B:{},G:{},W:{},P:{}};for(const [k,T] of [['B',BODY],['G',LEGS],['W',WP],['P',PAINT]])for(const id in T)COST[k][id]=UNLOCK_COST;
 const isUnl=(k,id)=>ADMIN||DEF_UNL[k].includes(id)||UNL.includes(k+':'+id);
 try{cfg.P=localStorage.getItem('rg_paint')||'bone'}catch(e){cfg.P='bone'}
@@ -892,7 +894,7 @@ function tpGeo(k,sd){const key=k+(sd||'');if(TPG[key])return TPG[key];if(TPD===u
   g.setAttribute('color',new THREE.BufferAttribute(new Uint8Array(b(q.c)),3,true));g.setIndex(new THREE.BufferAttribute(new Uint16Array(b(ix)),1));g.computeVertexNormals();return TPG[key]=g}
 const tpMat=new THREE.MeshLambertMaterial({vertexColors:true});
 // single=true: the light version (Squall) is one gun of the pair — top body, barrel cluster and ammo can — smaller and centred on its barrel axis
-function tempestModel(a,w,single){if(!tpGeo('bodyT'))return false;const k=single?.78:1,G=new THREE.Group();G.scale.setScalar(k);w.add(G);
+function tempestModel(a,w,single){if((WIP.tempestModel&&!window.HP_TEST)||!tpGeo('bodyT'))return false;const k=single?.78:1,G=new THREE.Group();G.scale.setScalar(k);w.add(G);
   if(single){G.position.set(0,-TPD.axT[1]*k,2.55-2.7*k)}
   const sd=a.s<0?'P':'N',add=(p,nm,m)=>{const ms=new THREE.Mesh(tpGeo(nm,nm.startsWith('bar')?'':sd),m||tpMat);p.add(ms);return ms};
   add(G,'bodyT');if(!single)add(G,'bodyB');
@@ -2915,7 +2917,7 @@ const DEMO_L=[{B:'cerb',G:'tank',A:'overload',W:['cannon','twin','gat']},{B:'lan
 const DEMO_E=['drone','drone','drone','shooter','shooter','hound','flyer','guard'];
 function hideAll(){for(const id of['home','stsel','setW','dexW','newsW','histW','shrW','pauseW','over','menu','hud','ctl','sheet','pick','help'])$(id).classList.add('hide');menuFocus=null;cam.clearViewOffset()}
 // build number: +1 on every update pushed to the test site. Test shows 1.1.<build>, production 1.0.<build>
-const BUILD=2;
+const BUILD=3;
 function goHome(){TUT=null;TEST=null;$('dpsH').classList.add('hide');if(!GT)tutHide();hideAll();stopMotors();megaLoop(false);inp.all=false;inp.w.fill(false);mb=mb2=false;joy.x=joy.y=0;try{document.pointerLockElement&&document.exitPointerLock()}catch(e){}startDemo();$('ver').textContent='ver '+(window.HP_TEST?'1.1.':'1.0.')+String(BUILD).padStart(3,'0')}
 function homeCur(){const c=demo?JSON.parse(demo.keep):cfg;$('hScrap').innerHTML=SCRI+SCRAP.toLocaleString()+(ADMIN?' <small>管理者</small>':'');$('hCur').innerHTML=`現在の機体<b>${BODY[c.B].n} ／ ${LEGS[c.G].n}</b>${BODY[c.B].slots.map((x,i)=>WP[c.W[i]].n).join('・')} ／ ${ABIL[c.A].n}`}
 function startDemo(){if(!demo)demo={keep:JSON.stringify(cfg)};Object.assign(demo,{t:0,sw:0,shot:0,ang:rnd()*TAU,ab:3,lg:5,cut:true,look:null});
