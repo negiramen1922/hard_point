@@ -1671,7 +1671,7 @@ function makeQuad(type,mt){
   if(type==='drone'){const q=makeSculpt('drone',2.3,'drone',0);if(q)return q}
   if(type==='hound')return makeHound(mt);
   if(type==='boss'){const bk=bossKind();if(bk==='spider')return makeSpiderSculpt()||makeSpider(mt);if(bk==='arma')return makeArma(mt);if(bk==='turtle')return makeTurtle(mt);if(bk==='hrungnir')return makeScorp(mt,2.6,true);if(bk==='nidhogg')return makeWorm(mt);if(bk==='crab')return makeCrab(mt);if(bk==='whale')return makeWhale(mt);if(bk==='naglfar')return makeNaglfar(mt)}
-  if(type==='kolga')return makeClione(mt);if(type==='drifa')return makeSnowbug(mt);if(type==='mjoll')return makePenguin(mt);if(type==='tentacle')return makeTentacle(mt);if(type==='manta')return makeManta(mt);if(type==='skoll')return makeScorp(mt,.9,false);if(type==='logi')return makeLizard(mt,1);if(type==='dvalin')return makeMole(mt,1);
+  if(type==='kolga')return makeClione(mt);if(type==='drifa')return makeSnowbug(mt);if(type==='mjoll')return makePenguin(mt);if(type==='tentacle')return makeTentacle(mt);if(type==='gmsl')return makeBigMissile(mt);if(type==='manta')return makeManta(mt);if(type==='skoll')return makeScorp(mt,.9,false);if(type==='logi')return makeLizard(mt,1);if(type==='dvalin')return makeMole(mt,1);
   if(type==='flyer')return makeFlyer(mt);
   const s={drone:.55,shooter:1,boss:2.6,mortar:1.3,sniper:.9,guard:1.1}[type],lh=1.6*s*(type==='sniper'?1.35:1),cy=lh+.3*s;
   const root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy;root.add(g);
@@ -1697,13 +1697,13 @@ function makeQuad(type,mt){
   return {root,legs,cy,s,muz,laser,ex};
 }
 function spawn(type,pos){
-  const mt=new THREE.MeshLambertMaterial({color:type==='boss'?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28,hrungnir:0x6e4628,nidhogg:0x7a5634,crab:0x8e3426,whale:0xf2f4f6,naglfar:0x5a3a6e}[bossKind()]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c,skoll:0x6a4a2a,logi:0x5e2a1a,dvalin:0x5a4636,manta:0x2e4a60,tentacle:0x6a3a7e,kolga:0x9fd8ee,drifa:0xf4f6f8,mjoll:0x24282e}[type]||0x5a2448)});
+  const mt=new THREE.MeshLambertMaterial({color:type==='boss'?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28,hrungnir:0x6e4628,nidhogg:0x7a5634,crab:0x8e3426,whale:0xf2f4f6,naglfar:0x5a3a6e}[bossKind()]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c,skoll:0x6a4a2a,logi:0x5e2a1a,dvalin:0x5a4636,manta:0x2e4a60,tentacle:0x6a3a7e,gmsl:0x8a9098,kolga:0x9fd8ee,drifa:0xf4f6f8,mjoll:0x24282e}[type]||0x5a2448)});
   const q=makeQuad(type,mt),m=q.root;
   let x=0,z=0;for(let t=0;t<15;t++){const a=rnd()*TAU,rr=55+rnd()*30;x=P.pos.x+Math.cos(a)*rr;z=P.pos.z+Math.sin(a)*rr;const d=Math.hypot(x,z);if(d>ARENA-4){x*=(ARENA-4)/d;z*=(ARENA-4)/d}if(!inBld(tv.set(x,1,z),q.s*2.5))break}
   if(pos){x=pos.x;z=pos.z}
   m.position.set(x,q.cy,z);scene.add(m);
-  const sc=1+wave*.09,hp={drone:50,shooter:160,hound:85,flyer:70,mortar:240,sniper:110,guard:280,skoll:110,logi:150,dvalin:200,manta:900,tentacle:1500,kolga:240,drifa:45,mjoll:130,boss:(13000+stage*5000)*({spider:1.25,arma:1.5,turtle:1.7,hrungnir:.95,nidhogg:1.1,crab:1,whale:1.15,naglfar:1.6}[q.kind]||.85)}[type]*(type==='boss'?1:sc);
-  enemies.push({type,m,mt:q.mt||mt,hp,mdl:q.mdl,mat3:q.mat3,max:hp,y:q.cy,legs:q.legs,wp:rnd()*6,r:{drone:1.2,shooter:1.6,hound:2.7,flyer:1.5,mortar:2,sniper:1.3,guard:1.9,skoll:1.7,logi:1.7,dvalin:2,manta:3.4,tentacle:3.4,kolga:1.8,drifa:1,mjoll:1.3,boss:q.kind==='naglfar'?16:q.kind==='whale'?10:q.kind==='crab'?5.6:q.kind==='nidhogg'?7:q.kind==='hrungnir'?5.4:q.kind==='spider'?5:q.kind==='arma'?5.9:q.kind==='turtle'?6.6:3.8}[type],spd:{drone:10+Math.min(6,wave*.35),shooter:6,hound:15+Math.min(5,wave*.3),flyer:9,mortar:3.5,sniper:4.5,guard:5.5,skoll:13+Math.min(5,wave*.3),logi:6,dvalin:15,manta:9,tentacle:0,kolga:3.5,drifa:9,mjoll:20,boss:3.2}[type],kind:q.kind,ru:q.ru,tur:q.tur,ball:q.ball,bodyG:q.body,muz:q.muz,glow:q.glow,laser:q.laser,rot:q.rot,tail:q.tail,ex:q.ex,cd:1.5+rnd()*2,flash:0,ph:rnd()*6,k:0,mat:.7});m.scale.setScalar(.05);
+  const sc=1+wave*.09,hp={drone:50,shooter:160,hound:85,flyer:70,mortar:240,sniper:110,guard:280,skoll:110,logi:150,dvalin:200,manta:900,tentacle:1500,gmsl:650,kolga:240,drifa:45,mjoll:130,boss:(13000+stage*5000)*({spider:1.25,arma:1.5,turtle:1.7,hrungnir:.95,nidhogg:1.1,crab:1,whale:1.15,naglfar:1.6}[q.kind]||.85)}[type]*(type==='boss'?1:sc);
+  enemies.push({type,m,mt:q.mt||mt,hp,mdl:q.mdl,mat3:q.mat3,max:hp,y:q.cy,legs:q.legs,wp:rnd()*6,r:{drone:1.2,shooter:1.6,hound:2.7,flyer:1.5,mortar:2,sniper:1.3,guard:1.9,skoll:1.7,logi:1.7,dvalin:2,manta:3.4,tentacle:3.4,gmsl:4.4,kolga:1.8,drifa:1,mjoll:1.3,boss:q.kind==='naglfar'?16:q.kind==='whale'?10:q.kind==='crab'?5.6:q.kind==='nidhogg'?7:q.kind==='hrungnir'?5.4:q.kind==='spider'?5:q.kind==='arma'?5.9:q.kind==='turtle'?6.6:3.8}[type],spd:{drone:10+Math.min(6,wave*.35),shooter:6,hound:15+Math.min(5,wave*.3),flyer:9,mortar:3.5,sniper:4.5,guard:5.5,skoll:13+Math.min(5,wave*.3),logi:6,dvalin:15,manta:9,tentacle:0,gmsl:0,kolga:3.5,drifa:9,mjoll:20,boss:3.2}[type],kind:q.kind,ru:q.ru,tur:q.tur,ball:q.ball,bodyG:q.body,muz:q.muz,glow:q.glow,laser:q.laser,rot:q.rot,tail:q.tail,ex:q.ex,cd:1.5+rnd()*2,flash:0,ph:rnd()*6,k:0,mat:.7});m.scale.setScalar(.05);
   if(type==='guard')enemies[enemies.length-1].shp=260*sc;
 }
 const portals=[];const ptCore=new THREE.MeshBasicMaterial({color:0x05000c});
@@ -2107,6 +2107,25 @@ function makeNaglfar(mt){const root=new THREE.Group(),body=new THREE.Group();roo
   const eye=new THREE.Group();eye.position.set(0,2.2,-4.6);core.add(eye);ell(eye,new THREE.MeshLambertMaterial({color:0xe6dccb}),2.4,2.4,1.6,0,0,0);const pupil=new THREE.Object3D();pupil.position.z=1.5;eye.add(pupil);
   ell(eye,new THREE.MeshBasicMaterial({color:0xff3a1a}),1.2,1.2,.5,0,0,1.25);ell(eye,new THREE.MeshBasicMaterial({color:0x200408}),.5,.9,.3,0,0,1.6);
   return{root,legs:[],cy:0,s:16,kind:'naglfar',body,ex:{tur,ten,sh,main:{g:mg,mz:mmz,glow:mglow},core,eye,pupil}}}
+// NAGLFAR's giant missile (PHASE 2+): launched straight up from the deck, then arcs down onto a red circle that creeps after the player.
+// It is a normal enemy target: lock on and shoot it down before it lands
+function makeBigMissile(mt){const root=new THREE.Group(),g=new THREE.Group();root.add(g);const red=new THREE.MeshLambertMaterial({color:0xb02a20}),dk=new THREE.MeshLambertMaterial({color:0x2e3238});
+  cyl(1.15,8,mt,0,0,0,g,'z');cyl(1.2,.5,red,0,0,2.2,g,'z');cyl(1.2,.5,red,0,0,-1.4,g,'z');cone(g,red,1.15,3,0,0,5.4,Math.PI/2);cyl(.9,1,dk,0,0,-4.4,g,'z');
+  for(let k=0;k<4;k++){const fn=new THREE.Group();fn.rotation.z=k*Math.PI/2+Math.PI/4;g.add(fn);box(.12,1.6,2.2,dk,0,1.6,-3.2,fn)}
+  const fl=new THREE.Mesh(new THREE.ConeGeometry(.8,3.4,10),mkAdd(0xffa040,.85));fl.rotation.x=-Math.PI/2;fl.position.z=-6.4;g.add(fl);
+  g.scale.setScalar(1.9);return{root,legs:[],cy:8,s:3,kind:'gmsl',ex:{fl}}}
+function gmslAI(e,p,dt){const X=e.ex;if(e.ms==null){e.ms='wait';e.mT=e.dl||0;e.mT=-e.mT}
+  e.mT+=dt;X.fl.scale.set(1,1+Math.sin(now*40)*.25,1);if(rnd()<.8)puff(_pv.copy(p).addScaledVector(t2.set(0,0,-12).applyQuaternion(e.m.quaternion),1),2.6,0xd8dcdc,.5);
+  if(e.ms==='wait'){X.fl.visible=false;e.m.rotation.set(-Math.PI/2,0,0);if(e.mT>=0){e.ms='up';e.mT=0;X.fl.visible=true;SFX.thrust(true);play('boomBig',sp(p,.7,.5))}return false}
+  if(e.ms==='up'){const k=Math.min(1,e.mT/1.6);p.y=8+40*k*k;e.y=p.y;e.m.rotation.set(-Math.PI/2,0,0);
+    if(k>=1){e.ms='fly';e.mT=0;e.a0=p.clone();e.tg=new V(P.pos.x+(e.ox||0),0,Math.min(SHORE-4,P.pos.z+(e.oz||0)));e.warn=makeWarn(e.tg,10)}return false}
+  const T=4.2,u=Math.min(1,e.mT/T);if(u<.7){t3.set(P.pos.x+(e.ox||0),0,Math.min(SHORE-4,P.pos.z+(e.oz||0))).sub(e.tg).setY(0);const L=t3.length();if(L>.01)e.tg.addScaledVector(t3,Math.min(L,6*dt)/L)}
+  e.warn.position.set(e.tg.x,.07,e.tg.z);const W=e.warn.userData;W.inner.scale.setScalar(Math.max(.02,1-u));W.fill.material.opacity=.15+.25*Math.abs(Math.sin(now*(6+u*14)));
+  const nx=e.a0.x+(e.tg.x-e.a0.x)*u,nz=e.a0.z+(e.tg.z-e.a0.z)*u,ny=e.a0.y*(1-u*u)+8*u*(1-u);t3.set(nx,ny,nz);if(t3.distanceToSquared(p)>1e-4){e.m.lookAt(t3)}p.copy(t3);e.y=p.y;
+  if(u>=1){const c=e.tg.clone().setY(1);dropWarn(e.warn);e.warn=null;explode(c,4.5);for(let k=0;k<5;k++)setTimeout(()=>explode(_pv.set(c.x+(rnd()-.5)*12,1,c.z+(rnd()-.5)*12).clone(),2,true),80+k*70);for(let k=0;k<16;k++)puff(t3.set(c.x+(rnd()-.5)*14,.6,c.z+(rnd()-.5)*14),2.8,0x3a3430,2);
+    SFX.bossLand(c);shake=Math.max(shake,1.6);propsAoe(c,10,9999);const dd=Math.hypot(P.pos.x-c.x,P.pos.z-c.z);if(dd<10.5&&P.y<8){t2.set(c.x-P.pos.x,0,c.z-P.pos.z).normalize();damage(420*(1-dd/14),t2,P.pos.clone().setY(2),'NAGLFARの大型ミサイル',1);P.vel.addScaledVector(t2,-20);P.vy=Math.max(P.vy,8)}
+    return true}
+  return false}
 function makeFan(B,L,a0,a1){const g=new THREE.Group();g.position.set(B.x,.09,B.z);const lo=Math.min(a0,a1)-Math.PI/2,ln=Math.abs(a1-a0),mk=o=>new THREE.MeshBasicMaterial({color:0xff2010,transparent:true,opacity:o,depthWrite:false,side:THREE.DoubleSide});
   const fill=new THREE.Mesh(new THREE.CircleGeometry(L,40,lo,ln),mk(.2)),edge=new THREE.Mesh(new THREE.RingGeometry(L-.8,L,40,1,lo,ln),mk(.9));for(const m of[fill,edge]){m.rotation.x=-Math.PI/2;g.add(m)}g.userData={fill};onTop(g);scene.add(g);bossFx.push(g);return g}
 function makeTentacle(mt){const root=new THREE.Group(),segs=[],N=22,flesh=new THREE.MeshLambertMaterial({color:0x4a2c6e,emissive:0x1a0828});
@@ -2151,6 +2170,8 @@ function bossNaglfar(e,p,d,dt){if(e.kind!=='naglfar')return false;const ph=e.phs
   if(ph>=2){e.rcd=(e.rcd==null?2:e.rcd)-dt;if(e.rcd<=0){e.rcd=1.2;const a=rnd()*TAU,rr=rnd()*30;lobShell(new V((rnd()-.5)*40,14,NG_Z),new V(P.pos.x+Math.cos(a)*rr,0,Math.min(SHORE-2,P.pos.z+Math.sin(a)*rr)),'NAGLFARの艦砲',{T:2.4,R:5,dmg:180,h:24,sz:2.6})}}
   // tentacle SWEEP: one tentacle rises and sweeps a wide fan across the pier, low to the ground (jump over it)
   e.wcd=(e.wcd==null?6:e.wcd)-dt;if(e.wcd<=0&&!enemies.some(o=>o.type==='tentacle'&&o.sw)){e.wcd=ph>=2?7:ph>=1?8.5:10;const x=cl(P.pos.x+(rnd()-.5)*20,-ARENA*.6,ARENA*.6);spawn('tentacle',new V(x,0,SHORE+5));const en=enemies[enemies.length-1];en.par=e;en.mat=.01;en.sw=1}
+  if(ph>=1){e.gcd=(e.gcd==null?5:e.gcd)-dt;if(e.gcd<=0&&!enemies.some(o=>o.type==='gmsl')){e.gcd=ph>=2?10:13;const n=ph>=2?2:1;toast('NAGLFAR 大型ミサイル発射！ 撃ち落とせ');
+      for(let k=0;k<n;k++){spawn('gmsl',new V(-8+k*14,0,NG_Z+1));const en=enemies[enemies.length-1];en.mat=.01;en.dl=k*.9;if(k){const a=rnd()*TAU;en.ox=Math.cos(a)*16;en.oz=Math.sin(a)*16}}}}
   if(nglMain(e,p,dt,ph,X))return true;
   nglCore(e,p,dt,ph,X);return true}
 // MAIN CANNON (PHASE 2+): the bow gun charges, a red line tracks the player and locks, then a heavy beam rakes along the line
@@ -2320,7 +2341,8 @@ function kill(e){const i=enemies.indexOf(e);if(i<0)return;if(e.type!=='boss'&&e.
   if(state==='play'&&!TUT&&!TEST){dexAdd(e);dropScrap(e)}
   {const dd=(e.dacc||0)+((e.php!=null?e.php:e.max)-e.hp);if(dd>.5&&state==='play'&&(e===lockT||dd>=120||e.type==='boss'))popNum(e.m.position,dd,'big',e.r);e.dacc=0}
   if(e.type==='boss'){dropWarn(e.warn);e.warn=null;dropFx(e.wl);e.wl=null;dropFx(e.bm);dropFx(e.bc);if(e.glow)e.glow.visible=false;e.bs=null;megaLoop(false);e.js=null;e.m.scale.set(1,1,1);enemies.splice(i,1);if(lockT===e)lockT=null;score+=5000;dying.push({e,t:0,next:0});toSpawn=[];for(const q of portals)scene.remove(q.g);portals.length=0;for(const b of eb){b.on=false;b.m.visible=false}const rest=enemies.slice();rest.forEach(o=>o.wipe=1);rest.forEach((o,k)=>setTimeout(()=>{if(enemies.includes(o))kill(o)},300+k*90));return}
-  explode(e.m.position,{kolga:1.6,drifa:1,mjoll:1.2,tentacle:2.4,manta:2.8,skoll:1.4,logi:1.5,dvalin:1.7,shooter:1.7,hound:1.3,flyer:1.5,mortar:2.1,sniper:1.5,guard:2}[e.type]||1.15);if(U.vamp)P.hp=Math.min(P.max,P.hp+P.max*.015*U.vamp);if(U.chain){const cp=e.m.position.clone();setTimeout(()=>{if(state==='play')aoe(cp,6+U.chain,110*U.chain)},90)}score+={kolga:350,drifa:120,mjoll:200,tentacle:600,manta:800,skoll:250,logi:350,dvalin:400,drone:100,shooter:300,hound:200,flyer:250,mortar:400,sniper:350,guard:450,boss:5000}[e.type];if(e.laser){dropFx(e.laser);e.laser=null}for(let k=0;k<5;k++)puff(_pv.set(e.m.position.x+(rnd()-.5)*2,e.m.position.y,e.m.position.z+(rnd()-.5)*2),.8+rnd()*.6,0x2a5a40,.6);if(now-(P.scr||0)>.18){P.scr=now;play('screech',sp(e.m.position,e.type==='drone'?.35:.6,.15))}scene.remove(e.m);e.mt.dispose();enemies.splice(i,1);if(lockT===e)lockT=null;
+  if(e.type==='gmsl'){shake=Math.max(shake,.8);SFX.boom(2.5,e.m.position);for(let k=0;k<10;k++)puff(_pv.set(e.m.position.x+(rnd()-.5)*6,e.m.position.y+(rnd()-.5)*4,e.m.position.z+(rnd()-.5)*6),2.4,0x3a3430,1);if(!e.wipe)toast('大型ミサイルを撃墜！')}
+  explode(e.m.position,{gmsl:3.6,kolga:1.6,drifa:1,mjoll:1.2,tentacle:2.4,manta:2.8,skoll:1.4,logi:1.5,dvalin:1.7,shooter:1.7,hound:1.3,flyer:1.5,mortar:2.1,sniper:1.5,guard:2}[e.type]||1.15);if(U.vamp)P.hp=Math.min(P.max,P.hp+P.max*.015*U.vamp);if(U.chain){const cp=e.m.position.clone();setTimeout(()=>{if(state==='play')aoe(cp,6+U.chain,110*U.chain)},90)}score+={gmsl:800,kolga:350,drifa:120,mjoll:200,tentacle:600,manta:800,skoll:250,logi:350,dvalin:400,drone:100,shooter:300,hound:200,flyer:250,mortar:400,sniper:350,guard:450,boss:5000}[e.type];if(e.laser){dropFx(e.laser);e.laser=null}for(let k=0;k<5;k++)puff(_pv.set(e.m.position.x+(rnd()-.5)*2,e.m.position.y,e.m.position.z+(rnd()-.5)*2),.8+rnd()*.6,0x2a5a40,.6);if(now-(P.scr||0)>.18){P.scr=now;play('screech',sp(e.m.position,e.type==='drone'?.35:.6,.15))}scene.remove(e.m);e.mt.dispose();enemies.splice(i,1);if(lockT===e)lockT=null;
 }
 let eVol=0,curVol=0;const volHit=new Map();
 function eShoot(e,dir,spd,dmg,col,size,from3){const b=eb[ei++%eb.length];b.vol=curVol||++eVol;b.by=e?eName(e)+'の'+({shooter:'酸弾',flyer:'光弾',sniper:'狙撃',guard:'三連射',mortar:'砲撃',boss:'砲撃'}[e.type]||'攻撃'):'';if(from3){b.m.position.copy(from3);b.v.copy(dir).normalize().multiplyScalar(spd)}else{b.m.position.set(e.m.position.x,2.6,e.m.position.z);b.v.copy(dir).setY(0).normalize().multiplyScalar(spd)}if(P.clk)b.v.applyAxisAngle(up,(rnd()<.5?-1:1)*(.25+rnd()*.5));b.m.material=ebMats[col||'red'];b.m.scale.setScalar(size||1.5);b.life=7;b.dmg=dmg;b.on=true;b.m.visible=true}
@@ -2891,7 +2913,7 @@ let DEX={};try{DEX=JSON.parse(localStorage.getItem('rg_dex')||'{}')}catch(e){}
 function dexAdd(e){const k=e.type==='boss'?'boss_'+(e.kind||'quad'):e.type;DEX[k]=(DEX[k]||0)+1;try{localStorage.setItem('rg_dex',JSON.stringify(DEX))}catch(_){}}
 const DXI={};
 function dexThumb(k){if(DXI[k])return DXI[k];if(!thR)thInit();const keep=stage,boss=k.startsWith('boss_'),kind=boss?k.slice(5):k;
-  if(boss)BK_OVR=kind;const mt=new THREE.MeshLambertMaterial({color:boss?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28,hrungnir:0x6e4628,nidhogg:0x7a5634,crab:0x8e3426,whale:0xf2f4f6,naglfar:0x5a3a6e}[kind]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c,skoll:0x6a4a2a,logi:0x5e2a1a,dvalin:0x5a4636,manta:0x2e4a60,tentacle:0x6a3a7e,kolga:0x9fd8ee,drifa:0xf4f6f8,mjoll:0x24282e}[kind]||0x5a2448)});
+  if(boss)BK_OVR=kind;const mt=new THREE.MeshLambertMaterial({color:boss?({spider:0x2e1a3a,arma:0x4a3424,turtle:0x5c3a28,hrungnir:0x6e4628,nidhogg:0x7a5634,crab:0x8e3426,whale:0xf2f4f6,naglfar:0x5a3a6e}[kind]||0x4a1a34):({shooter:0x3a2a52,hound:0x4a2c6e,flyer:0x5a2a7a,mortar:0x34422a,sniper:0x24383a,guard:0x4a3a2c,skoll:0x6a4a2a,logi:0x5e2a1a,dvalin:0x5a4636,manta:0x2e4a60,tentacle:0x6a3a7e,gmsl:0x8a9098,kolga:0x9fd8ee,drifa:0xf4f6f8,mjoll:0x24282e}[kind]||0x5a2448)});
   const q=makeQuad(boss?'boss':kind,mt);stage=keep;BK_OVR=null;q.root.position.set(0,q.cy,0);thS.add(q.root);q.root.updateMatrixWorld(true);
   const url=thShot(q.root,new V(.9,.55,1.1),boss?.95:1.05);thS.remove(q.root);DXI[k]=url;return url}
 function openDex(){let seen=0;const DL=DEXE.filter(x=>!x.map||mapRel(x.map));$('dexList').innerHTML=DL.map(x=>{const c=DEX[x.k]||0;if(c)seen++;const bs=x.k.startsWith('boss_');
@@ -3637,6 +3659,7 @@ function update(dt){
         const sp2=e.spd*(d<8?1.15:1);p.x+=Math.sin(e.wy)*sp2*dt;p.z+=Math.cos(e.wy)*sp2*dt;if(rnd()<.5)puff(t3.set(p.x-Math.sin(e.wy)*.8,.2,p.z-Math.cos(e.wy)*.8),.6,0xe8f2f8,.6);
         if(d<2.2&&P.y<3){t2.copy(tv).negate();damage(45,t2,p,'Mjöllの体当たり');P.vel.addScaledVector(t2,-8);SFX.clank(false);e.bk=1.3+rnd()*.6}}}
     else if(e.type==='tentacle'){tentacleAI(e,p,d,dt);continue}
+    else if(e.type==='gmsl'){if(gmslAI(e,p,dt)){scene.remove(e.m);e.mt.dispose();enemies.splice(i,1);if(lockT===e)lockT=null}continue}
     else if(e.type==='manta'){const X=e.ex,fl=Math.sin(now*2.2+e.ph)*.35;X.wl.rotation.z=fl;X.wr.rotation.z=-fl;if(e.tail)e.tail.rotation.y=Math.sin(now*1.6+e.ph)*.3;
       if(e.sw>0){e.sw-=dt;p.addScaledVector(e.sv,dt);e.bT-=dt;if(e.bT<=0){e.bT=.3;lobShell(p.clone().setY(p.y-1),new V(p.x+e.sv.x*.35,0,p.z+e.sv.z*.35),'Ránの氷爆弾',{ice:1,T:1,R:4,dmg:120,h:2,sz:2})}}
       else{const sd=e.ph>3?1:-1,want=d>42?1:d<30?-1:0;p.x+=(tv.x*want-tv.z*sd)*e.spd*dt;p.z+=(tv.z*want+tv.x*sd)*e.spd*dt;e.cd-=dt;
