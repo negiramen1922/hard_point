@@ -1559,7 +1559,7 @@ function cry(e,v){const d=DV[e.type];if(!d)return;const o=sp(e.m.position,d[2]*(
 const BV={spider:['queenRoar',1],hrungnir:['vChitterBig',.9],nidhogg:['vRumble',1],turtle:['roar',.62],crab:['vChitterBig',.7],whale:['whaleCall',1],naglfar:['hornCall',1],arma:['roar',.75],quad:['roar',.9]};
 function bossVoice(e,p,v,mn,r){const q=BV[e.kind||'quad']||['roar',1],o=p?sp(p,v,mn==null?.4:mn):{v};o.rate=q[1]*(r||1);play(q[0],o)}
 const SFX={
-  gun(k){if(k==='gat'){play('gat',{v:1.35,rate:.9,lim:170});return}play(k==='gat'?'gat':k==='ar'?'ar':'mini',{v:k==='turret'?.45:k==='mini'?.65:k==='gat'?.8:1,rate:k==='turret'?1.12:1,lim:170})},
+  gun(k){if(k==='gat'){play('gat',{v:1.9,rate:.9,lim:170});return}play(k==='gat'?'gat':k==='ar'?'ar':'mini',{v:k==='turret'?.45:k==='mini'?.95:k==='gat'?.8:1,rate:k==='turret'?1.12:1,lim:170})},
   beamFire(){play('beamFire',{v:.9})},
   boom(size,p){const o=sp(p,Math.min(1.35,.45+size*.35));o.rate=size<1?1.15:size>2.5?.85:1;play(size>=3?'boomBig':'boom',o)},
   clank(h){play(h?'clankH':'clankL',{v:h?.75:.55})},
@@ -1580,7 +1580,7 @@ function motor(kind){return{kind,src:null,lt:0,lv:-1}}
 function motorSet(m,v){if(!m||!AC||!isFinite(v)||AC.state!=='running')return;
   if(!m.src){const nm=m.kind==='gat'?'spinLoop':m.kind==='beam'?'beamLoop':m.kind==='arc'?'arcLoop':'engLoop',L=SBK[nm];if(!L)return;const s=AC.createBufferSource();s.buffer=L[0];s.loop=true;const g=AC.createGain();g.gain.value=0;s.connect(g);g.connect(sfxG);s.start();m.src={s,g}}
   if(now-m.lt<.07&&Math.abs(v-m.lv)<.08&&m.fire===m.lf)return;m.lt=now;m.lv=v;m.lf=m.fire;
-  let gv,rv;if(m.kind==='arc'){gv=v>0?.5:0;rv=.95+v*.08}else if(m.kind==='gat'){gv=v<.02?0:Math.min(1,v*1.6)*(m.fire?.2:.5);rv=.5+v*1.25}else if(m.kind==='beam'){if(v>1.5){gv=.6;rv=1}else{gv=v>0?.06+v*.22:0;rv=.5+v*.9}}else{gv=.22+v*.25;rv=.8+v*.6}
+  let gv,rv;if(m.kind==='arc'){gv=v>0?.5:0;rv=.95+v*.08}else if(m.kind==='gat'){gv=v<.02?0:Math.min(1,v*1.6)*(m.fire?.07:.26);rv=.5+v*1.25}else if(m.kind==='beam'){if(v>1.5){gv=.6;rv=1}else{gv=v>0?.06+v*.22:0;rv=.5+v*.9}}else{gv=.22+v*.25;rv=.8+v*.6}
   const t=AC.currentTime,G=m.src.g.gain,Rp=m.src.s.playbackRate;for(const pa of[G,Rp]){if(pa.cancelAndHoldAtTime)pa.cancelAndHoldAtTime(t);else pa.cancelScheduledValues(t)}G.setTargetAtTime(muted?0:gv,t,.05);Rp.setTargetAtTime(rv,t,.06)}
 let motors=[];
 function quietMotors(){if(!AC)return;const t=AC.currentTime;for(const m of motors){if(!m||!m.src||m.lv===0)continue;const G=m.src.g.gain;try{if(G.cancelAndHoldAtTime)G.cancelAndHoldAtTime(t);else G.cancelScheduledValues(t);G.setTargetAtTime(0,t,.04)}catch(e){}m.lv=0;m.lt=0}megaLoop(false)}
