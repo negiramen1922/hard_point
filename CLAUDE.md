@@ -1,6 +1,6 @@
 # HARD POINT 開発メモ（Claude 向け）
 
-ブラウザで遊べるメカTPS。`index.html` 1ファイルにゲームがすべて入っている（three.js r128 同梱）。
+ブラウザで遊べるメカTPS。ゲームの処理は `index.html` 1ファイル（three.js r128 同梱）。3Dモデル（敵・ボス・Tempest など）は `models/<id>.json` に分けてあり、起動後に裏で読み込む（`MODEL_IDS`。URL に `?v=BUILD` を付けているので更新すれば古いキャッシュは使われない）。新しいモデルを足すときは `models/` にファイルを置き、`MODEL_IDS` に id を加える
 
 ## 公開済みゲームの更新ルール
 

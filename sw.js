@@ -1,6 +1,6 @@
 // HARD POINT service worker
 // 更新を配信するときは VERSION を上げてください（古いキャッシュが破棄されます）
-const VERSION = 'hp-v6';
+const VERSION = 'hp-v7';
 // 本番(/hard_point/)とテスト版(/hard_point/test/)は同じドメインなので、キャッシュ名に置き場所を含めて混ざらないようにする
 const SCOPE = new URL(self.registration.scope).pathname;
 const CACHE = VERSION + '@' + SCOPE;
