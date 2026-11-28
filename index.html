@@ -2033,22 +2033,55 @@ function makeWhale(mt){const cy=24,root=new THREE.Group(),body=new THREE.Group()
   const tail=new THREE.Group();tail.position.set(0,.2,-7.2);body.add(tail);ell(tail,mt,1.3,1.2,2.6,0,0,-1.6);for(const sd of[-1,1]){const fl=ell(tail,mt,2.2,.2,1.1,sd*1.7,0,-3.8);fl.rotation.y=-sd*.35}
   const halo=new THREE.Group();halo.position.set(0,3.6,4.6);body.add(halo);const hm=new THREE.Mesh(new THREE.TorusGeometry(2.0,.13,8,40),new THREE.MeshBasicMaterial({color:0xfff2b0}));hm.rotation.x=Math.PI/2;halo.add(hm);
   const hg=new THREE.Mesh(new THREE.TorusGeometry(2.0,.42,8,40),mkAdd(0xffe080,.35));hg.rotation.x=Math.PI/2;halo.add(hg);
-  body.scale.setScalar(1.6);return{root,legs:[],cy,s:11,kind:'whale',body,tail,ex:{ports,fins,halo}}}
+  const blow=new THREE.Object3D();blow.position.set(0,2.3,3.4);body.add(blow);
+  body.scale.setScalar(1.6);return{root,legs:[],cy,s:11,kind:'whale',body,tail,ex:{ports,fins,halo,hg,blow}}}
+// BALDR specials (between broadsides and charges): SPOUT (blowhole sprays a volley of ice bombs around the player), HALO BEAM (PHASE 2+:
+// the halo charges and burns a beam onto the ground that chases the player), SONG (PHASE 2+: it stops, sings, and pours spiral arms of shots)
+function whaleSp(e,p,d,dt,ph,X){
+  if(!e.sp){e.spc=(e.spc==null?5:e.spc)-dt;if(e.spc>0||e.ccd<2)return false;
+    const opts=ph>=1?['spout','halo','song']:['spout'];const k=opts[(e.spi=(e.spi||0)+1)%opts.length];e.sp=k;e.wst=0;e.sf=0;
+    if(k==='spout'){toast('BALDR 潮吹き！ 赤い円から離れろ');play('roar',sp(p,.9,.5))}
+    if(k==='halo'){toast('BALDR ヘイロー光線！ 赤い円から逃げ続けろ');e.bp=new V(P.pos.x,0,P.pos.z);dropWarn(e.warn);e.warn=makeWarn(e.bp,3.6);SFX.bossCrouch(p)}
+    if(k==='song'){e.ws='song';e.wt=0;e.sa=rnd()*TAU;e.sT=0;toast('BALDR の歌… らせん弾幕が来る');play('roar',sp(p,.5,.8))}
+    return true}
+  if(e.ws==='song')return true;
+  e.wst+=dt;
+  if(e.sp==='spout'){X.blow.getWorldPosition(t3);
+    if(e.wst<1){if(rnd()<.7)puff(tv.set(t3.x+(rnd()-.5),t3.y+rnd()*2,t3.z+(rnd()-.5)),1.2+e.wst*1.5,0xeef6fa,3);return true}
+    if(!e.sf){e.sf=1;SFX.boom(1.5,t3);for(let k=0;k<14;k++)puff(tv.set(t3.x+(rnd()-.5)*3,t3.y+2+k*.9,t3.z+(rnd()-.5)*3),2.4,0xf4faff,4);
+      const n=ph>=2?10:ph>=1?8:6;for(let k=0;k<n;k++){let tx,tz;if(k===0){tx=P.pos.x+P.vel.x*1.8;tz=P.pos.z+P.vel.z*1.8}else{const a=rnd()*TAU,rr=5+rnd()*22;tx=P.pos.x+Math.cos(a)*rr;tz=P.pos.z+Math.sin(a)*rr}
+        const R=Math.hypot(tx,tz);if(R>ARENA-4){tx*=(ARENA-4)/R;tz*=(ARENA-4)/R}lobShell(t3.clone(),new V(tx,0,tz),'BALDRの潮吹き',{ice:1,T:2+rnd()*.6,R:5,dmg:170,h:14,sz:2.8})}}
+    if(e.wst>1.6){e.sp=null;e.spc=(ph>=2?4.5:ph>=1?5.5:7)+rnd()*1.5}return true}
+  if(e.sp==='halo'){const hg=X.hg;X.halo.getWorldPosition(t3);const dur=ph>=2?4.2:3.4,W=e.warn.userData;W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*14));
+    if(e.wst<1.3){hg.material.opacity=.35+e.wst*.45;hg.scale.setScalar(1+e.wst*.5);X.halo.rotation.y+=dt*6;e.bp.lerp(t2.set(P.pos.x,0,P.pos.z),Math.min(1,dt*6));e.warn.position.set(e.bp.x,.07,e.bp.z);return true}
+    if(!e.bm){e.bm=new THREE.Mesh(beamGeo,mkAdd(0xffd860,.7));e.bc=new THREE.Mesh(beamGeo,mkAdd(0xfffbe8,.95));scene.add(e.bm,e.bc);bossFx.push(e.bm,e.bc)}
+    if(!e.sf){e.sf=1;play('boomBig',{v:1.1,rate:.9});megaLoop(true);shake=Math.max(shake,.8)}
+    const vb=ph>=2?11:9;tv.set(P.pos.x-e.bp.x,0,P.pos.z-e.bp.z);const L=tv.length();if(L>.01)e.bp.addScaledVector(tv,Math.min(L,vb*dt)/L);e.warn.position.set(e.bp.x,.07,e.bp.z);
+    const to=_pv.set(e.bp.x,0,e.bp.z),dir=t2.copy(to).sub(t3),len=dir.length();dir.normalize();const w=1.8*(1+Math.sin(now*50)*.08)*Math.max(.05,Math.min(1,(e.wst-1.3)/.15,(dur+1.3-e.wst)/.2));
+    for(const [m,k] of[[e.bm,1],[e.bc,.4]]){m.visible=true;m.position.copy(t3);m.quaternion.setFromUnitVectors(up,dir);m.scale.set(w*k,len,w*k)}
+    if(rnd()<.8)spark(to,2,10);if(rnd()<.4)puff(tv.set(to.x,.4,to.z),1.6,0x9a9080,1.5);propsAoe(to,2.5,600*dt);
+    if(Math.hypot(P.pos.x-e.bp.x,P.pos.z-e.bp.z)<3.4&&P.y<6){t2.set(e.bp.x-P.pos.x,0,e.bp.z-P.pos.z).normalize();damage(300*dt,t2,P.pos.clone().setY(2),'BALDRのヘイロー光線')}
+    if(e.wst>1.3+dur){e.sp=null;megaLoop(false);e.bm.visible=e.bc.visible=false;dropWarn(e.warn);e.warn=null;hg.material.opacity=.35;hg.scale.setScalar(1);e.spc=(ph>=2?4.5:5.5)+rnd()*1.5}return true}
+  e.sp=null;return false}
 function bossWhale(e,p,d,dt){if(e.kind!=='whale')return false;const ph=e.phs||0,X=e.ex;e.wp=0;
   const ty=Math.atan2(P.pos.x-p.x,P.pos.z-p.z);if(e.tyaw==null){e.tyaw=ty;e.alt=24;e.ws='cruise';e.wt=0;e.bcd=2;e.ccd=6}
   X.halo.rotation.y+=dt*.8;X.halo.position.y=3.6+Math.sin(now*2)*.12;e.tail.rotation.x=Math.sin(now*1.6)*.25;for(const [i,f] of X.fins.entries())f.rotation.z=(i?-1:1)*Math.sin(now*1.6+.6)*.25;
   e.wt+=dt;let pitch=0,roll=0;
   if(e.ws==='cruise'){const sd=e.ph>3?1:-1,want=d>40?1:d<28?-1:0,ux=(P.pos.x-p.x)/(d||1),uz=(P.pos.z-p.z)/(d||1),vx=ux*want-uz*sd,vz=uz*want+ux*sd;p.x+=vx*e.spd*2.6*dt;p.z+=vz*e.spd*2.6*dt;
-    e.tyaw=la(e.tyaw,Math.atan2(vx,vz),dt*1.2);roll=-sd*.25;e.alt+=(24-e.alt)*Math.min(1,dt*1.2);
-    e.bcd-=dt;if(e.bcd<=0){e.bcd=(ph>=2?1.8:ph>=1?2.4:3);curVol=++eVol;for(const pt of X.ports){pt.o.getWorldPosition(t3);const side=pt.sd*(Math.cos(e.tyaw)*(P.pos.x-p.x)-Math.sin(e.tyaw)*(P.pos.z-p.z))>0;if(!side&&ph<2)continue;
+    e.tyaw=la(e.tyaw,Math.atan2(vx,vz),dt*1.2);roll=-sd*.25;e.alt+=(24-e.alt)*Math.min(1,dt*1.2);const busy=whaleSp(e,p,d,dt,ph,X);
+    if(!busy)e.bcd-=dt;if(e.bcd<=0){e.bcd=(ph>=2?1.8:ph>=1?2.4:3);curVol=++eVol;for(const pt of X.ports){pt.o.getWorldPosition(t3);const side=pt.sd*(Math.cos(e.tyaw)*(P.pos.x-p.x)-Math.sin(e.tyaw)*(P.pos.z-p.z))>0;if(!side&&ph<2)continue;
         const ax=P.pos.x-t3.x,az=P.pos.z-t3.z,a0=Math.atan2(ax,az),dy=(P.y+2-t3.y)/Math.hypot(ax,az);for(let q=-2;q<=2;q++){const a=a0+q*.13;eShoot(e,t2.set(Math.sin(a),dy,Math.cos(a)).normalize(),13+Math.abs(q),55,'mag',2.6,t3.clone())}}curVol=0;SFX.bossShot(p)}
-    e.ccd-=dt;if(e.ccd<=0&&d>14){e.ws='aim';e.wt=0;e.bdir=new V(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.wl=makeLine(9);e.chain=ph>=2?2:1;toast('BALDR 突撃！ 赤い線から離れろ');play('roar',sp(p,.6,.6))}}
+    if(!busy&&e.ws==='cruise')e.ccd-=dt;if(e.ccd<=0&&d>14&&!busy&&e.ws==='cruise'){e.ws='aim';e.wt=0;e.bdir=new V(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.wl=makeLine(9);e.chain=ph>=2?2:1;toast('BALDR 突撃！ 赤い線から離れろ');play('roar',sp(p,.6,.6))}}
   else if(e.ws==='aim'){t2.set(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.bdir.lerp(t2,Math.min(1,dt*3)).normalize();e.tyaw=Math.atan2(e.bdir.x,e.bdir.z);e.alt+=(14-e.alt)*Math.min(1,dt*2);pitch=.18;
     const W=e.wl.userData;e.wl.position.set(p.x,.09,p.z);e.wl.rotation.y=e.tyaw;W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*14));if(e.wt>1.2){e.ws='dive';e.wt=0;dropFx(e.wl);e.wl=null;SFX.thrust(true);e.tr=Math.min(60,d+14)}}
   else if(e.ws==='dive'){const v=ph>=1?40:34;p.x+=e.bdir.x*v*dt;p.z+=e.bdir.z*v*dt;e.tr-=v*dt;e.alt+=(4.6-e.alt)*Math.min(1,dt*4);pitch=.12;
     if(e.alt<7){propsAoe(p,e.r+1,9999);if(rnd()<.9)puff(t3.set(p.x-e.bdir.x*4+(rnd()-.5)*5,.5,p.z-e.bdir.z*4+(rnd()-.5)*5),2+rnd(),0xe8f0f4,1.5);if(rnd()<.5)spark(t3.set(p.x,.4,p.z),2,10);shake=Math.max(shake,.4)}
     const pd=Math.hypot(P.pos.x-p.x,P.pos.z-p.z);if(pd<e.r+2&&P.y<6&&now-(e.rh||0)>.8){e.rh=now;t2.set(p.x-P.pos.x,0,p.z-P.pos.z).normalize();damage(ph>=2?400:340,t2,P.pos.clone().setY(2),'BALDRの突撃');P.vel.addScaledVector(t2,-28);P.vy=Math.max(P.vy,9);shake=Math.max(shake,1.2)}
     t3.set(p.x+e.bdir.x*(e.r+1),1.5,p.z+e.bdir.z*(e.r+1));if(e.tr<=0||(e.alt<7&&inBld(t3,1))||Math.hypot(t3.x,t3.z)>ARENA-3){e.ws='stuck';e.wt=0;explode(t3.clone().setY(1),3,true);SFX.bossLand(t3);shake=Math.max(shake,1.3);for(let k=0;k<18;k++)puff(t3.clone().set(t3.x+(rnd()-.5)*10,.6,t3.z+(rnd()-.5)*10),2.5,0xe8f0f4,2);toast('BALDR が地面にはまった！ 今だ')}}
+  else if(e.ws==='song'){e.alt+=(20-e.alt)*Math.min(1,dt*1.5);X.halo.rotation.y+=dt*8;X.hg.material.opacity=.5+.3*Math.sin(now*10);X.hg.scale.setScalar(1.3+.15*Math.sin(now*6));roll=Math.sin(e.wt*2)*.08;pitch=-.08;
+    const dur=ph>=2?4.2:3.4;if(e.wt>.8&&e.wt<.8+dur){e.sT-=dt;if(e.sT<=0){e.sT=.11;const arms=ph>=2?5:4,dS=e.wt<.8+dur/2?1:-1;e.sa+=dS*.23;const o=_pv.set(p.x,e.alt+1,p.z),RR=Math.max(18,Math.min(45,d)),dy=-(o.y-2)/RR;curVol=++eVol;
+      for(let k=0;k<arms;k++){const a=e.sa+k*TAU/arms;eShoot(e,t2.set(Math.sin(a),dy,Math.cos(a)).normalize(),17,55,'mag',2.4,o.clone())}curVol=0;if(rnd()<.3)SFX.bossShot(p)}}
+    if(e.wt>dur+1.4){e.ws='cruise';e.wt=0;e.sp=null;X.hg.material.opacity=.35;X.hg.scale.setScalar(1);e.spc=(ph>=2?4.5:5.5)+rnd()*1.5;e.bcd=1.5}}
   else if(e.ws==='stuck'){e.alt+=(3.2-e.alt)*Math.min(1,dt*6);pitch=.32;if(e.wt>(ph>=2?1.6:2.2)){e.ws='thrash';e.wt=0;play('roar',sp(p,.7,.7))}}
   else if(e.ws==='thrash'){pitch=.32*(1-e.wt/.9);roll=Math.sin(e.wt*30)*.35;e.tyaw+=Math.sin(e.wt*26)*.05;shake=Math.max(shake,.5);if(rnd()<.8)puff(t3.set(p.x+(rnd()-.5)*10,.6,p.z+(rnd()-.5)*10),2,0xe8f0f4,2.5);
     if(e.wt>.9){if(--e.chain>0){e.ws='aim';e.wt=.3;e.bdir=new V(P.pos.x-p.x,0,P.pos.z-p.z).normalize();e.wl=makeLine(9)}else{e.ws='cruise';e.wt=0;e.ccd=(ph>=2?5:ph>=1?6.5:8)+rnd()*2;e.bcd=1.2;if(d<e.r+6){bossBarrage(e,p,16,12)}}}}
@@ -2066,7 +2099,16 @@ function makeNaglfar(mt){const root=new THREE.Group(),body=new THREE.Group();roo
   const ten=[];for(let k=0;k<7;k++){const g=new THREE.Group();g.position.set(-18+k*6.5,(k%2?3.6:-1),(k%2?-1:1)*5.2);sh.add(g);const n=8;const segs=[];for(let q=0;q<n;q++){const m=ell(g,q%2?flesh:mt,1.5-q*.15,1.5-q*.15,1.5-q*.15,0,0,0);segs.push(m)}ell(g,glowM,.25,.25,.25,0,0,0);ten.push({g,segs,ph:k*1.3})}
   for(let k=0;k<5;k++){const t=new THREE.Mesh(new THREE.TorusGeometry(6,.7,8,20),flesh);t.position.set(-16+k*8,1,0);t.rotation.y=Math.PI/2;t.scale.set(1.05,.75,1.4);sh.add(t)}
   for(const [x,y,z] of[[-8,4.2,-3],[10,4.2,3],[20,3,-2],[-20,4.5,2],[2,4.4,-4]]){ell(sh,flesh,2.6,2.0,2.6,x,y,z);for(const k of[-.45,.45])ell(sh,eyeMat,.28,.28,.2,x+k,y+.5,z-1.35)}
-  return{root,legs:[],cy:0,s:16,kind:'naglfar',body,ex:{tur,ten,sh}}}
+  // bow main cannon (charged beam) and the parasite's true body, hidden inside the hull until the FINAL PHASE
+  const mg=new THREE.Group();mg.position.set(21,5.2,0);sh.add(mg);cyl(2.4,1.6,top,0,0,0,mg);cbox(4,2.2,4.4,top,0,1.3,0,mg,.3);cyl(.75,9,hull,0,1.5,-4.5,mg,'z');cyl(1.05,1.4,top,0,1.5,-8.6,mg,'z');
+  const mmz=new THREE.Object3D();mmz.position.set(0,1.5,-9.6);mg.add(mmz);const mglow=new THREE.Mesh(new THREE.SphereGeometry(1,12,10),mkAdd(0xff8a30,.9));mglow.scale.setScalar(.01);mmz.add(mglow);
+  const core=new THREE.Group();core.position.set(2,-4,0);core.visible=false;sh.add(core);ell(core,flesh,6.5,5.2,5.6,0,0,0);
+  for(let k=0;k<9;k++){const a=k/9*TAU;ell(core,k%2?mt:flesh,2.2,2.2,2.2,Math.cos(a)*5.6,1.5+Math.sin(a*2)*1.5,Math.sin(a)*4.6)}
+  const eye=new THREE.Group();eye.position.set(0,2.2,-4.6);core.add(eye);ell(eye,new THREE.MeshLambertMaterial({color:0xe6dccb}),2.4,2.4,1.6,0,0,0);const pupil=new THREE.Object3D();pupil.position.z=1.5;eye.add(pupil);
+  ell(eye,new THREE.MeshBasicMaterial({color:0xff3a1a}),1.2,1.2,.5,0,0,1.25);ell(eye,new THREE.MeshBasicMaterial({color:0x200408}),.5,.9,.3,0,0,1.6);
+  return{root,legs:[],cy:0,s:16,kind:'naglfar',body,ex:{tur,ten,sh,main:{g:mg,mz:mmz,glow:mglow},core,eye,pupil}}}
+function makeFan(B,L,a0,a1){const g=new THREE.Group();g.position.set(B.x,.09,B.z);const lo=Math.min(a0,a1)-Math.PI/2,ln=Math.abs(a1-a0),mk=o=>new THREE.MeshBasicMaterial({color:0xff2010,transparent:true,opacity:o,depthWrite:false,side:THREE.DoubleSide});
+  const fill=new THREE.Mesh(new THREE.CircleGeometry(L,40,lo,ln),mk(.2)),edge=new THREE.Mesh(new THREE.RingGeometry(L-.8,L,40,1,lo,ln),mk(.9));for(const m of[fill,edge]){m.rotation.x=-Math.PI/2;g.add(m)}g.userData={fill};onTop(g);scene.add(g);bossFx.push(g);return g}
 function makeTentacle(mt){const root=new THREE.Group(),segs=[],N=22,flesh=new THREE.MeshLambertMaterial({color:0x4a2c6e,emissive:0x1a0828});
   for(let k=0;k<N;k++){const r=2.5-k*.085,m=ell(root,k%2?flesh:mt,r,r,r*1.35,0,0,0);segs.push(m);if(k%3===1)for(const sd of[-1,1])ell(m,glowM,.12,.12,.12,sd*.75,.55,0)}const tip=new THREE.Group();root.add(tip);cone(tip,legMat,.95,2.8,0,0,1.4,Math.PI/2);ell(tip,glowM,.55,.55,.55,0,0,0);
   return{root,legs:[],cy:2,s:2,kind:'tentacle',ex:{segs,tip}}}
@@ -2076,7 +2118,7 @@ function tentaclePose(e){const X=e.ex,B=e.base,T=e.tipP,H=e.arc;_tc.set((B.x+T.x
 function tentacleAI(e,p,d,dt){if(!e.base){e.base=p.clone().setY(-1);e.tipP=e.base.clone();e.arc=0;e.ts='rise';e.tt=0;e.slams=0}
   const par=e.par&&enemies.includes(e.par)?e.par:null;if(e.lhp==null)e.lhp=e.hp;const dmg=e.lhp-e.hp;if(dmg>0&&par){par.hp-=dmg*.8;par.flash=.05;if(par.hp<=0)kill(par)}e.lhp=e.hp;
   e.tt+=dt;const B=e.base;
-  if(e.ts==='rise'){const k=Math.min(1,e.tt/.9);e.tipP.set(B.x+Math.sin(now+e.ph)*2,-1+26*k,B.z-4*k);e.arc=2*k;if(rnd()<.6)puff(t3.set(B.x+(rnd()-.5)*4,.3,B.z+(rnd()-.5)*4),1.4,0xe8f2f8,2);if(k>=1){e.ts='aim';e.tt=0}}
+  if(e.ts==='rise'){const k=Math.min(1,e.tt/.9);e.tipP.set(B.x+Math.sin(now+e.ph)*2,-1+26*k,B.z-4*k);e.arc=2*k;if(rnd()<.6)puff(t3.set(B.x+(rnd()-.5)*4,.3,B.z+(rnd()-.5)*4),1.4,0xe8f2f8,2);if(k>=1){e.ts=e.sw?'swAim':'aim';e.tt=0}}
   else if(e.ts==='aim'){if(e.tt<.05||!e.tg){const tx=P.pos.x+P.vel.x*.5,tz=Math.min(SHORE-3,P.pos.z+P.vel.z*.5),dx=tx-B.x,dz=tz-B.z,L=Math.min(74,Math.hypot(dx,dz))||1;e.tg=new V(B.x+dx/Math.hypot(dx,dz)*L,0,B.z+dz/Math.hypot(dx,dz)*L);
       e.wl=makeLine(6);e.wl.position.set(B.x,.09,B.z);e.wl.rotation.y=Math.atan2(e.tg.x-B.x,e.tg.z-B.z);e.wl.userData.fill.scale.z=L;e.wl.children.forEach(c=>c.scale.z=L);play('screech',sp(B,.4,.4))}
     e.tipP.set(B.x+(e.tg.x-B.x)*.3,26+Math.sin(now*6)*.6,B.z+(e.tg.z-B.z)*.3);e.arc=5;const W=e.wl.userData;W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*14));if(e.tt>1.05){e.ts='slam';e.tt=0;dropFx(e.wl);e.wl=null}}
@@ -2084,6 +2126,12 @@ function tentacleAI(e,p,d,dt){if(!e.base){e.base=p.clone().setY(-1);e.tipP=e.bas
     if(k>=1){e.ts='lie';e.tt=0;e.slams++;shake=Math.max(shake,1);SFX.bossLand(e.tg);for(let q=0;q<16;q++){const u=q/15;puff(t3.set(B.x+(e.tg.x-B.x)*u,.6,B.z+(e.tg.z-B.z)*u),2,0xe8f2f8,1.5)}explode(e.tg.clone().setY(1),1.8,true);
       _ta.copy(B).setY(1);_tb.copy(e.tg).setY(1);if(segHit(_ta,_tb,_tc.set(P.pos.x,1,P.pos.z),4.2)&&P.y<4){t2.set(e.tg.x-B.x,0,e.tg.z-B.z).normalize();t2.set(-t2.z,0,t2.x);damage(260,t2,P.pos.clone().setY(2),'NAGLFARの触手');P.vel.addScaledVector(t2,-14)}
       propsAoe(e.tg,4,9999)}}
+  else if(e.ts==='swAim'){if(!e.wl){const dx=P.pos.x-B.x,dz=Math.min(SHORE-3,P.pos.z)-B.z;e.sL=cl(Math.hypot(dx,dz)+6,28,62);const ac=Math.atan2(dx,dz);e.sdr=rnd()<.5?1:-1;e.sa0=ac-e.sdr*1.15;e.sa1=ac+e.sdr*1.15;e.wl=makeFan(B,e.sL,e.sa0,e.sa1);toast('触手なぎ払い！ ジャンプでかわせ');play('screech',sp(B,.35,.5))}
+    const a=e.sa0;e.tipP.set(B.x+Math.sin(a)*e.sL*.8,6+Math.sin(now*6)*.4,B.z+Math.cos(a)*e.sL*.8);e.arc=4;e.wl.userData.fill.material.opacity=.1+.18*Math.abs(Math.sin(now*14));if(e.tt>1.4){e.ts='sweep';e.tt=0;dropFx(e.wl);e.wl=null;SFX.thrust(true)}}
+  else if(e.ts==='sweep'){const k=Math.min(1,e.tt/1.0),a=e.sa0+(e.sa1-e.sa0)*k;e.tipP.set(B.x+Math.sin(a)*e.sL,1.2,B.z+Math.cos(a)*e.sL);e.arc=1.2;shake=Math.max(shake,.3);
+    if(rnd()<.9)puff(t3.set(e.tipP.x,.5,e.tipP.z),2,0xe8f2f8,1.5);propsAoe(e.tipP,3,9999);
+    if(!e.shit&&P.y<3.2){_ta.copy(B).setY(1);_tb.copy(e.tipP).setY(1);if(segHit(_ta,_tb,_tc.set(P.pos.x,1,P.pos.z),3.6)){e.shit=1;t2.set(Math.cos(a),0,-Math.sin(a)).multiplyScalar(e.sdr);damage(240,t2.clone().negate(),P.pos.clone().setY(2),'NAGLFARの触手なぎ払い');P.vel.addScaledVector(t2,22);P.vy=Math.max(P.vy,6);shake=Math.max(shake,1)}}
+    if(k>=1){e.ts='lie';e.tt=1.2;e.slams=2}}
   else if(e.ts==='lie'){e.tipP.y=.8+Math.sin(now*3+e.ph)*.15;e.arc=.5;if(e.tt>3.2){if(e.slams<2){e.ts='aim';e.tt=0;e.tg=null}else{e.ts='back';e.tt=0}}}
   else{const k=Math.min(1,e.tt/.9);e.tipP.lerp(B,k*.2);e.tipP.y-=dt*8;if(k>=1){const i=enemies.indexOf(e);if(i>=0){scene.remove(e.m);enemies.splice(i,1);if(lockT===e)lockT=null}return}}
   tentaclePose(e)}
@@ -2092,16 +2140,41 @@ function bossNaglfar(e,p,d,dt){if(e.kind!=='naglfar')return false;const ph=e.phs
   for(const t of X.ten){t.g.children.forEach((m,q)=>{if(q>=t.segs.length)return;const a=now*1.4+t.ph+q*.5;m.position.set(Math.sin(a)*q*.35,q*.9+Math.sin(a*.7)*q*.15,-q*.25)})}
   for(const t of X.tur){t.g.rotation.y=la(t.g.rotation.y,Math.atan2(-(P.pos.x-(p.x+t.g.position.x)),-(P.pos.z-p.z))+Math.PI,dt*2)}
   // shelling comes in waves: a quiet spell, then a creeping barrage — rows of shells walking across the pier (from the shore inland, or back), plus one aimed at the player each row
-  e.ccd=(e.ccd==null?3:e.ccd)-dt;if(e.ccd<=0&&!e.wv){e.wv=ph>=2?7:ph>=1?6:5;e.wT=0;e.wk=0;e.wd=e.wd?0:1;toast('NAGLFAR 一斉砲撃！ 着弾の列が迫る')}
+  e.ccd=(e.ccd==null?3:e.ccd)-dt;if(e.ccd<=0&&!e.wv&&!e.mc){e.wv=ph>=2?7:ph>=1?6:5;e.wT=0;e.wk=0;e.wd=e.wd?0:1;toast('NAGLFAR 一斉砲撃！ 着弾の列が迫る')}
   if(e.wv){e.wT-=dt;if(e.wT<=0){e.wT=ph>=2?.45:.6;const k=e.wk++,n=ph>=1?8:6,z=e.wd?SHORE-8-k*14:-ARENA+12+k*14;
       for(let i=0;i<n;i++){const t=X.tur[i%3];t.mz.getWorldPosition(t3);lobShell(t3.clone(),new V((i/(n-1)-.5)*ARENA*1.6+(rnd()-.5)*6,0,Math.min(SHORE-2,z+(rnd()-.5)*5)),'NAGLFARの艦砲',{T:1.9,R:5.5,dmg:200,h:28,sz:2.8})}
       X.tur[k%3].mz.getWorldPosition(t3);lobShell(t3.clone(),new V(P.pos.x+P.vel.x*1.6,0,Math.min(SHORE-2,P.pos.z+P.vel.z*1.6)),'NAGLFARの艦砲',{T:1.9,R:6,dmg:210,h:28,sz:3});
       for(const t of X.tur){t.mz.getWorldPosition(t3);explode(t3.clone(),1.2,true)}SFX.boom(2,p);shake=Math.max(shake,.3);if(--e.wv<=0){e.wv=0;e.ccd=ph>=2?3.5:ph>=1?4.5:5.5}}}
   if(ph>=1){e.vcd=(e.vcd==null?2:e.vcd)-dt;if(e.vcd<=0){e.vcd=ph>=2?1.6:2.4;const t=X.tur[Math.floor(rnd()*X.tur.length)];t.mz.getWorldPosition(t3);tv.set(P.pos.x-t3.x,P.y+2-t3.y,P.pos.z-t3.z).normalize();const a0=Math.atan2(tv.x,tv.z);curVol=++eVol;for(let q=-3;q<=3;q++){const a=a0+q*.08;eShoot(e,t2.set(Math.sin(a),tv.y,Math.cos(a)).normalize(),22,80,'org',2.6,t3.clone())}curVol=0;SFX.bossShot(p)}}
-  e.tcd=(e.tcd==null?2:e.tcd)-dt;const nT=enemies.filter(o=>o.type==='tentacle').length,cap=ph>=2?4:ph>=1?3:2;
+  e.tcd=(e.tcd==null?2:e.tcd)-dt;const nT=enemies.filter(o=>o.type==='tentacle'&&!o.sw).length,cap=e.coreOn?5:ph>=2?4:ph>=1?3:2;
   if(e.tcd<=0&&nT<cap){e.tcd=ph>=2?2.5:4;const x=cl(P.pos.x+(rnd()-.5)*30,-ARENA*.7,ARENA*.7);spawn('tentacle',new V(x,0,SHORE+5));const en=enemies[enemies.length-1];en.par=e;en.mat=.01;toast('触手が来る！ 赤い線から離れろ')}
   if(ph>=2){e.rcd=(e.rcd==null?2:e.rcd)-dt;if(e.rcd<=0){e.rcd=1.2;const a=rnd()*TAU,rr=rnd()*30;lobShell(new V((rnd()-.5)*40,14,NG_Z),new V(P.pos.x+Math.cos(a)*rr,0,Math.min(SHORE-2,P.pos.z+Math.sin(a)*rr)),'NAGLFARの艦砲',{T:2.4,R:5,dmg:180,h:24,sz:2.6})}}
-  return true}
+  // tentacle SWEEP: one tentacle rises and sweeps a wide fan across the pier, low to the ground (jump over it)
+  e.wcd=(e.wcd==null?6:e.wcd)-dt;if(e.wcd<=0&&!enemies.some(o=>o.type==='tentacle'&&o.sw)){e.wcd=ph>=2?7:ph>=1?8.5:10;const x=cl(P.pos.x+(rnd()-.5)*20,-ARENA*.6,ARENA*.6);spawn('tentacle',new V(x,0,SHORE+5));const en=enemies[enemies.length-1];en.par=e;en.mat=.01;en.sw=1}
+  if(nglMain(e,p,dt,ph,X))return true;
+  nglCore(e,p,dt,ph,X);return true}
+// MAIN CANNON (PHASE 2+): the bow gun charges, a red line tracks the player and locks, then a heavy beam rakes along the line
+function nglMain(e,p,dt,ph,X){const M=X.main;M.mz.getWorldPosition(t3);const o=_pv2.set(t3.x,0,t3.z),dx0=e.mcD?e.mcD.x:P.pos.x-o.x,dz0=e.mcD?e.mcD.z:P.pos.z-o.z;M.g.rotation.y=la(M.g.rotation.y,Math.atan2(-dx0,-dz0),dt*2);
+  if(!e.mc){if(ph<1||e.wv)return false;e.mcd=(e.mcd==null?4:e.mcd)-dt;if(e.mcd>0)return false;e.mc='charge';e.mt2=0;e.mcD=null;dropFx(e.wl);e.wl=makeLine(8);toast('NAGLFAR 主砲チャージ！ 赤い線から離れろ');SFX.bossCrouch(p);play('roar',sp(p,.6,.6))}
+  e.mt2+=dt;
+  if(e.mc==='charge'){if(e.mt2<2||!e.mcD){e.mcD=new V(P.pos.x-o.x,0,Math.min(SHORE-2,P.pos.z)-o.z);e.mcL=e.mcD.length()+20;e.mcD.normalize()}
+    const W=e.wl.userData;e.wl.position.set(o.x,.09,o.z);e.wl.rotation.y=Math.atan2(e.mcD.x,e.mcD.z);W.fill.scale.z=e.mcL;e.wl.children.forEach(c=>c.scale.z=e.mcL);W.fill.material.opacity=.12+.2*Math.abs(Math.sin(now*(e.mt2>2?26:12)));
+    M.glow.scale.setScalar(.3+e.mt2);if(rnd()<.5)spark(t3,2,8);
+    if(e.mt2>=2.6){e.mc='fire';e.mt2=0;dropFx(e.wl);e.wl=null;if(!e.bm){e.bm=new THREE.Mesh(beamGeo,mkAdd(0xff8a30,.75));e.bc=new THREE.Mesh(beamGeo,mkAdd(0xfff0d8,.95));scene.add(e.bm,e.bc);bossFx.push(e.bm,e.bc)}play('boomBig',{v:1.4,rate:.7});megaLoop(true);shake=Math.max(shake,1.3)}}
+  else{const L=e.mcL,end=tv.set(o.x+e.mcD.x*L,0,o.z+e.mcD.z*L),dir=t2.copy(end).sub(t3),len=dir.length();dir.normalize();const w=3*(1+Math.sin(now*50)*.06)*Math.max(.05,Math.min(1,e.mt2/.12,(1.2-e.mt2)/.2));
+    for(const [m,k] of[[e.bm,1],[e.bc,.42]]){m.visible=true;m.position.copy(t3);m.quaternion.setFromUnitVectors(up,dir);m.scale.set(w*k,len,w*k)}M.glow.scale.setScalar(2.8+rnd()*.4);shake=Math.max(shake,.5);
+    if(now-(e.mex||0)>.15){e.mex=now;explode(end.clone().setY(1),1.4,true)}for(let k=0;k<2;k++){const u=.35+rnd()*.65,q=_pv.set(o.x+e.mcD.x*L*u,.5,o.z+e.mcD.z*L*u);if(q.z<SHORE){spark(q,2,9);propsAoe(q,3.5,900*dt)}}
+    const dx=P.pos.x-o.x,dz=P.pos.z-o.z,al=dx*e.mcD.x+dz*e.mcD.z,lat=Math.abs(-dx*e.mcD.z+dz*e.mcD.x);if(al>0&&al<L+2&&lat<w+1.6&&P.y<7){t2.set(-e.mcD.x,0,-e.mcD.z);damage(480*dt,t2,P.pos.clone().setY(2),'NAGLFARの主砲')}
+    if(e.mt2>=1.2){e.mc=null;megaLoop(false);e.bm.visible=e.bc.visible=false;M.glow.scale.setScalar(.01);e.mcd=ph>=2?8:11}}
+  return false}
+// FINAL PHASE: the parasite's true body heaves up out of the hull — a huge eye that fires spreads; while it is out NAGLFAR takes 1.3x damage
+function nglCore(e,p,dt,ph,X){
+  if(ph>=2&&!e.coreOn){e.coreOn=1;e.cT=0;X.core.visible=true;e.nlhp=e.hp;toast('寄生体の本体が出現！ 今なら大ダメージ');play('roar',{v:1.5,rate:.6});shake=Math.max(shake,1.5)}
+  if(!e.coreOn)return;const C=X.core;e.cT+=dt;const k=Math.min(1,e.cT/2.2);C.position.y=-5+13*k*(2-k);C.rotation.z=Math.sin(now*1.3)*.06;C.scale.setScalar(1.45+Math.sin(now*2.2)*.04);X.eye.lookAt(P.pos.x,P.y+2,P.pos.z);
+  if(k<1){shake=Math.max(shake,.4);if(rnd()<.8){X.eye.getWorldPosition(t3);puff(tv.set(t3.x+(rnd()-.5)*14,t3.y-4,t3.z+(rnd()-.5)*6),2.6,0x4a2c6e,2)}}
+  const dd=e.nlhp-e.hp;if(dd>0)e.hp-=dd*.3;e.nlhp=e.hp;if(e.hp<=0){kill(e);return}
+  if(k>=1){e.ecd2=(e.ecd2==null?1.5:e.ecd2)-dt;if(e.ecd2<=0){e.ecd2=2.2;X.pupil.getWorldPosition(t3);tv.set(P.pos.x-t3.x,P.y+2-t3.y,P.pos.z-t3.z).normalize();const a0=Math.atan2(tv.x,tv.z);curVol=++eVol;
+    for(let q=-2;q<=2;q++){const a=a0+q*.1;eShoot(e,t2.set(Math.sin(a),tv.y,Math.cos(a)).normalize(),24,85,'mag',3.4,t3.clone())}curVol=0;SFX.bossShot(p)}}}
 // ===== SURTR: giant turtle carrying a live volcano; the volcano erupts in bursts and rains lava bombs from above =====
 function makeTurtle(mt){const cy=3.4,root=new THREE.Group(),g=new THREE.Group();g.position.y=-cy;root.add(g);
   const body=new THREE.Group();body.position.y=cy;g.add(body);
