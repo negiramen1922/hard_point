@@ -14,6 +14,11 @@
    - 本番URL: https://negiramen1922.github.io/hard_point/
    - 公開の合図なしに `main` へ push しない
 
+## 本番に出さない作りかけ
+
+- まだ公開しないボディ・武器・見た目は `index.html` の `const WIP`（例：`B:['rapt']`, `W:['harpoon']`, `tempestModel`）に入れると、本番では出ずテスト版だけに出る。公開するときはそこから外す
+- マップは `MAPS` の `rel:false` で同じように本番では隠れる
+
 ## バージョン表示
 
 - ホーム画面の右下にバージョンを出している。本番は `1.0.<連番>`、テスト版は `1.1.<連番>`（`index.html` の `const BUILD`）
